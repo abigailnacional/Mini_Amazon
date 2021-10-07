@@ -4,4 +4,4 @@
 \COPY Cart FROM 'data/Cart.csv' WITH DELIMITER ',' NULL '' CSV
 \COPY Feedback FROM 'data/Feedback.csv' WITH DELIMITER ',' NULL '' CSV
 \COPY ProductsInCart FROM 'data/ProductsInCart.csv' WITH DELIMITER ',' NULL '' CSV
-\COPY Sell FROM 'data/Sells.csv' WITH DELIMITER ',' NULL '' CSV
+\COPY Sells FROM 'data/Sells.csv' WITH DELIMITER ',' NULL '' CSV

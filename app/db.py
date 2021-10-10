@@ -21,3 +21,9 @@ class DB:
         calling this function."""
         with self.engine.connect() as conn:
             return list(conn.execute(text(sqlstr), kwargs).fetchall())
+
+
+    # the use of .fetchall() causes the execute method to error for SQL that does not return rows (i.e. UPDATE)
+    def execute_non_select_statement(self, sqlstr, **kwargs):
+        with self.engine.connect() as conn:
+            return conn.execute(text(sqlstr), kwargs)

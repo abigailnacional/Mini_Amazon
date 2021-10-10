@@ -19,7 +19,7 @@ class Product:
         self.price = price
         self.is_available = is_available
         self.description = description
-        self.category = description
+        self.category = category
         self.link = link
         self.creator_id = creator_id
         self.image = image

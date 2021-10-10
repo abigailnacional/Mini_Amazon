@@ -44,11 +44,11 @@ CREATE TABLE ProductsInCart (
 
 CREATE TABLE Purchase (
     id INT NOT NULL PRIMARY KEY,
+    user_id INT NOT NULL,
     time_purchased timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
     is_fulfilled BOOLEAN DEFAULT FALSE,
     time_of_fulfillment timestamp without time zone DEFAULT NULL,
     cart_id INT NOT NULL,
-    user_id INT NOT NULL,
     FOREIGN KEY (cart_id) REFERENCES Cart(id),
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );

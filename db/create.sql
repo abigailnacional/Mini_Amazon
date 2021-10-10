@@ -8,7 +8,7 @@ CREATE TABLE Users (
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
     balance INT DEFAULT 0,
-    address VARCHAR(255) UNIQUE NOT NULL,
+    address VARCHAR(255) UNIQUE,
     CHECK (balance >= 0)
 );
 
@@ -48,7 +48,9 @@ CREATE TABLE Purchase (
     is_fulfilled BOOLEAN DEFAULT FALSE,
     time_of_fulfillment timestamp without time zone DEFAULT NULL,
     cart_id INT NOT NULL,
-    FOREIGN KEY (cart_id) REFERENCES Cart(id)
+    user_id INT NOT NULL,
+    FOREIGN KEY (cart_id) REFERENCES Cart(id),
+    FOREIGN KEY (user_id) REFERENCES Users(id)
 );
 
 CREATE TABLE Sells (

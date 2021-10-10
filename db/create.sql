@@ -8,7 +8,8 @@ CREATE TABLE Users (
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
     balance INT DEFAULT 0,
-    address VARCHAR(255) UNIQUE NOT NULL
+    address VARCHAR(255) UNIQUE NOT NULL,
+    CHECK (balance >= 0)
 );
 
 CREATE TABLE Product (
@@ -21,7 +22,8 @@ CREATE TABLE Product (
     link VARCHAR(255) NOT NULL,
     creator_id INT NOT NULL,
     image VARCHAR(255) NOT NULL,
-    FOREIGN KEY (creator_id) REFERENCES Users(id)
+    FOREIGN KEY (creator_id) REFERENCES Users(id),
+    CHECK (category IN ('Food', 'Beverage', 'Antique', 'Painting'))
 );
 
 CREATE TABLE Cart (
@@ -31,10 +33,20 @@ CREATE TABLE Cart (
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
 
+CREATE TABLE ProductsInCart (
+    cart_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL,
+    FOREIGN KEY (cart_id) REFERENCES Cart(id),
+    FOREIGN KEY (product_id) REFERENCES Product(id),
+    PRIMARY KEY (cart_id, product_id)
+);
+
 CREATE TABLE Purchase (
     id INT NOT NULL PRIMARY KEY,
     time_purchased timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
     is_fulfilled BOOLEAN DEFAULT FALSE,
+    time_of_fulfillment timestamp without time zone DEFAULT NULL,
     cart_id INT NOT NULL,
     FOREIGN KEY (cart_id) REFERENCES Cart(id)
 );
@@ -42,6 +54,7 @@ CREATE TABLE Purchase (
 CREATE TABLE Sells (
    seller_id INT NOT NULL,
    product_id INT NOT NULL,
+   inventory INT NOT NULL,
    FOREIGN KEY (seller_id) REFERENCES Users(id),
    FOREIGN KEY (product_id) REFERENCES Product(id),
    PRIMARY KEY (seller_id, product_id)
@@ -57,13 +70,4 @@ CREATE TABLE Feedback (
    FOREIGN KEY (reviewer_id) REFERENCES Users(id),
    FOREIGN KEY (seller_id) REFERENCES Users(id),
    FOREIGN KEY (product_id) REFERENCES Product(id)
-);
-
-CREATE TABLE ProductsInCart (
-    cart_id INT NOT NULL,
-    product_id INT NOT NULL,
-    quantity INT NOT NULL,
-    FOREIGN KEY (cart_id) REFERENCES Cart(id),
-    FOREIGN KEY (product_id) REFERENCES Product(id),
-    PRIMARY KEY (cart_id, product_id)
 );

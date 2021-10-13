@@ -24,16 +24,15 @@
         <td>{{product_in_cart.product.price}}</td>
         <td>{{product_in_cart.quantity}}</td>
         <td>
-          <form action="increase_quantity/{{product_in_cart.cart_id}}/{{product_in_cart.product.id}}">
+          <form action="increase_quantity/{{product_in_cart.cart_id}}/{{product_in_cart.product.id}}/{{product_in_cart.seller_id}}">
             <button>+1</button>
           </form>
         </td>
         <td>
-          <form action="decrease_quantity/{{product_in_cart.cart_id}}/{{product_in_cart.product.id}}">
+          <form action="decrease_quantity/{{product_in_cart.cart_id}}/{{product_in_cart.product.id}}/{{product_in_cart.seller_id}}">
             <button>-1</button>
           </form>
         </td>
-
       </tr>
     {% endfor %}
   </tbody>
@@ -46,6 +45,12 @@
 <tbody>
     {{total_cart_price}}
 </tbody>
+
+<br><br><br>
+
+ <form>
+   <button>Order</button>
+ </form>
 
 
 {% endblock %}

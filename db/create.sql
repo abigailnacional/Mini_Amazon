@@ -26,6 +26,15 @@ CREATE TABLE Product (
     CHECK (category IN ('Food', 'Beverage', 'Antique', 'Painting'))
 );
 
+CREATE TABLE Sells (
+   seller_id INT NOT NULL,
+   product_id INT NOT NULL,
+   inventory INT NOT NULL,
+   FOREIGN KEY (seller_id) REFERENCES Users(id),
+   FOREIGN KEY (product_id) REFERENCES Product(id),
+   PRIMARY KEY (seller_id, product_id)
+);
+
 CREATE TABLE Cart (
     id INT NOT NULL PRIMARY KEY,
     user_id INT NOT NULL,
@@ -36,10 +45,11 @@ CREATE TABLE Cart (
 CREATE TABLE ProductsInCart (
     cart_id INT NOT NULL,
     product_id INT NOT NULL,
+    seller_id INT NOT NULL,
     quantity INT NOT NULL,
     FOREIGN KEY (cart_id) REFERENCES Cart(id),
-    FOREIGN KEY (product_id) REFERENCES Product(id),
-    PRIMARY KEY (cart_id, product_id)
+    FOREIGN KEY (seller_id, product_id) REFERENCES Sells(seller_id, product_id),
+    PRIMARY KEY (cart_id, product_id, seller_id)
 );
 
 CREATE TABLE Purchase (
@@ -51,15 +61,6 @@ CREATE TABLE Purchase (
     cart_id INT NOT NULL,
     FOREIGN KEY (cart_id) REFERENCES Cart(id),
     FOREIGN KEY (user_id) REFERENCES Users(id)
-);
-
-CREATE TABLE Sells (
-   seller_id INT NOT NULL,
-   product_id INT NOT NULL,
-   inventory INT NOT NULL,
-   FOREIGN KEY (seller_id) REFERENCES Users(id),
-   FOREIGN KEY (product_id) REFERENCES Product(id),
-   PRIMARY KEY (seller_id, product_id)
 );
 
 CREATE TABLE Feedback (

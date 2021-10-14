@@ -14,7 +14,7 @@ class ProductInCart:
     def increase_quantity(cart_id, product_id, seller_id):
         app.db.execute_non_select_statement(
             """
-            UPDATE ProductsInCart
+            UPDATE ProductInCart
             SET quantity = quantity + 1
             WHERE product_id = :product_id
             AND cart_id = :cart_id
@@ -29,7 +29,7 @@ class ProductInCart:
     def decrease_quantity(cart_id, product_id, seller_id):
         app.db.execute_non_select_statement(
             """
-                UPDATE ProductsInCart
+                UPDATE ProductInCart
                 SET quantity = quantity - 1
                 WHERE product_id = :product_id
                 AND cart_id = :cart_id

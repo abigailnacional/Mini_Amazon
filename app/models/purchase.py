@@ -21,7 +21,7 @@ class Purchase:
     @staticmethod
     def get(id):
         rows = app.db.execute('''
-SELECT id, time_purchased, is_fulfilled, time_of_fulfillment, cart_id, user_id
+SELECT product_in_cart_id, time_purchased, is_fulfilled, time_of_fulfillment, cart_id, user_id
 FROM Purchase
 WHERE id = :id
 ''',
@@ -31,7 +31,7 @@ WHERE id = :id
     @staticmethod
     def get_all_by_uid_since(uid, since):
         rows = app.db.execute('''
-SELECT id, time_purchased, is_fulfilled, time_of_fulfillment, cart_id, user_id
+SELECT product_in_cart_id, time_purchased, is_fulfilled, time_of_fulfillment, cart_id, user_id
 FROM Purchase
 WHERE user_id = :user_id
 AND time_purchased >= :since

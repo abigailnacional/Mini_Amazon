@@ -16,7 +16,7 @@ class Cart:
         rows = app.db.execute(
             """
             SELECT product_id, seller_id, quantity
-            FROM ProductsInCart
+            FROM ProductInCart
             WHERE cart_id = :cart_id
             ORDER BY product_id
             """,

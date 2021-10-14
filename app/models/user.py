@@ -1,16 +1,24 @@
 from flask_login import UserMixin
 from flask import current_app as app
 from werkzeug.security import generate_password_hash, check_password_hash
+from typing import Optional
 
 from .. import login
 
 
 class User(UserMixin):
-    def __init__(self, id, email, first_name, last_name):
+    def __init__(
+            self,
+            id: int,
+            email: str,
+            first_name: str,
+            last_name:  str,
+            balance: Optional[int] = 0):
         self.id = id
         self.email = email
         self.first_name = first_name
         self.last_name = last_name
+        self.balance = balance
 
     @staticmethod
     def get_by_auth(email, password):

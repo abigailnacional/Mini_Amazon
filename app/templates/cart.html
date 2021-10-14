@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<br><br>
+
+<h2>Products in Cart</h2>
+<table class='table table-hover table-bordered container'>
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Product ID</th>
+      <th scope="col">Product Name</th>
+      <th scope="col">Price</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Increase</th>
+      <th scope="col">Decrease</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for product_in_cart in current_cart%}
+      <tr>
+        <th scope="row">{{product_in_cart.product.id}}</th>
+        <td>{{product_in_cart.product.name}}</td>
+        <td>{{product_in_cart.product.price}}</td>
+        <td>{{product_in_cart.quantity}}</td>
+        <td>
+          <form action="increase_quantity/{{product_in_cart.cart_id}}/{{product_in_cart.product.id}}/{{product_in_cart.seller_id}}">
+            <button>+1</button>
+          </form>
+        </td>
+        <td>
+          <form action="decrease_quantity/{{product_in_cart.cart_id}}/{{product_in_cart.product.id}}/{{product_in_cart.seller_id}}">
+            <button>-1</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+<br><br>
+
+<h2>Total price:</h2>
+<tbody>
+    {{total_cart_price}}
+</tbody>
+
+<br><br><br>
+
+ <form>
+   <button>Order</button>
+ </form>
+
+
+{% endblock %}
+ml>

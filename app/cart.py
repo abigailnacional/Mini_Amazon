@@ -53,7 +53,8 @@ def order_cart():
             #return
 
         # TODO, if we have enough inventory and balance, subtract inventory and balance
-
+        Cart.convert_cart_to_purchase(current_user.id, current_cart_id, products_in_cart)
+    return redirect(url_for('cart.view_cart'))
         # change cart to not current
     # create new cart
     # add to purchase table

@@ -4,7 +4,8 @@ from .product import Product
 
 class ProductInCart:
 
-    def __init__(self, product: Product, cart_id: int, seller_id: int, quantity: int):
+    def __init__(self, id, product: Product, cart_id: int, seller_id: int, quantity: int):
+        self.id = id
         self.product = product
         self.cart_id = cart_id
         self.quantity = quantity

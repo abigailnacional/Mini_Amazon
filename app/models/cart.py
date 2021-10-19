@@ -15,7 +15,7 @@ class Cart:
     def get_products_in_cart(cart_id: int) -> Optional[List[ProductInCart]]:
         rows = app.db.execute(
             """
-            SELECT product_id, seller_id, quantity
+            SELECT id, product_id, seller_id, quantity
             FROM ProductInCart
             WHERE cart_id = :cart_id
             ORDER BY product_id
@@ -26,10 +26,11 @@ class Cart:
         for product_in_cart_row in rows:
             products_in_cart.append(
                 ProductInCart(
-                    Product.get(product_in_cart_row[0]),
+                    product_in_cart_row[0],
+                    Product.get(product_in_cart_row[1]),
                     cart_id,
-                    product_in_cart_row[1],
-                    product_in_cart_row[2]
+                    product_in_cart_row[2],
+                    product_in_cart_row[3]
                 ))
         return products_in_cart
 
@@ -57,20 +58,48 @@ class Cart:
         return rows[0][0]
 
     @staticmethod
-    def convert_cart_to_purchase(cart_id):
-        app.db.execute_non_select_statement(
-            """
-                UPDATE Cart
-                SET is_current = False
-                WHERE cart_id = :cart_id
-                """,
-            cart_id=cart_id,
-        )
-        # TODO add purchase to table (need to refine database design for this)
-        # app.db.execute(
+    def convert_cart_to_purchase(
+            user_id,
+            cart_id: int,
+            products_in_cart: List[ProductInCart]
+    ):
+        # app.db.execute_non_select_statement(
         #     """
-        #         INSERT INTO Purchase( VALUES
-        #         ()
+        #         UPDATE Cart
+        #         SET is_current = False
+        #         WHERE id = :cart_id
         #         """,
         #     cart_id=cart_id,
         # )
+
+        app.db.execute_non_select_statement(
+            """
+            PREPARE purchase_product_in_cart AS 
+            INSERT INTO Purchase(product_in_cart_id, user_id, cart_id) VALUES
+            ($1, $2, $3)
+            """,
+        )
+
+        for product_in_cart in products_in_cart:
+            app.db.execute_non_select_statement(
+                'EXECUTE purchase_product_in_cart(:product_in_cart_id, :user_id, :cart_id)',
+                product_in_cart_id=product_in_cart.id,
+                user_id=user_id,
+                cart_id=cart_id
+            )
+
+        print(app.db.execute("""SELECT * FROM Purchase"""))
+
+
+
+# CREATE TABLE Purchase (
+#     product_in_cart_id INT NOT NULL PRIMARY KEY,
+#     user_id INT NOT NULL,
+#     time_purchased timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
+#     is_fulfilled BOOLEAN DEFAULT FALSE,
+#     time_of_fulfillment timestamp without time zone DEFAULT NULL,
+#     cart_id INT NOT NULL,
+#     FOREIGN KEY (cart_id) REFERENCES Cart(id),
+#     FOREIGN KEY (user_id) REFERENCES Users(id),
+#     FOREIGN KEY (product_in_cart_id) REFERENCES ProductInCart(id)
+# );

@@ -17,7 +17,7 @@ CREATE TABLE Product (
     name VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
     category VARCHAR(255) NOT NULL,
-    price FLOAT NOT NULL,
+    price DECIMAL NOT NULL,
     is_available BOOLEAN DEFAULT TRUE,
     link VARCHAR(255) NOT NULL,
     creator_id INT NOT NULL,

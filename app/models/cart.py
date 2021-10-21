@@ -6,10 +6,48 @@ from typing import List, Optional
 
 class Cart:
 
-    def __init__(self, id: int, user_id: int, is_current: bool):
+    def __init__(
+            self,
+            id: int,
+            user_id: int,
+            is_current: bool,
+    ):
         self.id = id
         self.user_id = user_id
         self.is_current = is_current
+
+    @staticmethod
+    def get_current_cart(user_id: int) -> "Cart":
+        current_cart_id = Cart.get_id_of_current_cart(user_id)
+        if not current_cart_id:
+            print("NO ID")
+            current_cart_id = Cart.create_new_cart(user_id)
+        print("RETURNED CART")
+        return Cart(
+            id=current_cart_id,
+            user_id=user_id,
+            is_current=True,
+        )
+
+    @staticmethod
+    def create_new_cart(user_id: int) -> int:
+        app.db.execute_with_no_return(
+            """
+            INSERT INTO Cart(user_id)
+                VALUES (:user_id)
+            """,
+            user_id=user_id,
+        )
+        return app.db.execute(
+            """
+            SELECT id
+            FROM Cart
+            WHERE user_id = :user_id
+            AND is_current
+            """,
+            user_id=user_id,
+        )[0][0]
+
 
     @staticmethod
     def get_products_in_cart(cart_id: int) -> Optional[List[ProductInCart]]:
@@ -58,48 +96,25 @@ class Cart:
         return rows[0][0]
 
     @staticmethod
-    def convert_cart_to_purchase(
-            user_id,
-            cart_id: int,
-            products_in_cart: List[ProductInCart]
-    ):
-        # app.db.execute_non_select_statement(
-        #     """
-        #         UPDATE Cart
-        #         SET is_current = False
-        #         WHERE id = :cart_id
-        #         """,
-        #     cart_id=cart_id,
-        # )
-
-        app.db.execute_non_select_statement(
+    def convert_cart_to_purchase(user_id, cart_id, products_in_cart: List[ProductInCart]):
+        app.db.execute_with_no_return(
             """
-            PREPARE purchase_product_in_cart AS 
-            INSERT INTO Purchase(product_in_cart_id, user_id, cart_id) VALUES
-            ($1, $2, $3)
+            UPDATE Cart
+            SET is_current = False
+            WHERE id = :cart_id
             """,
+            cart_id=cart_id,
         )
 
         for product_in_cart in products_in_cart:
-            app.db.execute_non_select_statement(
-                'EXECUTE purchase_product_in_cart(:product_in_cart_id, :user_id, :cart_id)',
-                product_in_cart_id=product_in_cart.id,
+            app.db.execute_with_no_return(
+                """
+                EXECUTE insert_purchase(:product_id, :user_id, :cart_id)
+                """,
+                product_id=product_in_cart.id,
                 user_id=user_id,
                 cart_id=cart_id
             )
 
-        print(app.db.execute("""SELECT * FROM Purchase"""))
+        Cart.create_new_cart(user_id)
 
-
-
-# CREATE TABLE Purchase (
-#     product_in_cart_id INT NOT NULL PRIMARY KEY,
-#     user_id INT NOT NULL,
-#     time_purchased timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
-#     is_fulfilled BOOLEAN DEFAULT FALSE,
-#     time_of_fulfillment timestamp without time zone DEFAULT NULL,
-#     cart_id INT NOT NULL,
-#     FOREIGN KEY (cart_id) REFERENCES Cart(id),
-#     FOREIGN KEY (user_id) REFERENCES Users(id),
-#     FOREIGN KEY (product_in_cart_id) REFERENCES ProductInCart(id)
-# );

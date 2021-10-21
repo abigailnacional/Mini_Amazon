@@ -44,12 +44,12 @@ def order_cart():
         total_price = Cart.get_total_price_of_cart(products_in_cart)
 
         # check that we have enough inventory and balance
-        # TODO, handle user not having enough balance
+        # TODO, check + handle user not having enough balance
         # if User.get(current_user.id).balance < total_price:
         #     print('user does not have enough money')
-        #    return
-        #for product_in_cart in products_in_cart:
-            # TODO, handle seller not having enough inventory of product
+        #     return redirect(url_for('cart.view_cart'))
+    #for product_in_cart in products_in_cart:
+            # TODO, check + handle seller not having enough inventory of product
             #return
 
         # TODO, if we have enough inventory and balance, subtract inventory and balance

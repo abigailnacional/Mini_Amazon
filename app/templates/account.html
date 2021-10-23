@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<br><br>
+
+<h2>Account Info</h2>
+<dl>
+    <dt>Account ID</dt>
+    <dd>{{current_user.id}}</dd>
+    <dt>Email</dt>
+    <dd>{{current_user.email}}</dd>
+    <dt>Full Name</dt>
+    <dd>{{current_user.first_name}} {{current_user.last_name}}</dd>
+    <dt>Address</dt>
+    <dd>{{current_user.address}}</dd>
+    <dt>Password</dt>
+    <dd>{{current_user.password}}</dd>
+  </dl> 
+
+<br><br>
+
+{% endblock %}
+ml>

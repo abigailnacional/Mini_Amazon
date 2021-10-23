@@ -13,11 +13,15 @@ class User(UserMixin):
             email: str,
             first_name: str,
             last_name:  str,
+            address: Optional[str],
+            password: Optional[str],
             balance: Optional[int] = 0):
         self.id = id
         self.email = email
         self.first_name = first_name
         self.last_name = last_name
+        self.address = address
+        self.password = password
         self.balance = balance
 
     @staticmethod
@@ -72,7 +76,7 @@ RETURNING id
     @login.user_loader
     def get(id):
         rows = app.db.execute("""
-SELECT id, email, first_name, last_name
+SELECT id, email, first_name, last_name, address, password
 FROM Users
 WHERE id = :id
 """,

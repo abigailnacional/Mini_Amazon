@@ -42,6 +42,7 @@ class ProductInCart:
             WHERE product_id = :product_id
             AND cart_id = :cart_id
             AND seller_id = :seller_id
+            AND quantity > 0
             """,
             product_id=product_id,
             cart_id=cart_id,

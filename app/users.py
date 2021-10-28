@@ -73,3 +73,10 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('index.index'))
+
+@bp.route('/users')
+def view_account():
+    if current_user.is_authenticated:
+        return render_template('account.html')
+    return render_template('login.html')
+

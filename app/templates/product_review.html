@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+{% block content %}
+
+<br><br>
+
+<h2>Product: {{ data.product.name }}</h2>
+
+<form method=post>
+  <dl>
+    Number of stars:
+    {{ form.number_of_stars(class="form-control pt-4") }} <br />
+    Written Review:
+    {{ form.written_review(class="form-control pt-4") }}
+  </dl>
+  <p><input type=submit value="Submit Review">
+</form>
+
+{% endblock %}

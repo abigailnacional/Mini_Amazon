@@ -19,32 +19,36 @@ class ProductInCart:
         self.seller_id = seller_id
 
     @staticmethod
-    def increase_quantity(cart_id, product_id, seller_id):
+    def increase_quantity(product_in_cart_id: int):
         app.db.execute_with_no_return(
             """
             UPDATE ProductInCart
             SET quantity = quantity + 1
-            WHERE product_id = :product_id
-            AND cart_id = :cart_id
-            AND seller_id = :seller_id
+            WHERE id = :id
             """,
-            product_id=product_id,
-            cart_id=cart_id,
-            seller_id=seller_id
+            # TODO add upper bound
+            id=product_in_cart_id,
         )
 
     @staticmethod
-    def decrease_quantity(cart_id, product_id, seller_id):
+    def decrease_quantity(product_in_cart_id: int):
         app.db.execute_with_no_return(
             """
             UPDATE ProductInCart
             SET quantity = quantity - 1
-            WHERE product_id = :product_id
-            AND cart_id = :cart_id
-            AND seller_id = :seller_id
-            AND quantity > 0
+            WHERE id = :id
+            AND quantity > 1
             """,
-            product_id=product_id,
-            cart_id=cart_id,
-            seller_id=seller_id
+            id=product_in_cart_id
         )
+
+    @staticmethod
+    def remove_from_cart(product_in_cart_id: int):
+        app.db.execute_with_no_return(
+            """
+            DELETE FROM ProductInCart
+            WHERE id = :id
+            """,
+            id=product_in_cart_id
+        )
+

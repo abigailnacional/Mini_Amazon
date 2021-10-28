@@ -69,7 +69,7 @@ class Cart:
 
     @staticmethod
     def get_current_cart(user_id: int) -> "Cart":
-        current_cart_id = Cart._get_id_of_current_cart(user_id)
+        current_cart_id = Cart.get_id_of_current_cart(user_id)
         if not current_cart_id:
             current_cart_id = Cart.create_new_cart(user_id)
         return Cart(
@@ -98,7 +98,7 @@ class Cart:
         )[0][0]
 
     @staticmethod
-    def _get_id_of_current_cart(user_id: int) -> Optional[int]:
+    def get_id_of_current_cart(user_id: int) -> Optional[int]:
         rows = app.db.execute(
             """
             SELECT id

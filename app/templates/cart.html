@@ -13,7 +13,7 @@
       <th scope="col">Price</th>
       <th scope="col">Quantity</th>
       <th scope="col"></th>
-      <!--<th scope="col">Decrease</th>-->
+      <th scope="col">Remove</th>
     </tr>
   </thead>
   <tbody>
@@ -23,11 +23,17 @@
         <td>{{product_in_cart.product.name}}</td>
         <td>{{product_in_cart.product.price}}</td>
         <td>{{product_in_cart.quantity}}</td>
-        <td><form action="increase_quantity/{{product_in_cart.cart_id}}/{{product_in_cart.product.id}}/{{product_in_cart.seller_id}}">
+        <td>
+          <form action="increase_quantity/{{product_in_cart.id}}">
             <button>&and;</button>
           </form>
-          <form action="decrease_quantity/{{product_in_cart.cart_id}}/{{product_in_cart.product.id}}/{{product_in_cart.seller_id}}">
+          <form action="decrease_quantity/{{product_in_cart.id}}">
             <button>&or;</button>
+          </form>
+        </td>
+        <td>
+          <form action="remove_item_from_cart/{{product_in_cart.id}}">
+            <button>X</button>
           </form>
         </td>
       </tr>

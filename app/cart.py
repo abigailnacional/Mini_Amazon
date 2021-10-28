@@ -24,16 +24,33 @@ def view_cart():
     return redirect(url_for('users.login'))
 
 
-@bp.route('/increase_quantity/<cart_id>/<product_id>/<seller_id>')
-def increase_quantity_in_cart(cart_id, product_id, seller_id):
-    ProductInCart.increase_quantity(cart_id, product_id, seller_id)
-    return redirect(url_for('cart.view_cart'))
+@bp.route('/increase_quantity/<product_in_cart_id>')
+def increase_quantity_in_cart(product_in_cart_id):
+    if current_user.is_authenticated:
+        ProductInCart.increase_quantity(product_in_cart_id)
+        return redirect(url_for('cart.view_cart'))
+    return redirect(url_for('users.login'))
 
 
-@bp.route('/decrease_quantity/<cart_id>/<product_id>/<seller_id>')
-def decrease_quantity_in_cart(cart_id, product_id, seller_id):
-    ProductInCart.decrease_quantity(cart_id, product_id, seller_id)
-    return redirect(url_for('cart.view_cart'))
+
+@bp.route('/decrease_quantity/<product_in_cart_id>')
+def decrease_quantity_in_cart(product_in_cart_id):
+    if current_user.is_authenticated:
+
+        ProductInCart.decrease_quantity(product_in_cart_id)
+        return redirect(url_for('cart.view_cart'))
+    return redirect(url_for('users.login'))
+
+
+@bp.route('/remove_item_from_cart/<product_in_cart_id>')
+def remove_item_from_cart(product_in_cart_id):
+    if current_user.is_authenticated:
+        ProductInCart.remove_from_cart(product_in_cart_id)
+        return redirect(url_for('cart.view_cart'))
+    return redirect(url_for('users.login'))
+
+
+
 
 # TODO method not complete - currently purchases but does not have any checks for changes to inventory/price or
 # TODO to see if user/seller has enough balance/inventory
@@ -53,4 +70,5 @@ def order_cart():
             #return
 
         current_cart.convert_cart_to_purchase()
-    return redirect(url_for('cart.view_cart'))
+    return redirect(url_for('users.login'))
+

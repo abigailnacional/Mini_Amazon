@@ -13,8 +13,8 @@ class User(UserMixin):
             email: str,
             first_name: str,
             last_name:  str,
-            address: Optional[str],
-            password: Optional[str],
+            address: Optional[str] = "",
+            password: Optional[str] = "",
             balance: Optional[int] = 0):
         self.id = id
         self.email = email

@@ -77,11 +77,6 @@ def logout():
 @bp.route('/users')
 def view_account():
     if current_user.is_authenticated:
-        #current_cart_id = Cart.get_id_of_current_cart(current_user.id)
-        #products_in_cart = Cart.get_products_in_cart(
-        #    cart_id=current_cart_id
-        #)
-        #total_price = Cart.get_total_price_of_cart(current_cart_id)
-        return render_template('account.html') #, current_cart=products_in_cart, total_cart_price=total_price)
+        return render_template('account.html')
     return render_template('login.html')
 

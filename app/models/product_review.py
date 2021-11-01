@@ -1,6 +1,5 @@
 from flask import current_app as app
 
-# maybe need to extend product class?
 class ProductRating:
     def __init__(reviewer_id, rating, review, product_id, seller_id, time_posted):
         self.reviewer_id = reviewer_id
@@ -20,4 +19,4 @@ class ProductRating:
             ''',
             id = reviewer_id)
 
-        return Product(*(rows[0])) if rows is not None else None
+        return ProductRating(*(rows[0])) if rows is not None else None

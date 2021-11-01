@@ -8,14 +8,16 @@
 
 <h2>Product: {{ data.product.name }}</h2>
 
-<form method=post>
+{{ wtf.quick_form(form) }}
+
+<!-- <form action="" method=post>
   <dl>
     Number of stars:
-    {{ form.number_of_stars(class="form-control pt-4") }} <br />
+    {{ form.number_of_stars() }} <br />
     Written Review:
-    {{ form.written_review(class="form-control pt-4") }}
+    {{ form.written_review() }}
   </dl>
   <p><input type=submit value="Submit Review">
-</form>
+</form> -->
 
 {% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<br><br>
+
+<h2>Orders</h2>
+<table class='table table-hover table-bordered container'>
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Order ID</th>
+      <th scope="col">Time of Order</th>
+      <th scope="col">Fulfilled</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for purchased_cart in purchased_carts%}
+      <tr>
+        <th scope="row">{{purchased_cart.id}}</th>
+        <td>{{purchased_cart.time_purchased}}</td>
+        <td>{{purchased_cart.is_fulfilled}}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+ml>

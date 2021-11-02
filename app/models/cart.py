@@ -2,6 +2,7 @@ from flask import current_app as app
 from .product import Product
 from .product_in_cart import ProductInCart
 from typing import List, Optional
+from datetime import datetime
 
 
 class Cart:
@@ -10,11 +11,15 @@ class Cart:
             self,
             id: int,
             user_id: int,
-            is_current: bool
+            is_current: bool,
+            time_purchased: Optional[datetime] = None,
+            is_fulfilled: Optional[bool] = None
     ):
         self.id = id
         self.user_id = user_id
         self.is_current = is_current
+        self.time_purchased = time_purchased
+        self.is_fulfilled = is_fulfilled
 
     def get_products_in_cart(self) -> Optional[List[ProductInCart]]:
         rows = app.db.execute(
@@ -31,11 +36,11 @@ class Cart:
         for product_in_cart_row in rows:
             products_in_cart.append(
                 ProductInCart(
-                    product_in_cart_row[0],
-                    Product.get(product_in_cart_row[1]),
-                    self.id,
-                    product_in_cart_row[2],
-                    product_in_cart_row[3]
+                    id=product_in_cart_row[0],
+                    product=Product.get(product_in_cart_row[1]),
+                    cart_id=self.id,
+                    seller_id=product_in_cart_row[2],
+                    quantity=product_in_cart_row[3]
                 ))
         return products_in_cart
 
@@ -49,10 +54,11 @@ class Cart:
         app.db.execute_with_no_return(
             """
             UPDATE Cart
-            SET is_current = False
+            SET is_current = False, time_purchased = :time_purchased
             WHERE id = :cart_id
             """,
             cart_id=self.id,
+            time_purchased=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         )
 
         for product_in_cart in self.get_products_in_cart():
@@ -68,12 +74,34 @@ class Cart:
         Cart.create_new_cart(self.user_id)
 
     @staticmethod
+    def get_cart_by_id(cart_id: Optional[int]) -> "Cart":
+        rows = app.db.execute(
+            """
+            SELECT id, user_id, is_current, time_purchased, is_fulfilled
+            FROM Cart
+            WHERE cart_id = :cart_id
+            """,
+            cart_id=cart_id
+        )
+        return Cart(*(rows[0])) if rows else None
+
+    @staticmethod
     def get_current_cart(user_id: int) -> "Cart":
-        current_cart_id = Cart.get_id_of_current_cart(user_id)
-        if not current_cart_id:
-            current_cart_id = Cart.create_new_cart(user_id)
+        rows = app.db.execute(
+            """
+            SELECT id, user_id, is_current, time_purchased, is_fulfilled
+            FROM Cart
+            WHERE user_id = :user_id
+            AND is_current
+            """,
+            user_id=user_id
+        )
+        cart_id = rows[0][0]
+        if not rows:  # no cart found for user
+            print('no cart for user')
+            cart_id = Cart.create_new_cart(user_id)
         return Cart(
-            id=current_cart_id,
+            id=cart_id,
             user_id=user_id,
             is_current=True,
         )
@@ -113,3 +141,17 @@ class Cart:
             print('no cart for user')
             return None
         return rows[0][0]
+
+    @staticmethod
+    def get_purchased_carts(user_id: int) -> List[Optional['Cart']]:
+        rows = app.db.execute(
+            """
+            SELECT id, user_id, is_current, time_purchased, is_fulfilled
+            FROM Cart
+            WHERE user_id = :user_id
+            AND NOT is_current
+            """,
+            user_id=user_id
+        )
+
+        return [Cart(*row) for row in rows] if rows else []

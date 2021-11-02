@@ -75,10 +75,33 @@ RETURNING id
     @staticmethod
     @login.user_loader
     def get(id):
-        rows = app.db.execute("""
-SELECT id, email, first_name, last_name, address, password
-FROM Users
-WHERE id = :id
-""",
-                              id=id)
+        rows = app.db.execute(
+            """
+            SELECT id, email, first_name, last_name, address, password, balance
+            FROM Users
+            WHERE id = :id
+            """,
+            id=id)
         return User(*(rows[0])) if rows else None
+
+    def has_enough_money(self, total_price):
+        return app.db.execute(
+            """
+            SELECT balance
+            FROM Users
+            WHERE id = :id
+            """,
+            id=self.id,
+        )[0][0] >= total_price
+
+    def decrement_balance(self, total_price):
+        app.db.execute_with_no_return(
+            """
+            UPDATE Users
+            SET balance = balance - :total_price
+            WHERE id = :id
+            AND balance > :total_price
+            """,
+            id=self.id,
+            total_price=total_price
+        )

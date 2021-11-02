@@ -11,6 +11,7 @@
       <th scope="col">Product ID</th>
       <th scope="col">Product Name</th>
       <th scope="col">Price</th>
+       <th scope="col">Seller</th>
       <th scope="col">Quantity</th>
       <th scope="col"></th>
       <th scope="col">Remove</th>
@@ -22,6 +23,7 @@
         <th scope="row">{{product_in_cart.product.id}}</th>
         <td>{{product_in_cart.product.name}}</td>
         <td>{{product_in_cart.product.price}}</td>
+        <td>{{product_in_cart.seller_id}}</td>
         <td>{{product_in_cart.quantity}}</td>
         <td>
           <form action="increase_quantity/{{product_in_cart.id}}">

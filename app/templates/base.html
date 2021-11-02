@@ -19,7 +19,7 @@
 
     .sidenav {
         height: 100%;
-        background-color: #000;
+        background-color: #00009c;
         overflow-x: hidden;
         padding-top: 20px;
     }
@@ -42,26 +42,53 @@
         background-color: #000 !important;
         color: #fff;
     }
+
+    #FLEX {
+      display: flex;
+      justify-content: space-between;
+    }
+
   </style>
 </head>
 
 <body>
   <div class="sidenav">
     {% block msg %}
-      <h1 style="color:aliceblue">Welcome to Duke Mobile Ordering!</h1>
-      <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
-        {% if current_user.is_authenticated %}
-          Hello {{current_user.firstname}}! <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a>
-          <a href="{{ url_for('cart.view_cart') }}" type="button" class="btn btn-light">View Cart</a>
-          <a href="{{ url_for('users.view_account') }}" type="button" class="btn btn-light">View Account Info</a>
-        {% else %}
-          <a href="{{ url_for('users.login') }}" type="button" class="btn btn-light">Log in</a>
-        {% endif %}
+      <h1 style="color:aliceblue">Duke Mobile Ordering</h1>
+      <div style="margin-bottom: 25px" id="FLEX">
+        <div id="vendor">
+          <!-- Need to figure out image incorporation -->
+          <a href="/product?id=1" type="button" id = "vendor" class="btn btn-black"> Beyu Blue </a> 
+          <a href="/product?id=2" type="button" id = "vendor" class="btn btn-black"> The Loop </a> 
+          <a href="/product?id=3" type="button" id = "vendor" class="btn btn-black"> McDonalds </a> 
+          <a href="/product?id=4" type="button" id = "vendor" class="btn btn-black"> Panda Express </a> 
+          <a href="/product?id=5" type="button" id = "vendor" class="btn btn-black"> Il Forno </a> 
+          <a href="/product?id=6" type="button" id = "vendor" class="btn btn-black"> Sazón </a> 
+        </div> 
+        <div id="login">
+          {% if current_user.is_authenticated %}
+            Hello {{current_user.firstname}}! <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a>
+            <a href="{{ url_for('cart.view_cart') }}" type="button" class="btn btn-light">View Cart</a>
+            <a href="{{ url_for('users.view_account') }}" type="button" class="btn btn-light">View Account Info</a>
+          {% else %}
+            <a href="{{ url_for('users.login') }}" type="button" class="btn btn-light">Log in</a>
+          {% endif %}
+        </div>
       </div>
     {% endblock %}
   </div>
-  <div class="main">
-    {% block content %}{% endblock %}
+  <div class="main" style="text-align: center; margin-top: 20px; font-size: 20px">
+    {% block content %}
+    <p> <b>Welcome to Duke Mobile Ordering!</b> Click on one of the above resturants to begin 
+      your order. Students and vendors both will need to login using their Duke credentials to save
+      items to their personal carts.
+    </p>
+    {% if current_user.is_authenticated %}
+    {% else %}
+      <p><a href="{{ url_for('users.login') }}">Log in</a> to see your purchase history!</p>
+    {% endif %} 
+    {% endblock %}
+
   </div>
 </body>
 

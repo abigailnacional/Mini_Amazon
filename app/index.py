@@ -10,7 +10,7 @@ bp = Blueprint('index', __name__)
 
 
 @bp.route('/')
-def landing():
+def index():
     return render_template('base.html')
 
 

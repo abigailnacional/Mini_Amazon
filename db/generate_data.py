@@ -2,7 +2,6 @@ import random
 import string
 import csv
 import math
-import datetime
 
 letters = string.ascii_lowercase
 
@@ -20,6 +19,7 @@ with open('db/data/Users.csv', 'w', newline='') as users_file:
         if num == base:
             email = "admin@gmail.com"
             password = "123"
+            balance = 1000000000
         else:
             email = ''.join(random.choice(letters) for i in range(random.randint(5, 10))) + "@gmail.com"
             password = ''.join(random.choice(letters) for i in range(random.randint(8, 16)))
@@ -40,10 +40,12 @@ with open('db/data/Cart.csv', 'w', newline='') as cart_file:
     for user_id in range(base, base + num_users_with_carts):
         for num_cart in range(num_carts_per_user):
             is_current = num_cart == num_carts_per_user - 1
+            time_purchased = None
             if not is_current:
+                time_purchased = "2021-09-10 13:12:58"
                 purchased_cart_ids.append(cart_id)
 
-            writer.writerow([cart_id, user_id, is_current])
+            writer.writerow([cart_id, user_id, is_current, time_purchased, False])
 
             cart_id += 1
 
@@ -55,7 +57,7 @@ with open('db/data/Product.csv', 'w', newline='') as product_file:
         name = ''.join(random.choice(letters) for i in range(random.randint(3, 20)))
         description = ''.join(random.choice(letters) for i in range(random.randint(3, 20)))
         category = random.choice(['Food', 'Beverage', 'Antique', 'Painting'])
-        price = random.randint(0, 100000)
+        price = random.randint(0, 1000)
         is_available = bool(random.randint(0, 1))
         link = ''.join(random.choice(letters) for i in range(random.randint(3, 20)))
         creator_id = random.randint(base, base + num_total_users - 1)
@@ -96,7 +98,7 @@ with open('db/data/ProductInCart.csv', 'w', newline='') as product_in_cart_file:
             for index in num_items_in_cart_range:  # number of items in the given cart
                 seller_id, product_id = random.choice(list(sells))
                 product_in_cart_id += 1
-                quantity = random.randint(1,  100000)
+                quantity = random.randint(1,  1000)
 
                 products_in_cart.add((product_in_cart_id, cart_id, product_id, seller_id))
                 writer.writerow([product_in_cart_id, cart_id, product_id, seller_id, quantity])

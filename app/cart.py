@@ -2,7 +2,8 @@ from flask_login import current_user
 from flask import render_template, redirect, url_for, flash, request
 
 from .models.cart import Cart
-from .models.cart import ProductInCart
+from .models.product_in_cart import ProductInCart
+from .models.user import User
 
 
 from flask import Blueprint
@@ -32,7 +33,6 @@ def increase_quantity_in_cart(product_in_cart_id):
     return redirect(url_for('users.login'))
 
 
-
 @bp.route('/decrease_quantity/<product_in_cart_id>')
 def decrease_quantity_in_cart(product_in_cart_id):
     if current_user.is_authenticated:
@@ -60,14 +60,21 @@ def order_cart():
     if current_user.is_authenticated:
         current_cart = Cart.get_current_cart(current_user.id)
 
+        if len(current_cart.get_products_in_cart()) == 0:
+            print("nothing in cart")
+            return redirect(url_for('cart.view_cart'))
+
         # check that we have enough inventory and balance
-        # TODO, check + handle user not having enough balance
-        # if User.get(current_user.id).balance < total_price:
-        #     print('user does not have enough money')
-        #     return redirect(url_for('cart.view_cart'))
-    #for product_in_cart in products_in_cart:
-            # TODO, check + handle seller not having enough inventory of product
-            #return
+        # TODO, handle user not having enough balance
+        current_user_account = User.get(current_user.id)
+        if not current_user_account.has_enough_money(current_cart.get_total_price_of_cart()):
+            print('user does not have enough money')
+            return redirect(url_for('cart.view_cart'))
+        current_user_account.decrement_balance(total_price=current_cart.get_total_price_of_cart())
+            #     return redirect(url_for('cart.view_cart'))
+        #for product_in_cart in products_in_cart:
+                # TODO, check + handle seller not having enough inventory of product
+                #return
 
         current_cart.convert_cart_to_purchase()
     return redirect(url_for('users.login'))

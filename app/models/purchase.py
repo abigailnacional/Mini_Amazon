@@ -1,4 +1,6 @@
 from flask import current_app as app
+from .cart import Cart
+
 
 
 class Purchase:
@@ -19,13 +21,14 @@ class Purchase:
         self.user_id = user_id
 
     @staticmethod
-    def get(id):
-        rows = app.db.execute('''
-SELECT product_in_cart_id, time_purchased, is_fulfilled, time_of_fulfillment, cart_id, user_id
-FROM Purchase
-WHERE id = :id
-''',
-                              id=id)
+    def get(product_in_cart_id):
+        rows = app.db.execute(
+            '''
+            SELECT product_in_cart_id, time_purchased, is_fulfilled, time_of_fulfillment, cart_id, user_id
+            FROM Purchase
+            WHERE product_in_cart_id = :product_in_cart_id
+            ''',
+            product_in_cart_id=product_in_cart_id)
         return Purchase(*(rows[0])) if rows else None
 
     @staticmethod

@@ -8,16 +8,38 @@
 
 <h2>Product: {{ data.product.name }}</h2>
 
-{{ wtf.quick_form(form) }}
-
-<!-- <form action="" method=post>
+<form action="" method=post>
   <dl>
-    Number of stars:
-    {{ form.number_of_stars() }} <br />
-    Written Review:
-    {{ form.written_review() }}
+    <fieldset class="form-field">
+    {{ form.number_of_stars.label }} <br />
+    {{ form.number_of_stars }}
+    {% if form.number_of_stars.errors %}
+    <ul class="errors">
+      {% for error in form.number_of_stars.errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    </fieldset>
+
+    <fieldset class="form-field">
+    {{ form.written_review.label }} <br />
+    {{ form.written_review }}
+    {% if form.written_review.errors %}
+    <ul class="errors">
+      {% for error in form.written_review.errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    </fieldset>
   </dl>
-  <p><input type=submit value="Submit Review">
-</form> -->
+
+  {% if form.errors %}
+  {{ form.errors }}
+  {% endif %}
+
+  {{ form.submit }}
+</form>
 
 {% endblock %}

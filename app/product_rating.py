@@ -50,8 +50,6 @@ def create_review():
                 p.add_review(review_contents)
 
                 return redirect(url_for('actor', id=id)) # TODO: redirect to product page (index)
-        else:
-            print("manned")
                 
         data = {'product': product}
         return render_template('product_review.html', title='Product Review Form', form=form, data=data, message=return_message)

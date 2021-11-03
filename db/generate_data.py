@@ -15,6 +15,8 @@ num_reviews = 1000
 num_carts_per_user = 1000
 num_carts_populated_per_user = 3
 
+# TODO: create modules for each csv so we don't have to re-create all the data every time
+
 with open('db/data/Users.csv', 'w', newline='') as users_file:
     writer = csv.writer(users_file, delimiter=',')
     for num in range(base, base + num_total_users):

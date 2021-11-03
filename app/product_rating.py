@@ -26,15 +26,11 @@ def create_review():
     if current_user.is_authenticated:
         form = ProductRatingForm()
         return_message = ""
-        print(current_user)
 
         product = p.get("" + request.args.get('product_id'))
         user_id = '111'
 
-        print("roched")
-
         if form.validate_on_submit():
-            print("reacyhed")
             num_stars = form.number_of_stars.data
             written_review = form.written_review.data
 

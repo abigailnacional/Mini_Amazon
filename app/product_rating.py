@@ -7,6 +7,7 @@ from wtforms.validators import DataRequired
 import time
 
 from app.models.product import Product as p
+from app.models.product_review import ProductReview as pr
 
 from flask import Blueprint
 bp = Blueprint('product_rating', __name__)
@@ -28,29 +29,29 @@ def create_review():
         return_message = ""
 
         product = p.get("" + request.args.get('product_id'))
-        user_id = '111'
+        user_id = current_user.id
 
         if form.validate_on_submit():
             num_stars = form.number_of_stars.data
             written_review = form.written_review.data
 
             #check if reviewer id already exists in database
-            if p.check_user_review_exists:
+            if pr.check_user_review_exists(user_id):
                 return_message = "You have already submitted a review for this product!"
             else:
                 review_contents = {
                     'reviewer_id': user_id, #user_id
                     'rating': int(num_stars),
                     'review': written_review,
-                    'product_id': product,
-                    'seller_id': 'N/A',
+                    'product_id': product.id,
+                    'seller_id': None,
                     'time_posted': time.strftime('%Y-%m-%d %H:%M:%S')
                 }
 
-                p.add_review(review_contents)
+                pr.add_review(review_contents)
 
-                return redirect(url_for('actor', id=id)) # TODO: redirect to product page (index)
+                return redirect(url_for('/', id=id)) # TODO: redirect to product page (index)
                 
-        data = {'product': product}
+        data = {'product': product.name}
         return render_template('product_review.html', title='Product Review Form', form=form, data=data, message=return_message)
     return redirect(url_for('users.login'))

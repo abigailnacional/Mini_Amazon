@@ -21,9 +21,10 @@ class ProductReview:
 
         return ProductReview(*(rows[0])) if rows is not None else None
     
+    # TODO: not sure if this belongs here, maybe it's better belonged in Product file?
     @staticmethod
     def check_user_review_exists(user_id):
-        pass
+        return False
 
     @staticmethod
     def add_review(review_contents): #review_contents is dictionary

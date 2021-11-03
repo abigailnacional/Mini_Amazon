@@ -9,6 +9,7 @@
 <h2>Product: {{ data.product.name }}</h2>
 
 <form action="" method=post>
+  {{ form.csrf_token }}
   <dl>
     <fieldset class="form-field">
     {{ form.number_of_stars.label }} <br />

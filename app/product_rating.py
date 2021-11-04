@@ -50,7 +50,7 @@ def create_review():
 
                 pr.add_review(review_contents)
 
-                return redirect(url_for('/', id=id)) # TODO: redirect to product page (index)
+                return redirect(url_for('index.index')) # TODO: redirect to product page (index)
                 
         data = {'product': product.name}
         return render_template('product_review.html', title='Product Review Form', form=form, data=data, message=return_message)

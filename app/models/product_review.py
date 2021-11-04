@@ -23,8 +23,16 @@ class ProductReview:
     
     # TODO: not sure if this belongs here, maybe it's better belonged in Product file?
     @staticmethod
-    def check_user_review_exists(user_id):
-        return False
+    def check_user_review_exists(user_id, product_id):
+        rows = app.db.execute(
+             '''
+             SELECT *
+             FROM Feedback
+             WHERE (reviewer_id = :user_id and product_id = :product_id)
+             ''',
+             user_id = user_id,
+             product_id = product_id)
+        return len(rows) != 0
 
     @staticmethod
     def add_review(review_contents): #review_contents is dictionary

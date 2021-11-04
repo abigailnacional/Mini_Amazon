@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, flash
 from flask_login import current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField, SelectField
@@ -36,8 +36,10 @@ def create_review():
             written_review = form.written_review.data
 
             #check if reviewer id already exists in database
-            if pr.check_user_review_exists(user_id):
+            if pr.check_user_review_exists(user_id, product.id):
                 return_message = "You have already submitted a review for this product!"
+                flash(return_message)
+                # return redirect(url_for('index.index'))
             else:
                 review_contents = {
                     'reviewer_id': user_id, #user_id
@@ -50,8 +52,8 @@ def create_review():
 
                 pr.add_review(review_contents)
 
-                return redirect(url_for('index.index')) # TODO: redirect to product page (index)
+                return redirect(url_for('index.index'))
                 
-        data = {'product': product.name}
+        data = {'product': product}
         return render_template('product_review.html', title='Product Review Form', form=form, data=data, message=return_message)
     return redirect(url_for('users.login'))

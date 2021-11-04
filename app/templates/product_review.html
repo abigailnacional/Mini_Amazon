@@ -6,6 +6,16 @@
 
 <br><br>
 
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
 <h2>Product: {{ data.product.name }}</h2>
 
 <form action="" method=post>

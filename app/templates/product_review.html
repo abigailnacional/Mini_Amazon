@@ -6,16 +6,51 @@
 
 <br><br>
 
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
 <h2>Product: {{ data.product.name }}</h2>
 
-<form method=post>
+<form action="" method=post>
+  {{ form.csrf_token }}
   <dl>
-    Number of stars:
-    {{ form.number_of_stars(class="form-control pt-4") }} <br />
-    Written Review:
-    {{ form.written_review(class="form-control pt-4") }}
+    <fieldset class="form-field">
+    {{ form.number_of_stars.label }} <br />
+    {{ form.number_of_stars }}
+    {% if form.number_of_stars.errors %}
+    <ul class="errors">
+      {% for error in form.number_of_stars.errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    </fieldset>
+
+    <fieldset class="form-field">
+    {{ form.written_review.label }} <br />
+    {{ form.written_review }}
+    {% if form.written_review.errors %}
+    <ul class="errors">
+      {% for error in form.written_review.errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    </fieldset>
   </dl>
-  <p><input type=submit value="Submit Review">
+
+  {% if form.errors %}
+  {{ form.errors }}
+  {% endif %}
+
+  {{ form.submit }}
 </form>
 
 {% endblock %}

@@ -68,12 +68,13 @@ CREATE TABLE Purchase (
 );
 
 CREATE TABLE Feedback (
-   reviewer_id INT NOT NULL PRIMARY KEY,
+   reviewer_id INT NOT NULL,
    rating INT NOT NULL,  -- this should be 1 - 5
    review VARCHAR(255) NOT NULL,
    product_id INT CHECK(product_id IS NOT NULL OR seller_id IS NOT NULL),
    seller_id INT CHECK(seller_id IS NOT NULL OR product_id IS NOT NULL),
    time_posted timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
+   PRIMARY KEY (product_id, reviewer_id),
    FOREIGN KEY (reviewer_id) REFERENCES Users(id),
    FOREIGN KEY (seller_id) REFERENCES Users(id),
    FOREIGN KEY (product_id) REFERENCES Product(id)

@@ -26,16 +26,13 @@ def create_app():
 
     from .cart import bp as cart_bp
     app.register_blueprint(cart_bp)
-
-<<<<<<< HEAD
-=======
+    
     from .orders import bp as orders_bp
     app.register_blueprint(orders_bp)
 
     from .product_rating import bp as p_review_bp
     app.register_blueprint(p_review_bp)
     
->>>>>>> 8a1301d5d1de20717ad92f9470ef1459f0001fd1
     from .products import bp as product_bp
     app.register_blueprint(product_bp)
 

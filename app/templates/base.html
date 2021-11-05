@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
+<!-- Landing page for site -->
 <head>
   <title>Mini Amazon</title>
   <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
@@ -57,6 +57,7 @@
       <h1 style="color:aliceblue">Duke Mobile Ordering</h1>
       <div style="margin-bottom: 25px" id="FLEX">
         <div id="vendor">
+          <!-- Directs to on-campus resturant partners (to which each seller is affiliated) -->
           <!-- Need to figure out image incorporation -->
           <a href="/product?id=1" type="button" id = "vendor" class="btn btn-black"> Beyu Blue </a> 
           <a href="/product?id=2" type="button" id = "vendor" class="btn btn-black"> The Loop </a> 
@@ -65,6 +66,7 @@
           <a href="/product?id=5" type="button" id = "vendor" class="btn btn-black"> Il Forno </a> 
           <a href="/product?id=6" type="button" id = "vendor" class="btn btn-black"> Sazón </a> 
         </div> 
+        <!-- Log-in information for those that are authenticated -->
         <div id="login">
           {% if current_user.is_authenticated %}
             Hello {{current_user.firstname}}! 
@@ -81,12 +83,33 @@
   </div>
   <div class="main" style="text-align: center; margin-top: 20px; font-size: 20px">
     {% block content %}
-    <p> <b>Welcome to Duke Mobile Ordering!</b> Click on one of the above resturants to begin 
+    <!-- Displays previous purchases for authenticated users -->
+    {% if current_user.is_authenticated %}
+    <h2>Your recent purchases:</h2>
+    <table class='table table-hover table-bordered container'>
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Purchase ID</th>
+        <th scope="col">Product Name</th>
+        <th scope="col">Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for purchase in purchase_history%}
+        <tr>
+          <th scope="row">{{purchase.id}}</th>
+          <td>{{purchase.pid}}</td>
+          <td>{{purchase.time_purchased}}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+    </table>
+    <!-- Landing page text (to eventually include most highly rated items, campus news, etc.) -->
+    {% else %}
+      <p> <b>Welcome to Duke Mobile Ordering!</b> Click on one of the above resturants to begin 
       your order. Students and vendors both will need to login using their Duke credentials to save
       items to their personal carts.
-    </p>
-    {% if current_user.is_authenticated %}
-    {% else %}
+      </p>
       <p><a href="{{ url_for('users.login') }}">Log in</a> to see your purchase history!</p>
     {% endif %} 
     {% endblock %}

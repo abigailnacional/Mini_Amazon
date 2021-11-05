@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+{% block content %}
+
+<br><br>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+<h2>Product: {{ data.product.name }}</h2>
+
+<form action="" method=post>
+  {{ form.csrf_token }}
+  <dl>
+    <fieldset class="form-field">
+    {{ form.number_of_stars.label }} <br />
+    {{ form.number_of_stars }}
+    {% if form.number_of_stars.errors %}
+    <ul class="errors">
+      {% for error in form.number_of_stars.errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    </fieldset>
+
+    <fieldset class="form-field">
+    {{ form.written_review.label }} <br />
+    {{ form.written_review }}
+    {% if form.written_review.errors %}
+    <ul class="errors">
+      {% for error in form.written_review.errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    </fieldset>
+  </dl>
+
+  {% if form.errors %}
+  {{ form.errors }}
+  {% endif %}
+
+  {{ form.submit }}
+</form>
+
+{% endblock %}

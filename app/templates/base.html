@@ -57,6 +57,7 @@
       <h1 style="color:aliceblue">Duke Mobile Ordering</h1>
       <div style="margin-bottom: 25px" id="FLEX">
         <div id="vendor">
+          <!-- Need to figure out image incorporation -->
           <a href="/product?id=1" type="button" id = "vendor" class="btn btn-black"> Beyu Blue </a> 
           <a href="/product?id=2" type="button" id = "vendor" class="btn btn-black"> The Loop </a> 
           <a href="/product?id=3" type="button" id = "vendor" class="btn btn-black"> McDonalds </a> 
@@ -66,8 +67,11 @@
         </div> 
         <div id="login">
           {% if current_user.is_authenticated %}
-            Hello {{current_user.firstname}}! <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a>
-            <a href="{{ url_for('cart.view_cart') }}" type="button" class="btn btn-light">View Cart</a>
+            Hello {{current_user.firstname}}! 
+          <a href="{{ url_for('cart.view_cart') }}" type="button" class="btn btn-light">View Cart</a>
+          <a href="{{ url_for('order.view_orders') }}" type="button" class="btn btn-light">View Orders</a>
+          <a href="{{ url_for('users.view_account') }}" type="button" class="btn btn-light">View Account Info</a>
+          <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a>
           {% else %}
             <a href="{{ url_for('users.login') }}" type="button" class="btn btn-light">Log in</a>
           {% endif %}

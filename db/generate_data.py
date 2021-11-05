@@ -8,10 +8,14 @@ letters = string.ascii_lowercase
 base = 1000
 num_total_users = 1000
 num_users_with_carts = 5
+num_resturants = 6
 num_sellers = 20
 num_products = 5000
+num_reviews = 1000
 num_carts_per_user = 1000
 num_carts_populated_per_user = 3
+
+# TODO: create modules for each csv so we don't have to re-create all the data every time
 
 with open('db/data/Users.csv', 'w', newline='') as users_file:
     writer = csv.writer(users_file, delimiter=',')
@@ -56,7 +60,7 @@ with open('db/data/Product.csv', 'w', newline='') as product_file:
         id = num
         name = ''.join(random.choice(letters) for i in range(random.randint(3, 20)))
         description = ''.join(random.choice(letters) for i in range(random.randint(3, 20)))
-        category = random.choice(['Beyu Blue', 'The Loop', 'McDonalds', 'Panda Express', 'Il Forno', 'Sazón'])
+        category = random.choice(['Entrées', 'Sides', 'Desserts', 'Beverages', 'Appetizers'])
         price = random.randint(0, 1000)
         is_available = bool(random.randint(0, 1))
         link = ''.join(random.choice(letters) for i in range(random.randint(3, 20)))
@@ -75,10 +79,11 @@ with open('db/data/Sells.csv', 'w', newline='') as sells_file:
 
             product_id = random.randint(base, base + num_products - 1)
             inventory = random.randint(0, 1000000)
+            seller_affiliation = random.randint(1, num_resturants)
 
             if (seller_id, product_id) not in sells:
                 sells.add((seller_id, product_id))
-                writer.writerow([seller_id, product_id, inventory])
+                writer.writerow([seller_affiliation, seller_id, product_id, inventory])
 
 products_in_cart = set()
 with open('db/data/ProductInCart.csv', 'w', newline='') as product_in_cart_file:
@@ -119,35 +124,16 @@ with open('db/data/Purchase.csv', 'w', newline='') as purchase_file:
 
             writer.writerow([product_in_cart_id, user_id, "2021-09-10 13:12:58", is_fulfilled, time_of_fulfillment, cart_id])
 
-# with open('db/data/Feedback.csv', 'w', newline='') as feedback_file:
-#     writer = csv.writer(feedback_file, delimiter=',')
-#
-#     for product_id in range(base, base + num_products):
-#
-#         reviewer_id = random.randint(base, base + num_important_users - 1)
-#
-#         rating = random.randint(1,5)
-#         review = ''.join(random.choice(letters) for i in range(random.randint(3, 20)))
-#
-#         writer.writerow([reviewer_id, rating, review, product_id, None, "2021-09-10 13:12:58"])
+with open('db/data/Feedback.csv', 'w', newline='') as feedback_file:
+    writer = csv.writer(feedback_file, delimiter=',')
 
-        # app.db.execute_with_no_return(
-        #     """
-        #     EXECUTE create_user(:email, :password, :first, :last, :balance, :address)
-        #     """,
-        #     email=email,
-        #     password=password,
-        #     first=first,
-        #     last=last,
-        #     balance=balance,
-        #     address=address
-        # )
+    reviewer_ids = random.sample(list(range(base, base + num_total_users)), num_reviews)
+    product_ids = random.sample(list(range(base, base + num_products)), num_reviews)
 
+    for i in range(num_reviews):
+        reviewer_id = reviewer_ids[i]
+        product_id = product_ids[i]
+        rating = random.randint(1, 5)
+        review = ''.join(random.choice(letters) for x in range(random.randint(3, 20)))
 
-        # app.db.execute_with_no_return(
-        #     """
-        #     PREPARE create_user AS
-        #     INSERT INTO User(email, password, first, last, balance, address)
-        #     VALUES ($1, $2, $3, $4, $5, $6)
-        #     """
-        # )
+        writer.writerow([reviewer_id, rating, review, product_id, None, "2021-11-01 18:54:37"])

@@ -5,6 +5,7 @@ class DB:
     """Hosts all functions for querying the database."""
     def __init__(self, app):
         self.engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+        self.run_prepare_statements()
 
     def connect(self):
         return self.engine.connect()
@@ -24,6 +25,17 @@ class DB:
 
 
     # the use of .fetchall() causes the execute method to error for SQL that does not return rows (i.e. UPDATE)
-    def execute_non_select_statement(self, sqlstr, **kwargs):
+    def execute_with_no_return(self, sqlstr, **kwargs):
         with self.engine.connect() as conn:
             return conn.execute(text(sqlstr), kwargs)
+
+    def run_prepare_statements(self):
+        # TODO find better home for this code
+
+        self.execute_with_no_return(
+            """
+            PREPARE insert_purchase AS
+            INSERT INTO Purchase(product_in_cart_id, user_id, cart_id)
+                VALUES ($1, $2, $3)
+            """
+        )

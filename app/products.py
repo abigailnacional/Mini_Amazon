@@ -12,6 +12,6 @@ product_sellers = {'1': 'Beyu Blue', '2': 'The Loop', '3': 'McDonalds', '4': 'Pa
 @bp.route('/product', methods=['GET'])
 def view_product():
     seller_id = request.args.get('id')
-    products = Product.get_specific(product_sellers[seller_id])
+    products = Product.get_specific(seller_id)
     return render_template('product.html', name=product_sellers[seller_id], avail_products=products)
 

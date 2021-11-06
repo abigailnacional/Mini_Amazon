@@ -13,9 +13,10 @@ class User(UserMixin):
             email: str,
             first_name: str,
             last_name:  str,
-            address: Optional[str] = "",
             password: Optional[str] = "",
-            balance: Optional[int] = 0):
+            balance: Optional[int] = 0,
+            address: Optional[str] = ""):
+            
         self.id = id
         self.email = email
         self.first_name = first_name
@@ -53,17 +54,18 @@ WHERE email = :email
         return len(rows) > 0
 
     @staticmethod
-    def register(email, password, first_name, last_name):
+    def register(email, password, first_name, last_name, address):
         try:
             rows = app.db.execute("""
-INSERT INTO Users(email, password, first_name, last_name)
-VALUES(:email, :password, :first_name, :last_name)
+INSERT INTO Users(email, password, first_name, last_name, address)
+VALUES(:email, :password, :first_name, :last_name, :address)
 RETURNING id
 """,
                                   email=email,
                                   password=generate_password_hash(password),
                                   first_name=first_name,
-                                  last_name=last_name)
+                                  last_name=last_name,
+                                  address=address)
             id = rows[0][0]
             return User.get(id)
         except Exception as e:
@@ -77,7 +79,7 @@ RETURNING id
     def get(id):
         rows = app.db.execute(
             """
-            SELECT id, email, first_name, last_name, address, password, balance
+            SELECT id, email, first_name, last_name, password, balance, address
             FROM Users
             WHERE id = :id
             """,
@@ -104,4 +106,76 @@ RETURNING id
             """,
             id=self.id,
             total_price=total_price
-        )
+        ) 
+
+    def edit_email(self, email) -> bool:
+        return app.db.execute(
+            """
+            UPDATE Users
+            SET email = :email
+            WHERE id = :id
+            RETURNING email
+            """,
+            id=self.id,
+            email=email,
+        )[0][0] == email
+
+    def edit_fname(self, first_name) -> bool:
+        return app.db.execute(
+            """
+            UPDATE Users
+            SET first_name = :first_name
+            WHERE id = :id
+            RETURNING first_name
+            """,
+            id=self.id,
+            first_name=first_name,
+        )[0][0] == first_name
+
+    def edit_lname(self, last_name) -> bool:
+        return app.db.execute(
+            """
+            UPDATE Users
+            SET last_name = :last_name
+            WHERE id = :id
+            RETURNING last_name
+            """,
+            id=self.id,
+            last_name=last_name,
+        )[0][0] == last_name
+
+    def edit_address(self, address) -> bool:
+        return app.db.execute(
+            """
+            UPDATE Users
+            SET address = :address
+            WHERE id = :id
+            RETURNING address
+            """,
+            id=self.id,
+            address = address
+        )[0][0] == address
+        
+    def edit_password(self, password) -> bool:
+        return app.db.execute(
+            """
+            UPDATE Users
+            SET password = :password
+            WHERE id = :id
+            RETURNING password
+            """,
+            id=self.id,
+            password = password
+        )[0][0] == password
+
+    def edit_balance(self, balance) -> bool:
+        return app.db.execute(
+            """
+            UPDATE Users
+            SET balance = :balance
+            WHERE id = :id
+            RETURNING balance
+            """,
+            id=self.id,
+            balance = balance
+        )[0][0] == balance

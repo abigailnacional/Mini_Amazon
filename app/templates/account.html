@@ -5,23 +5,48 @@
 <br><br>
 
 <h2>Account Info</h2>
+<p>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+      {% for message in messages %}
+      <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+  </p>
 <dl>
     <dt>Account ID</dt>
     <dd>{{current_user.id}}</dd>
-    <dt>Email</dt>
+    <dt>Email
+        <a class="btn btn-secondary" href="{{ url_for('users.edit_email') }}" role="button">Edit Email</a>
+    </dt>
     <dd>{{current_user.email}}</dd>
-    <dt>Full Name</dt>
-    <dd>{{current_user.first_name}} {{current_user.last_name}}</dd>
-    <dt>Address</dt>
+    <dt>First Name
+        <a class="btn btn-secondary" href="{{ url_for('users.edit_fname') }}" role="button">Edit First Name</a>
+    </dt>
+    </dt>
+    <dd>{{current_user.first_name}}</dd>
+    <dt>Last Name
+        <a class="btn btn-secondary" href="{{ url_for('users.edit_lname') }}" role="button">Edit Last Name</a>
+    </dt>
+    <dd>{{current_user.last_name}}</dd>
+    <dt>Address
+        <a class="btn btn-secondary" href="{{ url_for('users.edit_address') }}" role="button">Edit Address</a>
+    </dt>
     <dd>{{current_user.address}}</dd>
-    <dt>Password</dt>
+    <dt>Password
+        <a class="btn btn-secondary" href="{{ url_for('users.edit_password') }}" role="button">Edit Password</a>
+    </dt>
     <dd>{{current_user.password}}</dd>
+    <dt>Balance
+        <a class="btn btn-secondary" href="{{ url_for('users.edit_balance') }}" role="button">Edit Balance</a>
+    </dt>
+    <dd>{{current_user.balance}}</dd>
 </dl> 
 
 <br><br>
-
-<h3>Balance</h3>
-<p>{{current_user.balance}}</p>
 
 {% endblock %}
 ml>

@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, flash, request
 from werkzeug.urls import url_parse
 from flask_login import login_user, logout_user, current_user
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from flask_babel import _, lazy_gettext as _l
 
@@ -47,6 +47,7 @@ class RegistrationForm(FlaskForm):
     password2 = PasswordField(
         _l('Repeat Password'), validators=[DataRequired(),
                                            EqualTo('password')])
+    address = StringField(_l('Address'), validators=[DataRequired()])
     submit = SubmitField(_l('Register'))
 
     def validate_email(self, email):
@@ -63,7 +64,8 @@ def register():
         if User.register(form.email.data,
                          form.password.data,
                          form.first_name.data,
-                         form.last_name.data):
+                         form.last_name.data,
+                         form.address.data):
             flash('Congratulations, you are now a registered user!')
             return redirect(url_for('users.login'))
     return render_template('register.html', title='Register', form=form)
@@ -74,9 +76,93 @@ def logout():
     logout_user()
     return redirect(url_for('index.index'))
 
-@bp.route('/users')
+@bp.route('/view_account')
 def view_account():
     if current_user.is_authenticated:
         return render_template('account.html')
-    return render_template('login.html')
+    return redirect(url_for('users.login'))
 
+class EditEmailForm(FlaskForm):
+    email = StringField(_l('New Email'), validators=[DataRequired(), Email()])
+    submit = SubmitField(_l('Update Email'))
+
+    def validate_email(self, email):
+        if User.email_exists(email.data):
+            raise ValidationError(_('Already a user with this email.'))
+
+@bp.route('/edit_email', methods=['GET', 'POST'])
+def edit_email():
+    form = EditEmailForm()
+    if form.validate_on_submit():
+        if User.edit_email(current_user, form.email.data):
+            flash('Email has been changed.')
+            return redirect(url_for('users.view_account'))
+    return render_template('edit_email.html', title='Edit Email', form=form)
+
+class EditFnameForm(FlaskForm):
+    first_name = StringField(_l('First Name'), validators=[DataRequired()])
+    submit = SubmitField(_l('Update First Name'))
+
+@bp.route('/edit_fname', methods=['GET', 'POST'])
+def edit_fname():
+    form = EditFnameForm()
+    if form.validate_on_submit():
+        if User.edit_fname(current_user, form.first_name.data):
+            flash('First name has been changed.')
+            return redirect(url_for('users.view_account'))
+    return render_template('edit_fname.html', title='Edit First Name', form=form)
+
+class EditLnameForm(FlaskForm):
+    last_name = StringField(_l('Last Name'), validators=[DataRequired()])
+    submit = SubmitField(_l('Update Last Name'))
+
+@bp.route('/edit_lname', methods=['GET', 'POST'])
+def edit_lname():
+    form = EditLnameForm()
+    if form.validate_on_submit():
+        if User.edit_lname(current_user, form.last_name.data):
+            flash('Last name has been changed.')
+            return redirect(url_for('users.view_account'))
+    return render_template('edit_lname.html', title='Edit Last Name', form=form)
+
+class EditAddressForm(FlaskForm):
+    address = StringField(_l('Address'), validators=[DataRequired()])
+    submit = SubmitField(_l('Update Address'))
+
+@bp.route('/edit_address', methods=['GET', 'POST'])
+def edit_address():
+    form = EditAddressForm()
+    if form.validate_on_submit():
+        if User.edit_address(current_user, form.address.data):
+            flash('Address has been changed.')
+            return redirect(url_for('users.view_account'))
+    return render_template('edit_address.html', title='Edit Address', form=form)
+
+class EditPasswordForm(FlaskForm):
+    password = PasswordField(_l('Password'), validators=[DataRequired()])
+    password2 = PasswordField(
+        _l('Repeat Password'), validators=[DataRequired(),
+                                           EqualTo('password')])
+    submit = SubmitField(_l('Update Password'))
+
+@bp.route('/edit_password', methods=['GET', 'POST'])
+def edit_password():
+    form = EditPasswordForm()
+    if form.validate_on_submit():
+        if User.edit_password(current_user, form.password.data):
+            flash('Password has been changed.')
+            return redirect(url_for('users.view_account'))
+    return render_template('edit_password.html', title='Edit Password', form=form)
+
+class EditBalanceForm(FlaskForm):
+    balance = FloatField(_l('Balance'), validators=[DataRequired()])
+    submit = SubmitField(_l('Update Balance'))
+
+@bp.route('/edit_balance', methods=['GET', 'POST'])
+def edit_balance():
+    form = EditBalanceForm()
+    if form.validate_on_submit():
+        if User.edit_balance(current_user, form.balance.data):
+            flash('Balance has been changed.')
+            return redirect(url_for('users.view_account'))
+    return render_template('edit_balance.html', title='Edit Balance', form=form)

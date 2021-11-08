@@ -2,7 +2,18 @@
 
 {% block content %}
 
-<h1>Products for sale at {{name}}:</h1>
+<h1>Products for sale at {{product_sellers[vender_id]}}:</h1>
+
+<select id="categoryFilter" onchange="location = this.value;">
+  <option value="/product?id={{vender_id}}">Filter by:</option>
+  <tbody>
+    {% for category in categories%}
+      <tr>
+        document.write('<option value="/filter?id={{vender_id}}&cat={{category[0]}}">{{category[0]}}</option>');
+      </tr>
+      {% endfor %}
+  </tbody>
+</select>
 
 <br><br>
 
@@ -11,6 +22,7 @@
     <tr>
       <th scope="col">Product ID</th>
       <th scope="col">Product Name</th>
+      <th scope="col">Category</th>
       <th scope="col">Price</th>
       <th scope="col">Temp Rating</th>
     </tr>
@@ -20,7 +32,8 @@
       <tr>
         <th scope="row">{{product.id}}</th>
         <td>{{product.name}}</td>
-        <td>{{product.price}}</td>
+        <td>{{product.category}}</td>
+        <td>${{product.price}}</td>
         <td>
           <a href="{{ url_for('product_rating.create_review', product_id=product.id) }}">Rate This Product</a>
         </td>

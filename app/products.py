@@ -21,7 +21,6 @@ def view_product():
 def filtered_view():
     vender_id = request.args.get('id')
     spec_category = request.args.get('cat')
-    print(spec_category)
     products = Product.filtered(vender_id, spec_category)
     categories = Product.get_categories()
     return render_template('product.html', vender_id=vender_id, product_sellers=product_sellers, 

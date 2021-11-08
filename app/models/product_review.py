@@ -1,7 +1,7 @@
 from flask import current_app as app
 
 class ProductReview:
-    def __init__(reviewer_id, rating, review, product_id, seller_id, time_posted):
+    def __init__(self, reviewer_id, rating, review, product_id, seller_id, time_posted):
         self.reviewer_id = reviewer_id
         self.rating = rating
         self.review = review
@@ -10,7 +10,7 @@ class ProductReview:
         self.time_posted = time_posted
 
     @staticmethod
-    def get(reviewer_id):
+    def get_user_reviews(reviewer_id):
         rows = app.db.execute(
             '''
             SELECT reviewer_id, rating, review, product_id, seller_id, time_posted
@@ -19,9 +19,10 @@ class ProductReview:
             ''',
             id = reviewer_id)
 
-        return ProductReview(*(rows[0])) if rows is not None else None
-    
-    # TODO: not sure if this belongs here, maybe it's better belonged in Product file?
+        pr_r = [ProductReview(*row) for row in rows]
+
+        return pr_r
+
     @staticmethod
     def check_user_review_exists(user_id, product_id):
         rows = app.db.execute(

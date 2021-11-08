@@ -28,6 +28,7 @@ CREATE TABLE Product (
 );
 
 CREATE TABLE Sells (
+   seller_affiliation INT NOT NULL,
    seller_id INT NOT NULL,
    product_id INT NOT NULL,
    inventory INT NOT NULL,

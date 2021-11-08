@@ -6,8 +6,12 @@ from .models.product import Product
 from flask import Blueprint
 bp = Blueprint('products', __name__)
 
+product_sellers = {'1': 'Beyu Blue', '2': 'The Loop', '3': 'McDonalds', '4': 'Panda Express', '5': 'Il Forno',
+                   '6': 'Sazón'}
+
 @bp.route('/product', methods=['GET'])
 def view_product():
     seller_id = request.args.get('id')
-    return render_template('product.html')
+    products = Product.get_specific(seller_id)
+    return render_template('product.html', name=product_sellers[seller_id], avail_products=products)
 

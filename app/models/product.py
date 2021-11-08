@@ -35,6 +35,18 @@ WHERE id = :id
         return Product(*(rows[0])) if rows is not None else None
 
     @staticmethod
+    def get_specific(category):
+        rows = app.db.execute('''
+SELECT DISTINCT id, name, description, category, price, is_available, link, creator_id, image
+FROM Product
+RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
+WHERE seller_affiliation = :category AND is_available = True
+ORDER BY id
+''',
+                                category=category)
+        return [Product(*row) for row in rows] if rows is not None else None                 
+
+    @staticmethod
     def get_all(is_available=True):
         rows = app.db.execute('''
 SELECT id, name, description, category, price, is_available, link, creator_id, image

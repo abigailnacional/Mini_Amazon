@@ -8,6 +8,7 @@ letters = string.ascii_lowercase
 base = 1000
 num_total_users = 1000
 num_users_with_carts = 5
+num_resturants = 6
 num_sellers = 20
 num_products = 5000
 num_reviews = 1000
@@ -59,7 +60,7 @@ with open('db/data/Product.csv', 'w', newline='') as product_file:
         id = num
         name = ''.join(random.choice(letters) for i in range(random.randint(3, 20)))
         description = ''.join(random.choice(letters) for i in range(random.randint(3, 20)))
-        category = random.choice(['Food', 'Beverage', 'Antique', 'Painting'])
+        category = random.choice(['Entrées', 'Sides', 'Desserts', 'Beverages', 'Appetizers'])
         price = random.randint(0, 1000)
         is_available = bool(random.randint(0, 1))
         link = ''.join(random.choice(letters) for i in range(random.randint(3, 20)))
@@ -78,10 +79,11 @@ with open('db/data/Sells.csv', 'w', newline='') as sells_file:
 
             product_id = random.randint(base, base + num_products - 1)
             inventory = random.randint(0, 1000000)
+            seller_affiliation = random.randint(1, num_resturants)
 
             if (seller_id, product_id) not in sells:
                 sells.add((seller_id, product_id))
-                writer.writerow([seller_id, product_id, inventory])
+                writer.writerow([seller_affiliation, seller_id, product_id, inventory])
 
 products_in_cart = set()
 with open('db/data/ProductInCart.csv', 'w', newline='') as product_in_cart_file:

@@ -25,6 +25,26 @@
 </table>
 <br></br>
 <h2>Current Sellers:</h2> 
-
+<table class = 'seller-info'>
+    <tr>
+        <th>Seller ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+        <th>Seller Affiliation</th>
+        <th>Inventory</th>
+    </tr>
+    <tbody>
+        {% for seller in sellers%}
+          <tr>
+            <td>{{seller.id}}</td>
+            <td>{{seller.first_name}}</td>
+            <td>{{seller.last_name}}</td>
+            <td>{{seller.email}}</td>
+            <td>{{seller.seller_affiliation}}</td>
+            <td>{{seller.inventory}}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
 
 {% endblock %}

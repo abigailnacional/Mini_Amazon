@@ -2,6 +2,7 @@ from flask_login import current_user
 from flask import render_template, redirect, url_for, flash, request
 
 from .models.product import Product
+from .models.user import User
 
 from flask import Blueprint
 bp = Blueprint('products', __name__)
@@ -30,6 +31,8 @@ def filtered_view():
 def ind_view():
     prod_id = request.args.get('id')
     product = Product.get(prod_id)
-    return render_template('ind_prod.html', product_info=product)
+    sellers = User.get_sellers(prod_id)
+    print(sellers[0])
+    return render_template('ind_prod.html', product_info=product, sellers=sellers)
     
 

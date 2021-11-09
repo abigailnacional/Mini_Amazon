@@ -25,5 +25,11 @@ def filtered_view():
     categories = Product.get_categories()
     return render_template('product.html', vender_id=vender_id, product_sellers=product_sellers, 
                             avail_products=products, categories=categories)
+
+@bp.route('/view', methods=['GET'])
+def ind_view():
+    prod_id = request.args.get('id')
+    product = Product.get(prod_id)
+    return render_template('ind_prod.html', product_info=product)
     
 

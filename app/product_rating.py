@@ -13,6 +13,7 @@ from flask import Blueprint
 bp = Blueprint('product_rating', __name__)
 
 class ProductRatingForm(FlaskForm):
+    # product_name = TextAreaField("Product Name", render_kw={'readonly': True})
     number_of_stars = SelectField('Number of stars', choices=[('1', '1 star'),
                                                               ('2', '2 stars'),
                                                               ('3', '3 stars'),
@@ -21,6 +22,23 @@ class ProductRatingForm(FlaskForm):
     written_review = TextAreaField("Written Review", validators=None)
     submit = SubmitField('Submit')
 
+@bp.route('/edit_review', methods=['GET', 'POST'])
+def edit_review():
+    if current_user.is_authenticated:
+        product = p.get("" + request.args.get('product_id'))
+        user_id = current_user.id
+
+        review = pr.get_specific_product_review_by_user(user_id, product.id)
+        review_form_data = {
+            'number_of_stars': review.rating,
+            'written_review': review.review
+        }
+        form = ProductRatingForm(obj=review_form_data)
+        
+        data = {'product': product}
+
+        return render_template("product_review.html", title='Product Review Form', action="Edit", form=form)
+    return redirect(url_for('users.login'))
 
 @bp.route('/create_review', methods=['GET', 'POST'])
 def create_review():

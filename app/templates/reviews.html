@@ -13,7 +13,7 @@
       <th scope="col">Date</th>
       <th scope="col">Star Rating</th>
       <th scope="col">Review Message</th> <!-- TODO: perhaps not review the entire message in this one column? -->
-      <th scope="col">Edit</th>
+      <th scope="col">Edit Your Review</th>
     </tr>
   </thead>
   <tbody>
@@ -23,7 +23,7 @@
         <td>{{ reviews[i].time_posted }}</td>
         <td>{{ reviews[i].rating }}</td>
         <td>{{ reviews[i].review }}</td>
-        <td><a href="{{ url_for('index.index') }}">Edit</a></td> <!-- TODO: implement this -->
+        <td><a href="{{ url_for('product_rating.edit_review, product_id=reviews[i].product_id') }}">Edit</a></td> <!-- TODO: implement this -->
       </tr>
     {% endfor %}
   </tbody>

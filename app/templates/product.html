@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-
 <h1>Products for sale at {{product_sellers[vender_id]}}:</h1>
 
 <select id="categoryFilter" onchange="location = this.value;">
@@ -30,7 +29,9 @@
   <tbody>
     {% for product in avail_products%}
       <tr>
-        <th scope="row">{{product.id}}</th>
+        <th scope="row">
+          <a href="/view?id={{product.id}}">{{product.id}}</a>
+        </th>
         <td>{{product.name}}</td>
         <td>{{product.category}}</td>
         <td>${{product.price}}</td>

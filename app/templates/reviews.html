@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<br><br>
+
+{% if current_user.is_authenticated %}
+<h2>Your reviews:</h2>
+<table class='table table-hover table-bordered container'>
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Product Name</th>
+      <th scope="col">Date</th>
+      <th scope="col">Star Rating</th>
+      <th scope="col">Review Message</th> <!-- TODO: perhaps not review the entire message in this one column? -->
+      <th scope="col">Edit</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in range(reviews|length) %}
+      <tr>
+        <th scope="row">{{ product_names[i] }}</th>
+        <td>{{ reviews[i].time_posted }}</td>
+        <td>{{ reviews[i].rating }}</td>
+        <td>{{ reviews[i].review }}</td>
+        <td><a href="{{ url_for('index.index') }}">Edit</a></td> <!-- TODO: implement this -->
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p><a href="{{ url_for('users.login') }}">Log in</a> to see your reviews!</p>
+{% endif %}
+
+{% endblock %}

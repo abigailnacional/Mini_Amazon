@@ -7,7 +7,8 @@ from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from flask_babel import _, lazy_gettext as _l
 
 from .models.user import User
-
+from .models.product import Product
+from .models.product_review import ProductReview
 
 from flask import Blueprint
 bp = Blueprint('users', __name__)
@@ -75,6 +76,20 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('index.index'))
+
+@bp.route('/view_reviews')
+def view_reviews():
+    if current_user.is_authenticated:
+        reviews = ProductReview.get_user_reviews(current_user.id)
+        reviewed_product_ids = [review.product_id for review in reviews]
+        # current way is inefficient, find a better way?
+        reviewed_product_names = []
+        for id in reviewed_product_ids:
+            product = Product.get(id)
+            reviewed_product_names.append(product.name)
+
+        return render_template('reviews.html', product_names=reviewed_product_names, reviews=reviews)
+    return redirect(url_for('users.login'))
 
 @bp.route('/view_account')
 def view_account():

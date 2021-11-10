@@ -88,7 +88,7 @@
         <div id="login">
           {% if current_user.is_authenticated %}
             <a href="{{ url_for('index.index') }}" type="button" class="btn btn-light">Home</a>
-            <a href="{{ url_for('users.view_reviews') }}" type="button" class="btn btn-light">My Reviews</a>
+            <a href="{{ url_for('product_rating.view_reviews') }}" type="button" class="btn btn-light">My Reviews</a>
             <a href="{{ url_for('cart.view_cart') }}" type="button" class="btn btn-light">View Cart</a>
             <a href="{{ url_for('order.view_orders') }}" type="button" class="btn btn-light">View Orders</a>
             <a href="{{ url_for('users.view_account') }}" type="button" class="btn btn-light">View Account Info</a>

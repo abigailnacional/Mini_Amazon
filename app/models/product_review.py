@@ -10,30 +10,73 @@ class ProductReview:
         self.time_posted = time_posted
 
     @staticmethod
+    def get_product_reviews(product_id):
+        rows = app.db.execute(
+            '''
+            SELECT *
+            FROM Feedback
+            WHERE product_id = :id
+            ''',
+            id=product_id)
+
+        reviews = [ProductReview(*row) for row in rows]
+
+        return reviews
+
+    @staticmethod
     def get_user_reviews(reviewer_id):
         rows = app.db.execute(
             '''
-            SELECT reviewer_id, rating, review, product_id, seller_id, time_posted
+            SELECT *
             FROM Feedback
             WHERE reviewer_id = :id
             ''',
-            id = reviewer_id)
+            id=reviewer_id)
 
-        pr_r = [ProductReview(*row) for row in rows]
+        reviews = [ProductReview(*row) for row in rows]
 
-        return pr_r
+        return reviews
 
     @staticmethod
-    def check_user_review_exists(user_id, product_id):
+    def get_specific_product_review_by_user(user_id, product_id):
         rows = app.db.execute(
              '''
              SELECT *
              FROM Feedback
              WHERE (reviewer_id = :user_id and product_id = :product_id)
              ''',
-             user_id = user_id,
-             product_id = product_id)
-        return len(rows) != 0
+             user_id=user_id,
+             product_id=product_id)
+    
+        return ProductReview(*(rows[0])) if rows is not None else None
+
+    @staticmethod
+    def get_product_average_rating(product_ids):
+        ret = []
+        # TODO: very inefficient, think of another way to do this
+        for product_id in product_ids:
+
+            rows = app.db.execute(
+                '''
+                SELECT AVG(rating)
+                FROM Feedback
+                WHERE product_id = :id
+                ''',
+                id=product_id)
+
+            
+            
+            if rows[0][0] == None:
+                ret.append("No ratings yet")
+            else:
+                ret.append("{:.1f}".format(rows[0][0]))
+        
+        return ret
+
+    @staticmethod
+    def check_user_review_exists(user_id, product_id):
+        review = ProductReview.get_specific_product_review_by_user(user_id, product_id)
+        return review != None
 
     @staticmethod
     def add_review(review_contents): #review_contents is dictionary

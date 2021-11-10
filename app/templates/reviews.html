@@ -10,9 +10,9 @@
   <thead class="thead-dark">
     <tr>
       <th scope="col">Product Name</th>
-      <th scope="col">Date</th>
       <th scope="col">Star Rating</th>
       <th scope="col">Review Message</th> <!-- TODO: perhaps not review the entire message in this one column? -->
+      <th scope="col">Date</th>
       <th scope="col">Edit Your Review</th>
     </tr>
   </thead>
@@ -20,10 +20,10 @@
     {% for i in range(reviews|length) %}
       <tr>
         <th scope="row">{{ product_names[i] }}</th>
-        <td>{{ reviews[i].time_posted }}</td>
         <td>{{ reviews[i].rating }}</td>
         <td>{{ reviews[i].review }}</td>
-        <td><a href="{{ url_for('product_rating.edit_review, product_id=reviews[i].product_id') }}">Edit</a></td> <!-- TODO: implement this -->
+        <td>{{ reviews[i].time_posted }}</td>
+        <td><a href="{{ url_for('product_rating.edit_review', product_id=reviews[i].product_id) }}">Edit</a></td>
       </tr>
     {% endfor %}
   </tbody>

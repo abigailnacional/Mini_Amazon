@@ -22,22 +22,32 @@ class ProductRatingForm(FlaskForm):
     written_review = TextAreaField("Written Review", validators=None)
     submit = SubmitField('Submit')
 
+@bp.route('/view_reviews')
+def view_reviews():
+    if current_user.is_authenticated:
+        reviews = pr.get_user_reviews(current_user.id)
+        reviewed_product_ids = [review.product_id for review in reviews]
+        # current way is inefficient, find a better way?
+        reviewed_product_names = []
+        for id in reviewed_product_ids:
+            product = p.get(id)
+            reviewed_product_names.append(product.name)
+
+        return render_template('reviews.html', product_names=reviewed_product_names, reviews=reviews)
+    return redirect(url_for('users.login'))
+
 @bp.route('/edit_review', methods=['GET', 'POST'])
 def edit_review():
     if current_user.is_authenticated:
         product = p.get("" + request.args.get('product_id'))
         user_id = current_user.id
-
         review = pr.get_specific_product_review_by_user(user_id, product.id)
-        review_form_data = {
-            'number_of_stars': review.rating,
-            'written_review': review.review
-        }
-        form = ProductRatingForm(obj=review_form_data)
+
+        form = ProductRatingForm(number_of_stars=review.rating, written_review=review.review)
         
         data = {'product': product}
 
-        return render_template("product_review.html", title='Product Review Form', action="Edit", form=form)
+        return render_template("product_review.html", title='Product Review Form', action="Edit", form=form, data=data, message="")
     return redirect(url_for('users.login'))
 
 @bp.route('/create_review', methods=['GET', 'POST'])

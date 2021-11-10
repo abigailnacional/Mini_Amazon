@@ -45,10 +45,33 @@ class ProductReview:
              FROM Feedback
              WHERE (reviewer_id = :user_id and product_id = :product_id)
              ''',
-             user_id = user_id,
-             product_id = product_id)
+             user_id=user_id,
+             product_id=product_id)
     
         return ProductReview(*(rows[0])) if rows is not None else None
+
+    @staticmethod
+    def get_product_average_rating(product_ids):
+        ret = []
+        # TODO: very inefficient, think of another way to do this
+        for product_id in product_ids:
+
+            rows = app.db.execute(
+                '''
+                SELECT AVG(rating)
+                FROM Feedback
+                WHERE product_id = :id
+                ''',
+                id=product_id)
+
+            
+            
+            if rows[0][0] == None:
+                ret.append("No ratings yet")
+            else:
+                ret.append("{:.1f}".format(rows[0][0]))
+        
+        return ret
 
     @staticmethod
     def check_user_review_exists(user_id, product_id):

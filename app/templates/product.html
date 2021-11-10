@@ -23,21 +23,19 @@
       <th scope="col">Product Name</th>
       <th scope="col">Category</th>
       <th scope="col">Price</th>
-      <th scope="col">Rating</th>
+      <th scope="col">Average Rating</th>
     </tr>
   </thead>
   <tbody>
-    {% for product in avail_products%}
+    {% for i in range(avail_products|length) %}
       <tr>
         <th scope="row">
-          <a href="/view?id={{product.id}}">{{product.id}}</a>
+          <a href="/view?id={{avail_products[i].id}}">{{avail_products[i].id}}</a>
         </th>
-        <td>{{product.name}}</td>
-        <td>{{product.category}}</td>
-        <td>${{product.price}}</td>
-        <td>
-          <a href="{{ url_for('product_rating.create_review', product_id=product.id) }}">Rate This Product</a>
-        </td>
+        <td>{{avail_products[i].name}}</td>
+        <td>{{avail_products[i].category}}</td>
+        <td>${{avail_products[i].price}}</td>
+        <td>{{ average_ratings[i] }}</td>
       </tr>
     {% endfor %}
   </tbody>

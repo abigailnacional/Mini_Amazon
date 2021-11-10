@@ -28,7 +28,7 @@ def login():
         user = User.get_by_auth(form.email.data, form.password.data)
         if user is None:
             flash('Invalid email or password')
-            current_user
+            return redirect(url_for('users.login'))
         login_user(user)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':

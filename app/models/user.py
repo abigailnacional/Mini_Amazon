@@ -179,3 +179,14 @@ RETURNING id
             id=self.id,
             balance = balance
         )[0][0] == balance
+
+    @staticmethod
+    def get_sellers(id):
+        rows = app.db.execute('''
+SELECT id, first_name, last_name, email, inventory, seller_affiliation
+FROM Users
+RIGHT OUTER JOIN Sells ON Users.id=Sells.seller_id
+WHERE product_id = :id
+''',
+                            id=id)     
+        return  rows if rows is not None else None 

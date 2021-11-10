@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- place product image on left-hand side (set of images corresponding to categories for testing purposes)-->
+
+<h1>{{product_info.name}}</h1>
+<br></br>
+<h2>{{product_info.description}}</h2> 
+<br></br>
+<!-- refer back to base.html for css styling changes -->
+<table class = 'product-info'>
+    <tr>
+        <th>Product ID</th>
+        <th>Category</th>
+        <th>Price</th>
+        <th>Creator ID</th>
+    </tr>
+    <tr>
+        <td>{{product_info.id}}</td>
+        <td>{{product_info.category}}</td>
+        <td>${{product_info.price}}</td>
+        <td>{{product_info.creator_id}}</td>
+    </tr>
+</table>
+<br></br>
+<h2>Current Sellers:</h2> 
+<table class = 'seller-info'>
+    <tr>
+        <th>Seller ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+        <th>Restaurant</th>
+        <th>Amount Remaining</th>
+    </tr>
+    <tbody>
+        {% for seller in sellers%}
+          <tr>
+            <td>{{seller.id}}</td>
+            <td>{{seller.first_name}}</td>
+            <td>{{seller.last_name}}</td>
+            <td>{{seller.email}}</td>
+            <td>{{product_sellers[seller.seller_affiliation]}}</td>
+            <td>{{seller.inventory}}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+
+{% endblock %}

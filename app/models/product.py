@@ -79,4 +79,4 @@ ORDER BY id
 ''',
                               seller_affiliation=seller_affiliation,
                               category=category)
-        return [Product(*row) for row in rows]                   
+        return [Product(*row) for row in rows]   

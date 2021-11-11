@@ -87,7 +87,12 @@
         <!-- Log-in information for those that are authenticated -->
         <div id="login">
           {% if current_user.is_authenticated %}
+            <span style="color: white;">
+              Hello, {{ current_user.first_name }}! &nbsp;
+            </span> 
+      
             <a href="{{ url_for('index.index') }}" type="button" class="btn btn-light">Home</a>
+            <a href="{{ url_for('inventory.inventory') }}" type="button" class="btn btn-light">View My Products</a>
             <a href="{{ url_for('product_rating.view_reviews') }}" type="button" class="btn btn-light">My Reviews</a>
             <a href="{{ url_for('cart.view_cart') }}" type="button" class="btn btn-light">View Cart</a>
             <a href="{{ url_for('order.view_orders') }}" type="button" class="btn btn-light">View Orders</a>

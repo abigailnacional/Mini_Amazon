@@ -1,5 +1,6 @@
 from flask import current_app as app
 from .product import Product
+from typing import Optional
 
 
 class ProductInCart:

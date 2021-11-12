@@ -3,6 +3,7 @@ from flask import render_template, redirect, url_for, flash, request
 
 from .models.cart import Cart
 from .models.product_in_cart import ProductInCart
+from .models.purchase import Purchase
 from .models.user import User
 
 
@@ -24,6 +25,27 @@ def view_cart():
         )
     return redirect(url_for('users.login'))
 
+@bp.route('/order/<cart_id>')
+def view_purchased_cart(cart_id):
+    if current_user.is_authenticated:
+        purchased_cart = Cart.get_cart_by_id(cart_id)
+        purchases = purchased_cart.get_purchases_from_cart()
+        #total_price = purchased_cart.get_total_price_of_cart() # TODO correct (this would have new prices)
+
+        # products_in_cart = purchased_cart.get_products_in_cart()
+        # purchases = []
+        # for product_in_cart in products_in_cart:
+        #     purchases.append(Purchase.get(product_in_cart.id))
+
+        return render_template(
+            'purchase.html',
+            products_in_cart=purchased_cart.get_products_in_cart(),
+            cart=purchased_cart,
+            purchases=purchases,
+            total_cart_price=0,
+            cart_id=cart_id
+        )
+    return redirect(url_for('users.login'))
 
 @bp.route('/increase_quantity/<product_in_cart_id>')
 def increase_quantity_in_cart(product_in_cart_id):

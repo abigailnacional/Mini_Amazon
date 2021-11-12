@@ -1,5 +1,6 @@
 from flask import current_app as app
 from .product import Product
+from .purchase import Purchase
 from .product_in_cart import ProductInCart
 from typing import List, Optional
 from datetime import datetime
@@ -44,6 +45,10 @@ class Cart:
                 ))
         return products_in_cart
 
+    def get_purchases_from_cart(self) -> Optional[List[Purchase]]:
+        purchases = Purchase.get_by_cart(self.id)
+        return purchases
+
     def get_total_price_of_cart(self) -> int:
         total_price = 0
         for product_in_cart in self.get_products_in_cart():
@@ -61,16 +66,34 @@ class Cart:
             time_purchased=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         )
 
-        for product_in_cart in self.get_products_in_cart():
+        for product_in_cart in self.get_products_in_cart():  # TODO need to add final prices somehow
+            # TODO figure out why prepared statement isn't working
+            # rows = app.db.execute(
+            #     """
+            #     EXECUTE insert_purchase(:product_id, :user_id, :cart_id)
+            #     """,
+            #     product_id=product_in_cart.id,
+            #     user_id=self.user_id,
+            #     cart_id=self.id
+            # )
+            # print(rows)
+
+            # print(app.db.execute(
+            #     """
+            #     SELECT * FROM Purchase
+            #     WHERE product_in_cart_id = :product_id
+            #     """,
+            #     product_id=product_in_cart.id
+            # ))
             app.db.execute_with_no_return(
                 """
-                EXECUTE insert_purchase(:product_id, :user_id, :cart_id)
+                INSERT INTO Purchase(product_in_cart_id, user_id, cart_id)
+                VALUES (:product_id, :user_id, :cart_id)
                 """,
                 product_id=product_in_cart.id,
                 user_id=self.user_id,
                 cart_id=self.id
             )
-
         Cart.create_new_cart(self.user_id)
 
     @staticmethod
@@ -79,7 +102,7 @@ class Cart:
             """
             SELECT id, user_id, is_current, time_purchased, is_fulfilled
             FROM Cart
-            WHERE cart_id = :cart_id
+            WHERE id = :cart_id
             """,
             cart_id=cart_id
         )
@@ -150,6 +173,7 @@ class Cart:
             FROM Cart
             WHERE user_id = :user_id
             AND NOT is_current
+            ORDER BY id DESC
             """,
             user_id=user_id
         )

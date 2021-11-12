@@ -32,11 +32,6 @@ def view_purchased_cart(cart_id):
         purchases = purchased_cart.get_purchases_from_cart()
         #total_price = purchased_cart.get_total_price_of_cart() # TODO correct (this would have new prices)
 
-        # products_in_cart = purchased_cart.get_products_in_cart()
-        # purchases = []
-        # for product_in_cart in products_in_cart:
-        #     purchases.append(Purchase.get(product_in_cart.id))
-
         return render_template(
             'purchase.html',
             products_in_cart=purchased_cart.get_products_in_cart(),

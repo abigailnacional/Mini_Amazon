@@ -4,7 +4,10 @@
 
 <!-- place product image on left-hand side (set of images corresponding to categories for testing purposes)-->
 
+<div>
 <h1>{{product_info.name}}</h1>
+</div>
+
 <br></br>
 <h2>{{product_info.description}}</h2> 
 <br></br>
@@ -33,6 +36,7 @@
       <th>Email</th>
       <th>Restaurant</th>
       <th>Amount Remaining</th>
+      <td></td>
   </tr>
   <tbody>
     {% for seller in sellers%}
@@ -43,6 +47,9 @@
         <td>{{seller.email}}</td>
         <td>{{product_sellers[seller.seller_affiliation]}}</td>
         <td>{{seller.inventory}}</td>
+        <td>
+            <a href="{{ url_for('cart.add_item_to_cart', product_id=product_info.id, seller_id=seller.id) }}" type="button" class="btn btn-dark">Add to Cart</a>
+        </td>
       </tr>
     {% endfor %}
   </tbody>

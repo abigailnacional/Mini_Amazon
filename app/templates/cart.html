@@ -4,6 +4,19 @@
 
 <br><br>
 
+<h2>Total price:</h2>
+<tbody>
+    {{total_cart_price}}
+</tbody>
+
+<br><br>
+
+ <form action="order_cart">
+   <button>Order</button>
+ </form>
+
+<br><br><br>
+
 <h2>Products in Cart</h2>
 <table class='table table-hover table-bordered container'>
   <thead class="thead-dark">
@@ -42,20 +55,6 @@
     {% endfor %}
   </tbody>
 </table>
-
-
-<br><br>
-
-<h2>Total price:</h2>
-<tbody>
-    {{total_cart_price}}
-</tbody>
-
-<br><br><br>
-
- <form action="order_cart">
-   <button>Order</button>
- </form>
 
 
 {% endblock %}

@@ -153,14 +153,23 @@ def edit_password():
     return render_template('edit_password.html', title='Edit Password', form=form)
 
 class EditBalanceForm(FlaskForm):
-    balance = FloatField(_l('Balance'), validators=[DataRequired()])
+    balance = FloatField(_l('Amount to Withdraw/Deposit'), validators=[DataRequired()])
     submit = SubmitField(_l('Update Balance'))
 
-@bp.route('/edit_balance', methods=['GET', 'POST'])
-def edit_balance():
+@bp.route('/decrement_balance', methods=['GET', 'POST'])
+def decrement_balance():
     form = EditBalanceForm()
     if form.validate_on_submit():
-        if User.edit_balance(current_user, form.balance.data):
-            flash('Balance has been changed.')
+        if User.decrement_balance2(current_user, form.balance.data):
+            flash('Money has been withdrawn from your account.')
             return redirect(url_for('users.view_account'))
-    return render_template('edit_balance.html', title='Edit Balance', form=form)
+    return render_template('withdraw_money.html', title='Withdraw Money', form=form)
+
+@bp.route('/increment_balance', methods=['GET', 'POST'])
+def increment_balance():
+    form = EditBalanceForm()
+    if form.validate_on_submit():
+        if User.increment_balance(current_user, form.balance.data):
+            flash('Money has been deposited into your account.')
+            return redirect(url_for('users.view_account'))
+    return render_template('deposit_money.html', title='Deposit Money', form=form)

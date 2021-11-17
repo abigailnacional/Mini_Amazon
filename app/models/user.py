@@ -106,7 +106,37 @@ RETURNING id
             """,
             id=self.id,
             total_price=total_price
-        ) 
+        )
+
+#The function below is just the same as the one above except it returns rows.
+#I created it to avoid potential merge conflicts that would
+#   result from changing the use of the top function in files related to Cart.
+#TODO: Combine the functions above and below this comment block.
+
+    def decrement_balance2(self, total_price):
+        return app.db.execute(
+            """
+            UPDATE Users
+            SET balance = balance - :total_price
+            WHERE id = :id
+            AND balance > :total_price
+            RETURNING*
+            """,
+            id=self.id,
+            total_price=total_price
+        )[0][0]
+
+    def increment_balance(self, total_price):
+        return app.db.execute(
+            """
+            UPDATE Users
+            SET balance = balance + :total_price
+            WHERE id = :id
+            RETURNING*
+            """,
+            id=self.id,
+            total_price=total_price
+        )[0][0]
 
     def edit_email(self, email) -> bool:
         return app.db.execute(

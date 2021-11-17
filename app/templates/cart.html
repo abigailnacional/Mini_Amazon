@@ -33,7 +33,7 @@
   <tbody>
     {% for product_in_cart in products_in_cart%}
       <tr>
-        <th scope="row">{{product_in_cart.product.id}}</th>
+        <th scope="row"><a href="/view?id={{product_in_cart.product.id}}">{{product_in_cart.product.id}}</a></th>
         <td>{{product_in_cart.product.name}}</td>
         <td>{{product_in_cart.product.price}}</td>
         <td>{{product_in_cart.seller_id}}</td>

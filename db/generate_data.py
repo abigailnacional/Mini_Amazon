@@ -88,7 +88,7 @@ with open('db/data/Sells.csv', 'w', newline='') as sells_file:
 products_in_cart = set()
 with open('db/data/ProductInCart.csv', 'w', newline='') as product_in_cart_file:
     writer = csv.writer(product_in_cart_file, delimiter=',')
-    product_in_cart_id = 0
+    product_in_cart_id = 1000
 
     for user_num in range(num_users_with_carts):  # 0 - 10
 

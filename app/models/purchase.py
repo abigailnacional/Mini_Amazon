@@ -28,15 +28,6 @@ class Purchase:
 
     @staticmethod
     def get_by_cart(cart_id):
-
-        print(app.db.execute(
-            '''
-            SELECT *
-            FROM Purchase
-            WHERE Purchase.cart_id = :cart_id
-            ''',
-            cart_id=cart_id))
-
         rows = app.db.execute(
             '''
             SELECT 

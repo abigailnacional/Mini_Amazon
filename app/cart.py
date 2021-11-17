@@ -42,6 +42,15 @@ def view_purchased_cart(cart_id):
         )
     return redirect(url_for('users.login'))
 
+@bp.route('/add_item_to_cart/<product_id>/<seller_id>')
+def add_item_to_cart(product_id, seller_id):
+    if current_user.is_authenticated:
+        current_cart_id = Cart.get_id_of_current_cart(current_user.id)
+        ProductInCart.add_to_cart(product_id, seller_id, current_cart_id)
+        return redirect(request.referrer)
+    return redirect(url_for('users.login'))
+
+
 @bp.route('/increase_quantity/<product_in_cart_id>')
 def increase_quantity_in_cart(product_in_cart_id):
     if current_user.is_authenticated:
@@ -53,7 +62,6 @@ def increase_quantity_in_cart(product_in_cart_id):
 @bp.route('/decrease_quantity/<product_in_cart_id>')
 def decrease_quantity_in_cart(product_in_cart_id):
     if current_user.is_authenticated:
-
         ProductInCart.decrease_quantity(product_in_cart_id)
         return redirect(url_for('cart.view_cart'))
     return redirect(url_for('users.login'))

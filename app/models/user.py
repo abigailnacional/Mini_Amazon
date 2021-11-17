@@ -162,11 +162,11 @@ RETURNING id
             UPDATE Users
             SET password = :password
             WHERE id = :id
-            RETURNING password
+            RETURNING id
             """,
             id=self.id,
-            password = password
-        )[0][0] == password
+            password = generate_password_hash(password)
+        )[0][0] == self.id
 
     def edit_balance(self, balance) -> bool:
         return app.db.execute(

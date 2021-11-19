@@ -1,6 +1,5 @@
 from flask import current_app as app
 from typing import Optional
-from .user import User
 
 class Seller():
     def __init__(

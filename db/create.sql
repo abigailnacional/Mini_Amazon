@@ -63,6 +63,7 @@ CREATE TABLE Purchase (
     is_fulfilled BOOLEAN DEFAULT FALSE,
     time_of_fulfillment timestamp without time zone DEFAULT NULL,
     cart_id INT NOT NULL,
+    final_unit_price INT NOT NULL,
     FOREIGN KEY (cart_id) REFERENCES Cart(id),
     FOREIGN KEY (user_id) REFERENCES Users(id),
     FOREIGN KEY (product_in_cart_id) REFERENCES ProductInCart(id)

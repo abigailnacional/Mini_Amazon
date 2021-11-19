@@ -6,14 +6,32 @@
 
 <h2>Total price:</h2>
 <tbody>
-    {{total_cart_price}}
+    ${{total_cart_price}}
 </tbody>
 
-<br><br>
+<br><br><br>
 
- <form action="order_cart">
-   <button>Order</button>
- </form>
+     {% if user_can_order %}
+        <form action="order_cart">
+            <button>Order</button>
+        </form>
+     {% else %}
+        <form action="order_cart">
+            <button disabled>Order</button>
+        </form>
+        [You do not have enough money to make this purchase]
+     {% endif %}
+
+<br>
+
+{% with messages = get_flashed_messages() %}
+   {% if messages %}
+      {% for message in messages %}
+         {{ message }}
+      {% endfor %}
+   {% endif %}
+{% endwith %}
+
 
 <br><br><br>
 
@@ -23,7 +41,7 @@
     <tr>
       <th scope="col">Product ID</th>
       <th scope="col">Product Name</th>
-      <th scope="col">Price</th>
+      <th scope="col">Unit Price</th>
        <th scope="col">Seller</th>
       <th scope="col">Quantity</th>
       <th scope="col"></th>
@@ -35,7 +53,7 @@
       <tr>
         <th scope="row"><a href="/view?id={{product_in_cart.product.id}}">{{product_in_cart.product.id}}</a></th>
         <td>{{product_in_cart.product.name}}</td>
-        <td>{{product_in_cart.product.price}}</td>
+        <td>${{product_in_cart.product.price}}</td>
         <td>{{product_in_cart.seller_id}}</td>
         <td>{{product_in_cart.quantity}}</td>
         <td>

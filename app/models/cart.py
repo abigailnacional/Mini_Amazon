@@ -1,10 +1,11 @@
-from flask import current_app as app
+from flask import current_app as app, flash
 from .product import Product
 from .purchase import Purchase
 from .product_in_cart import ProductInCart
 from typing import List, Optional
 from datetime import datetime
-
+from sqlalchemy import text
+from app.errors import NOT_ENOUGH_MONEY
 
 class Cart:
 
@@ -45,56 +46,97 @@ class Cart:
                 ))
         return products_in_cart
 
-    def get_purchases_from_cart(self) -> Optional[List[Purchase]]:
+    def get_purchases(self) -> Optional[List[Purchase]]:
         purchases = Purchase.get_by_cart(self.id)
         return purchases
 
-    def get_total_price_of_cart(self) -> int:
+    def get_total_current_price(self) -> int:
         total_price = 0
         for product_in_cart in self.get_products_in_cart():
             total_price += product_in_cart.product.price * product_in_cart.quantity
         return total_price
 
     def convert_cart_to_purchase(self):
+
+        # for each item, check inventory and person money
+        # if ever too low, rollback whole transaction
+        # decrement inventory and person money
+        # add seller money
+        # create purchase
+        # add final price to purchase
+
+        # if all was successful, make cart past cart and create new cart
+
+        with app.db.engine.begin() as conn:
+
+            for product_in_cart in self.get_products_in_cart():  # TODO need to add final prices somehow
+
+                product_price_by_unit = conn.execute(text(
+                    """
+                    SELECT price
+                    FROM Product
+                    WHERE id = :product_id
+                    """),
+                    {"product_id": product_in_cart.product.id}
+                ).first()[0]
+
+                total_product_price = product_in_cart.quantity
+
+                user_balance = conn.execute(text(
+                    """
+                    SELECT balance
+                    FROM Users
+                    WHERE id = :user_id
+                    """),
+                    {"user_id": self.user_id},
+                ).first()[0]
+                user_has_enough_money = user_balance >= total_product_price
+
+                if not user_has_enough_money:
+                    flash(NOT_ENOUGH_MONEY)
+                    conn.rollback()
+                    return False
+                else:
+                    conn.execute(text(
+                        """
+                        UPDATE Users
+                        SET balance = balance - :product_price
+                        WHERE id = :user_id
+                        """),
+                        {
+                            "product_price": total_product_price,
+                            "user_id": self.user_id
+                         },
+                    )
+
+                    conn.execute(text(
+                        """
+                        INSERT INTO Purchase(product_in_cart_id, user_id, cart_id, final_unit_price)
+                        VALUES (:product_in_cart_id, :user_id, :cart_id, :final_unit_price)
+                        """),
+                        {
+                            "product_in_cart_id": product_in_cart.id,
+                            "user_id": self.user_id,
+                            "cart_id": self.id,
+                            "final_unit_price": product_price_by_unit
+                        }
+                    )
+            print('transaction successful')
+            conn.commit()
+            self.mark_as_purchased()
+            Cart.create_new_cart(self.user_id)
+            return True
+
+    def mark_as_purchased(self):
         app.db.execute_with_no_return(
             """
             UPDATE Cart
             SET is_current = False, time_purchased = :time_purchased
             WHERE id = :cart_id
             """,
-            cart_id=self.id,
-            time_purchased=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            time_purchased=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            cart_id=self.id
         )
-
-        for product_in_cart in self.get_products_in_cart():  # TODO need to add final prices somehow
-            # TODO figure out why prepared statement isn't working
-            # rows = app.db.execute(
-            #     """
-            #     EXECUTE insert_purchase(:product_id, :user_id, :cart_id)
-            #     """,
-            #     product_id=product_in_cart.id,
-            #     user_id=self.user_id,
-            #     cart_id=self.id
-            # )
-            # print(rows)
-
-            # print(app.db.execute(
-            #     """
-            #     SELECT * FROM Purchase
-            #     WHERE product_in_cart_id = :product_id
-            #     """,
-            #     product_id=product_in_cart.id
-            # ))
-            app.db.execute_with_no_return(
-                """
-                INSERT INTO Purchase(product_in_cart_id, user_id, cart_id)
-                VALUES (:product_id, :user_id, :cart_id)
-                """,
-                product_id=product_in_cart.id,
-                user_id=self.user_id,
-                cart_id=self.id
-            )
-        Cart.create_new_cart(self.user_id)
 
     @staticmethod
     def get_cart_by_id(cart_id: Optional[int]) -> "Cart":

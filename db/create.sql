@@ -75,6 +75,7 @@ CREATE TABLE Feedback (
    product_id INT CHECK(product_id IS NOT NULL OR seller_id IS NOT NULL),
    seller_id INT CHECK(seller_id IS NOT NULL OR product_id IS NOT NULL),
    time_posted timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
+   upvotes INT NOT NULL DEFAULT 0,
    PRIMARY KEY (product_id, reviewer_id),
    FOREIGN KEY (reviewer_id) REFERENCES Users(id),
    FOREIGN KEY (seller_id) REFERENCES Users(id),

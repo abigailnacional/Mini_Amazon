@@ -97,6 +97,7 @@
             <a href="{{ url_for('cart.view_cart') }}" type="button" class="btn btn-light">View Cart</a>
             <a href="{{ url_for('order.view_orders') }}" type="button" class="btn btn-light">View Orders</a>
             <a href="{{ url_for('users.view_account') }}" type="button" class="btn btn-light">View My Account Info</a>
+            <a href="{{ url_for('users.view_public_profile', public_user_id=current_user.id) }}" type="button" class="btn btn-light">View My Public Profile</a>
             <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a>
           {% else %}
             <a href="{{ url_for('index.index') }}" type="button" class="btn btn-light">Home</a>

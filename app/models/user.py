@@ -220,3 +220,15 @@ WHERE product_id = :id
 ''',
                             id=id)     
         return  rows if rows is not None else None 
+
+    @staticmethod
+    def check_seller(id) -> bool:
+        rows = app.db.execute(
+            """
+            SELECT id
+            FROM Users
+            RIGHT OUTER JOIN Sells ON Users.id=Sells.seller_id
+            WHERE id = :id
+            """,
+            id=id)
+        return True if rows else False

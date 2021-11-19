@@ -7,6 +7,7 @@ from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from flask_babel import _, lazy_gettext as _l
 
 from .models.user import User
+from .models.seller import Seller
 
 from flask import Blueprint
 bp = Blueprint('users', __name__)
@@ -78,6 +79,24 @@ def logout():
 def view_account():
     if current_user.is_authenticated:
         return render_template('account.html')
+    return redirect(url_for('users.login'))
+
+@bp.route('/view_public_profile/<public_user_id>')
+def view_public_profile(public_user_id):
+    if current_user.is_authenticated:
+        if User.check_seller(public_user_id):
+            #If user is a seller, render user profile with extra seller info
+            return render_template(
+                'public_seller_profile.html',
+                seller = Seller.get_seller_info(public_user_id)
+            )
+        
+        #If user is not a seller, render user profile with limited info
+        return render_template(
+        'public_user_profile.html',
+        user = User.get(public_user_id)
+        )
+        
     return redirect(url_for('users.login'))
 
 class EditEmailForm(FlaskForm):

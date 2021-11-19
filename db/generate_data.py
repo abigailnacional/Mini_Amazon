@@ -144,6 +144,7 @@ with open('db/data/Feedback.csv', 'w', newline='') as feedback_file:
         reviewer_id = reviewer_ids[i]
         product_id = product_ids[i]
         rating = random.randint(1, 5)
+        upvotes = random.randint(0, 10)
         review = ''.join(random.choice(letters) for x in range(random.randint(3, 20)))
 
-        writer.writerow([reviewer_id, rating, review, product_id, None, "2021-11-01 18:54:37"])
+        writer.writerow([reviewer_id, rating, review, product_id, None, "2021-11-01 18:54:37", upvotes])

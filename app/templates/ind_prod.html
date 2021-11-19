@@ -64,6 +64,8 @@
       <th scope="col">Star Rating</th>
       <th scope="col">Review Message</th> <!-- TODO: perhaps not review the entire message in this one column? -->
       <th scope="col">Date</th>
+      <th scope="col">Temp upvote counter</th>
+      <th scope="col">Upvote</th>
     </tr>
   </thead>
   <tbody>
@@ -72,9 +74,15 @@
         <td>{{ reviews[i].rating }}</td>
         <td>{{ reviews[i].review }}</td>
         <td>{{ reviews[i].time_posted }}</td>
+        <td>{{ reviews[i].upvotes }}</td>
+        <td>
+          <a href="{{ url_for('product_rating.upvote_review', product_id=product_info.id) }}" type="button" class="btn btn-dark">Upvote This Review</a>
+        </td>
       </tr>
     {% endfor %}
   </tbody>
 </table>
+
+<a href="{{ url_for('index.index') }}" type="button" class="btn btn-dark">Show More Reviews (TODO)</a>
 
 {% endblock %}

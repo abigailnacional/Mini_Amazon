@@ -2,6 +2,7 @@ import random
 import string
 import csv
 import math
+import names
 
 letters = string.ascii_lowercase
 
@@ -29,8 +30,10 @@ with open('db/data/Users.csv', 'w', newline='') as users_file:
             password = ''.join(random.choice(letters) for i in range(random.randint(8, 16)))
 
         id = num
-        first = ''.join(random.choice(letters) for i in range(random.randint(3, 20)))
-        last = ''.join(random.choice(letters) for i in range(random.randint(3, 20)))
+        # names are generated using the names Python module created by Trey Hunner
+        # source: https://moonbooks.org/Articles/How-to-generate-random-names-first-and-last-names-with-python-/
+        first = names.get_first_name()
+        last = names.get_last_name()
         balance = random.randint(0, 1000000000)
         address = ''.join(random.choice(letters) for i in range(random.randint(20, 40)))
 

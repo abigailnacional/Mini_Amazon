@@ -2,7 +2,9 @@ import random
 import string
 import csv
 import math
+
 import names
+from random_address import real_random_address
 
 letters = string.ascii_lowercase
 
@@ -35,8 +37,10 @@ with open('db/data/Users.csv', 'w', newline='') as users_file:
         first = names.get_first_name()
         last = names.get_last_name()
         balance = random.randint(0, 1000000000)
-        address = ''.join(random.choice(letters) for i in range(random.randint(20, 40)))
-
+        # addresses are generated using the random address Python tool which accurately geocodes to data collected from the Open
+        # Addresses project (would need additional data for other states - beyond scope of this project)
+        # source: 
+        address = real_random_address()['address1']
         writer.writerow([id, email, password, first, last, balance, address])
 
 purchased_cart_ids = []

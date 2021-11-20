@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, text
 class DB:
     """Hosts all functions for querying the database."""
     def __init__(self, app):
-        self.engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+        self.engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'], future=True)
 
         self.execute_with_no_return(
             """
@@ -29,10 +29,14 @@ class DB:
         for additional details.  See models/*.py for examples of
         calling this function."""
         with self.engine.connect() as conn:
-            return list(conn.execute(text(sqlstr), kwargs).fetchall())
+            result = list(conn.execute(text(sqlstr), kwargs).fetchall())
+            conn.commit()
+            return result
 
 
     # the use of .fetchall() causes the execute method to error for SQL that does not return rows (i.e. UPDATE)
     def execute_with_no_return(self, sqlstr, **kwargs):
         with self.engine.connect() as conn:
-            return conn.execute(text(sqlstr), kwargs)
+            result = conn.execute(text(sqlstr), kwargs)
+            conn.commit()
+            return result

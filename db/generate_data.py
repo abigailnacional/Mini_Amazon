@@ -121,8 +121,18 @@ with open('db/data/Purchase.csv', 'w', newline='') as purchase_file:
             time_of_fulfillment = None
             if is_fulfilled:
                 time_of_fulfillment = "2021-09-10 13:12:58"
+            final_price = random.randint(0, 1000)
 
-            writer.writerow([product_in_cart_id, user_id, "2021-09-10 13:12:58", is_fulfilled, time_of_fulfillment, cart_id])
+            writer.writerow(
+                [
+                    product_in_cart_id,
+                    user_id,
+                    "2021-09-10 13:12:58",
+                    is_fulfilled,
+                    time_of_fulfillment,
+                    cart_id,
+                    final_price]
+            )
 
 with open('db/data/Feedback.csv', 'w', newline='') as feedback_file:
     writer = csv.writer(feedback_file, delimiter=',')

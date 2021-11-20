@@ -15,7 +15,7 @@
   </thead>
   <tbody>
       <tr>
-        <th scope="row">{{total_cart_price}}</th>
+        <th scope="row">${{total_cart_price}}</th>
         <td>{{cart.time_purchased}}</td>
         <td>{{cart.is_fulfilled}}</td>
       </tr>
@@ -30,7 +30,7 @@
     <tr>
       <th scope="col">Product ID</th>
       <th scope="col">Product Name</th>
-      <th scope="col">Price</th>
+      <th scope="col">Final Unit Price</th>
       <th scope="col">Seller</th>
       <th scope="col">Quantity</th>
       <th scope="col">Fulfilled</th>
@@ -42,11 +42,15 @@
       <tr>
         <th scope="row">{{purchase.product_in_cart.product.id}}</th>
         <td>{{purchase.product_in_cart.product.name}}</td>
-        <td>0</td>
+        <td>${{purchase.final_unit_price}}</td>
         <td>{{purchase.product_in_cart.seller_id}}</td>
         <td>{{purchase.product_in_cart.quantity}}</td>
         <td>{{purchase.is_fulfilled}}</td>
-        <td>{{purchase.time_purchased}}</td>
+        {% if purchase.time_of_fulfillment %}
+          <td>{{purchase.time_of_fulfillment}}</td>
+        {% else %}
+          <td>-</td>
+        {% endif %}
       </tr>
     {% endfor %}
   </tbody>

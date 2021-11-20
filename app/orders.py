@@ -10,7 +10,7 @@ from flask import Blueprint
 bp = Blueprint('order', __name__)
 
 
-@bp.route('/orders')
+@bp.route('/view_orders')
 def view_orders():
     if current_user.is_authenticated:
 

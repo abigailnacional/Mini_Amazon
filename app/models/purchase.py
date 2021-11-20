@@ -16,6 +16,7 @@ class Purchase:
             time_of_fulfillment: datetime,
             cart_id: int,
             user_id: int,
+            final_unit_price: int,
             product_in_cart: Optional[ProductInCart] = None
     ):
         self.id = id
@@ -24,6 +25,7 @@ class Purchase:
         self.time_of_fulfillment = time_of_fulfillment
         self.cart_id = cart_id
         self.user_id = user_id
+        self.final_unit_price = final_unit_price
         self.product_in_cart = product_in_cart
 
     @staticmethod
@@ -37,6 +39,7 @@ class Purchase:
             Purchase.time_of_fulfillment as time_of_fulfillment, 
             Purchase.cart_id as cart_id, 
             Purchase.user_id as user_id,
+            Purchase.final_unit_price as final_unit_price,
             ProductInCart.product_id as product_id,
             ProductInCart.seller_id as seller_id, 
             ProductInCart.quantity as quantity
@@ -55,6 +58,7 @@ class Purchase:
                 time_of_fulfillment=time_of_fulfillment,
                 cart_id=cart_id,
                 user_id=user_id,
+                final_unit_price=final_unit_price,
                 product_in_cart=ProductInCart(
                     id=product_in_cart_id,
                     cart_id=cart_id,
@@ -68,6 +72,7 @@ class Purchase:
                 time_of_fulfillment,
                 cart_id,
                 user_id,
+                final_unit_price,
                 product_id,
                 seller_id,
                 quantity,

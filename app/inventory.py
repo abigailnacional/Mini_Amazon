@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for
 from flask_login import current_user
 from typing import List
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, SelectField, TextField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, SelectField, TextField, IntegerField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from flask_babel import _, lazy_gettext as _l
 
@@ -31,12 +31,17 @@ def inventory():
 class AddProductForm(FlaskForm):
     name = StringField(_l('Product Name'), validators=[DataRequired()])
     description = TextField(_l('Product Description'))
-    price = StringField(_l('Product Price'), validators=[DataRequired()])
+    price = IntegerField(_l('Product Price'), validators=[DataRequired()])
     category = SelectField(_l('Type'),
         choices = [('Entrées', 'Entrées'), ('Sides', 'Sides'), ('Appetizers', 'Appetizers'), ('Desserts', 'Desserts'), ('Beverages', 'Beverages')],
         validators=[DataRequired()]
     )
-    submit = SubmitField(_l('Post product'))
+    restaurant = SelectField(_l('Locations Served'),
+        choices = [('Beyu Blue', 'Beyu Blue'), ('The Loop', 'The Loop'), ('McDonalds', 'McDonalds'), ('Panda Express', 'Panda Express'), ('Il Forno', 'Il Forno'), ('Sazon', 'Sazon')],
+        validators=[DataRequired()]
+    )
+    inventory = IntegerField(_l('Product Inventory'), validators=[DataRequired()])
+    submit = SubmitField(_l('Post Product'))
 
 
 @bp.route('/add-product')

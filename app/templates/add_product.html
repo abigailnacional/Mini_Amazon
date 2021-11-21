@@ -19,13 +19,23 @@
         {{ form.price(size=32) }}<br/>
     </p>
     <p>
+        {{ form.inventory.label }}<br/>
+        {{ form.inventory(size=32) }}<br/>
+    </p>
+    <p>
         {{ form.category.label }}<br/>
         <select name="categories">
             <option selected>Select a category</option>
             {% for option in form.category.choices %}
-                <option value="{{ option[0] }}">{{ option[0] }}</option> 
+                <option value="{{ option[1] }}">{{ option[0] }}</option> 
             {% endfor %}
         </select>
+    </p>
+    <p>
+        {{ form.restaurant.label }}<br/>
+        {% for option in form.restaurant.choices %}
+            <input type="checkbox" class="select" value="{{ option[1] }}">{{ option[0] }}</option>
+        {% endfor %}
     </p>
     {{ form.submit(class_="btn btn-black") }}
 </form>

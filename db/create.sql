@@ -17,7 +17,7 @@ CREATE TABLE Users (
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
     balance INT DEFAULT 0,
-    address VARCHAR(255) UNIQUE,
+    address VARCHAR(255),
     CHECK (balance >= 0)
 );
 

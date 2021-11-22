@@ -5,10 +5,14 @@
 <h1>Add Product</h1> 
 
 <form action="" method="post" novalidate>
-    {{ form.hidden_tag() }}
+    {{ form.csrf_token }}
     <p>
         {{ form.name.label }}<br/>
         {{ form.name(size=32) }}<br/>
+    </p>
+    <p>
+        {{ form.product_id.label }}<br/>
+        {{ form.product_id(size=32) }}<br/>
     </p>
     <p>
         {{ form.description.label }}<br/>
@@ -22,6 +26,20 @@
         {{ form.inventory.label }}<br/>
         {{ form.inventory(size=32) }}<br/>
     </p>
+    <p>
+        {{form.category.label}}<br/>
+        {{form.category}}<br/>
+    </p>
+    <p>
+        {{form.restaurant.label}}<br/>
+        {{form.restaurant}}<br/>
+    </p>
+    {{ form.submit(class_="btn btn-black") }}
+</form>
+
+{% endblock %}
+
+<!-- additional formatting to the add product form
     <p>
         {{ form.category.label }}<br/>
         <select name="categories">
@@ -37,7 +55,4 @@
             <input type="checkbox" class="select" value="{{ option[1] }}">{{ option[0] }}</option>
         {% endfor %}
     </p>
-    {{ form.submit(class_="btn btn-black") }}
-</form>
-
-{% endblock %}
+    -->

@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for
 from flask_login import current_user
 from typing import List
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, SelectField, TextField, IntegerField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, SelectField, TextField, IntegerField, DecimalField, SelectMultipleField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from flask_babel import _, lazy_gettext as _l
 
@@ -30,23 +30,32 @@ def inventory():
 
 class AddProductForm(FlaskForm):
     name = StringField(_l('Product Name'), validators=[DataRequired()])
-    description = TextField(_l('Product Description'))
-    price = IntegerField(_l('Product Price'), validators=[DataRequired()])
+    product_id = IntegerField(_l('Product ID'), validators=[DataRequired()])
+    description = StringField(_l('Product Description'))
+    price = DecimalField(_l('Product Price'), validators=[DataRequired()])
     category = SelectField(_l('Type'),
-        choices = [('Entrées', 'Entrées'), ('Sides', 'Sides'), ('Appetizers', 'Appetizers'), ('Desserts', 'Desserts'), ('Beverages', 'Beverages')],
+        choices = [('', 'Select a category'), ('Entrées', 'Entrées'), ('Sides', 'Sides'), ('Appetizers', 'Appetizers'), ('Desserts', 'Desserts'), ('Beverages', 'Beverages')],
         validators=[DataRequired()]
     )
-    restaurant = SelectField(_l('Locations Served'),
-        choices = [('Beyu Blue', 'Beyu Blue'), ('The Loop', 'The Loop'), ('McDonalds', 'McDonalds'), ('Panda Express', 'Panda Express'), ('Il Forno', 'Il Forno'), ('Sazon', 'Sazon')],
+    # have to input restaurant id as string for flask form constraints (later convert back to int for sql query)
+    restaurant = SelectMultipleField(_l('Locations Served'),
+        choices = [('', 'Select a restaurant'), ('1', 'Beyu Blue'), ('2', 'The Loop'), ('3', 'McDonalds'), ('4', 'Panda Express'), ('5', 'Il Forno'), ('6', 'Sazon')],
         validators=[DataRequired()]
     )
     inventory = IntegerField(_l('Product Inventory'), validators=[DataRequired()])
     submit = SubmitField(_l('Post Product'))
 
 
-@bp.route('/add-product')
+@bp.route('/add-product', methods=['GET', 'POST'])
 def add_product():
     form = AddProductForm()
+    if form.validate_on_submit():
+        #if InventoryEntry.add_product(current_user, form.name.data, form.id.data, form.description.data, form.price.data,
+        #                              form.inventory.data, form.category.data, form.restaurant.data):
+        #    flash('Product has been added!')
+        #    return redirect(url_for('inventory.inventory'))
+        return redirect(url_for('inventory.inventory'))
+    print(form.errors)
     return render_template('add_product.html', form=form)
 
 

@@ -2,6 +2,7 @@ from flask_login import UserMixin
 from flask import current_app as app
 from werkzeug.security import generate_password_hash, check_password_hash
 from typing import Optional
+from sqlalchemy import text
 
 from .. import login
 
@@ -96,17 +97,37 @@ RETURNING id
             id=self.id,
         )[0][0] >= total_price
 
-    def decrement_balance(self, total_price):
-        app.db.execute_with_no_return(
+    """
+    This method is used to decrease balance without committing to allow for rollback when purchasing a cart
+    """
+    def decrease_balance_without_commit(self, connection, total_price):
+        connection.execute(text(
             """
             UPDATE Users
             SET balance = balance - :total_price
-            WHERE id = :id
-            AND balance > :total_price
-            """,
-            id=self.id,
-            total_price=total_price
-        ) 
+            WHERE id = :user_id
+            """),
+            {
+                "total_price": total_price,
+                "user_id": self.id
+            },
+        )
+
+    """
+    This method is used to increase balance without committing to allow for rollback when purchasing a cart
+    """
+    def increase_balance_without_commit(self, connection, total_price):
+        connection.execute(text(
+            """
+            UPDATE Users
+            SET balance = balance + :total_price
+            WHERE id = :user_id
+            """),
+            {
+                "total_price": total_price,
+                "user_id": self.id
+            },
+        )
 
     def edit_email(self, email) -> bool:
         return app.db.execute(
@@ -188,5 +209,5 @@ FROM Users
 RIGHT OUTER JOIN Sells ON Users.id=Sells.seller_id
 WHERE product_id = :id
 ''',
-                            id=id)     
+                            id=id)
         return  rows if rows is not None else None 

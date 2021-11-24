@@ -1,6 +1,6 @@
 from flask import current_app as app
 from .product import Product
-from typing import Optional
+from .inventory import InventoryEntry
 
 
 class ProductInCart:
@@ -19,17 +19,45 @@ class ProductInCart:
         self.quantity = quantity
         self.seller_id = seller_id
 
+
+    @staticmethod
+    def get(product_in_cart_id: int):
+        rows = app.db.execute(
+            """
+            SELECT id, product_id, cart_id, seller_id, quantity
+            FROM ProductInCart
+            WHERE id = :product_in_cart_id
+            """,
+            product_in_cart_id=product_in_cart_id
+        )[0]
+
+        return ProductInCart(
+            id=rows[0],
+            product=Product.get(rows[1]),
+            cart_id=rows[2],
+            seller_id=rows[3],
+            quantity=rows[4]
+        )
+
     @staticmethod
     def increase_quantity(product_in_cart_id: int):  # product_in_cart_id refers to the id in the ProductInCart table
-        app.db.execute_with_no_return(
-            """
-            UPDATE ProductInCart
-            SET quantity = quantity + 1
-            WHERE id = :id
-            """,
-            # TODO add upper bound
-            id=product_in_cart_id,
+        product_in_cart = ProductInCart.get(product_in_cart_id)
+
+        product_amount_available = InventoryEntry.get_amount_available(
+            product_in_cart.seller_id,
+            product_in_cart.product.id
         )
+
+        if product_in_cart.quantity + 1 <= product_amount_available:
+            app.db.execute_with_no_return(
+                """
+                UPDATE ProductInCart
+                SET quantity = quantity + 1
+                WHERE id = :id
+                """,
+                # TODO add upper bound
+                id=product_in_cart_id,
+            )
 
     @staticmethod
     def decrease_quantity(product_in_cart_id: int):

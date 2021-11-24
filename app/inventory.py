@@ -6,6 +6,8 @@ import datetime
 
 from .models.inventory import InventoryEntry
 # from .models.purchase import Purchase
+from .models.coupon import Coupon
+
 
 from flask import Blueprint
 
@@ -20,6 +22,14 @@ def inventory():
     items: List[InventoryEntry] = InventoryEntry.get_all_entries_by_seller(
         seller_id=current_user.id)
 
+    coupons = {}
+    for item in items:
+        coupon = Coupon.get_current_coupon_for_product(item.product_id)
+        if coupon:
+            coupons[item.product_id] = coupon.code
+
     return render_template(
         'products_sold.html', 
-        inventory=items)
+        inventory=items,
+        coupons=coupons
+    )

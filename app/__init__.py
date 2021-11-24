@@ -39,4 +39,7 @@ def create_app():
     from .products import bp as product_bp
     app.register_blueprint(product_bp)
 
+    from .coupon import bp as coupon_bp
+    app.register_blueprint(coupon_bp)
+
     return app

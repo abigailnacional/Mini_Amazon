@@ -14,6 +14,8 @@
       <th scope="col">Category</th>
       <th scope="col">Price</th>
       <th scope="col">Available</th>
+      <th scope="col">Current Coupon</th>
+      <th scope="col">Generate Coupon</th>
     </tr>
   </thead>
   <tbody>
@@ -25,6 +27,17 @@
         <td scope="row">{{ item.category }}</td>
         <td scope="row">{{ item.price }}</td>
         <td scope="row">{{ item.is_available }}</td>
+        {% if item.product_id in coupons %}
+          <td scope="row">{{ coupons[item.product_id] }}</td>
+          <td>
+            <button disabled>Click here!</button>
+          </td>
+        {% else %}
+          <td scope="row">No current coupon</td>
+          <td><form action="/generate_coupon/{{item.product_id}}">
+            <button>Click here!</button>
+          </form></td>
+        {% endif %}
       </tr>
     {% endfor %}
   </tbody>

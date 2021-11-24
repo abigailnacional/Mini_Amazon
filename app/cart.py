@@ -4,6 +4,8 @@ from flask import render_template, redirect, url_for, flash, request, get_flashe
 from .models.cart import Cart
 from .models.product_in_cart import ProductInCart
 from .models.user import User
+from .models.coupon import Coupon
+from .errors import COUPON_DOES_NOT_EXIST, COUPON_SUCCESSFUL
 
 
 from flask import Blueprint
@@ -115,3 +117,11 @@ def order_cart():
             return redirect(url_for('cart.view_cart'))
     return redirect(url_for('order.view_orders'))
 
+@bp.route('/apply_coupon')
+def apply_coupon(coupon_code):
+    if current_user.is_authenticated:
+        coupon = Coupon.get(coupon_code)
+        if not coupon:
+            flash(COUPON_DOES_NOT_EXIST)
+        else:
+            flash(COUPON_SUCCESSFUL.format(coupon.percent_off, coupon.product_id))

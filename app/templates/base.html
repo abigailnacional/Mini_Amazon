@@ -75,13 +75,22 @@
       height: 100px;
     }
 
+    .prod-image {
+      float: left;
+      height: 200px;
+      margin-left: 10%;
+    }
+
+    .prod-text {
+      margin: 0 auto;
+    }
   </style>
 </head>
 
 <body>
   <div class="sidenav">
     {% block msg %}
-      <img src = "{{ url_for('static', filename='mobile_logo.png') }}" class="image"/>
+      <img src = "{{ url_for('static', filename='images/mobile_logo.png') }}" class="image"/>
       <h1 style="color:aliceblue">Duke Mobile Ordering</h1>
       <div style="margin-bottom: 25px" id ="FLEX">
         <div id="vendor">

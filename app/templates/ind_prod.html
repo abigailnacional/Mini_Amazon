@@ -3,7 +3,11 @@
 {% block content %}
 
 <!-- place product image on left-hand side (set of images corresponding to categories for testing purposes)-->
-
+{% if os.path.exists('app/static/images/products/' + product_info.id|string + '.png') %}
+    <img src = "{{ url_for('static', filename='images/products/' + product_info.id|string + '.png') }}" class="prod-image"/>
+{% else %}
+    <img src = "{{ url_for('static', filename='images/products/na.png') }}" class="prod-image"/>
+{% endif %}
 <div>
 <h1>{{product_info.name}}</h1>
 </div>

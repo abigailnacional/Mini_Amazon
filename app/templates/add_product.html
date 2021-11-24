@@ -2,17 +2,13 @@
 
 {% block content %}
 
-<h1>Add Product</h1> 
+<h1>Add New Product</h1> 
 
 <form action="" method="post" novalidate>
     {{ form.csrf_token }}
     <p>
         {{ form.name.label }}<br/>
         {{ form.name(size=32) }}<br/>
-    </p>
-    <p>
-        {{ form.product_id.label }}<br/>
-        {{ form.product_id(size=32) }}<br/>
     </p>
     <p>
         {{ form.description.label }}<br/>

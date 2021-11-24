@@ -30,7 +30,6 @@ def inventory():
 
 class AddProductForm(FlaskForm):
     name = StringField(_l('Product Name'), validators=[DataRequired()])
-    product_id = IntegerField(_l('Product ID'), validators=[DataRequired()])
     description = StringField(_l('Product Description'))
     price = DecimalField(_l('Product Price'), validators=[DataRequired()])
     category = SelectField(_l('Type'),
@@ -43,7 +42,7 @@ class AddProductForm(FlaskForm):
         validators=[DataRequired()]
     )
     inventory = IntegerField(_l('Product Inventory'), validators=[DataRequired()])
-    submit = SubmitField(_l('Post Product'))
+    submit = SubmitField(_l('Start Selling Product'))
 
 
 @bp.route('/add-product', methods=['GET', 'POST'])

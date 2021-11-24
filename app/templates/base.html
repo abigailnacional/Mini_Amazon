@@ -65,15 +65,34 @@
     tr:nth-child(even) {
       border: 1px solid black;
       background-color: #f2f2f2;}
+    
+    .select {
+      margin: 10px;
+    }
 
+    .image {
+      float: left;
+      height: 100px;
+    }
+
+    .prod-image {
+      float: left;
+      height: 200px;
+      margin-left: 10%;
+    }
+
+    .prod-text {
+      margin: 0 auto;
+    }
   </style>
 </head>
 
 <body>
   <div class="sidenav">
     {% block msg %}
+      <img src = "{{ url_for('static', filename='images/mobile_logo.png') }}" class="image"/>
       <h1 style="color:aliceblue">Duke Mobile Ordering</h1>
-      <div style="margin-bottom: 25px" id="FLEX">
+      <div style="margin-bottom: 25px" id ="FLEX">
         <div id="vendor">
           <!-- Directs to on-campus resturant partners (to which each seller is affiliated) -->
           <!-- Need to figure out image incorporation -->

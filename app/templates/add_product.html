@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Add New Product</h1> 
+
+<form action="" method="post" novalidate>
+    {{ form.csrf_token }}
+    <p>
+        {{ form.name.label }}<br/>
+        {{ form.name(size=32) }}<br/>
+    </p>
+    <p>
+        {{ form.description.label }}<br/>
+        {{ form.description(size=32) }}<br/>
+    </p>
+    <p>
+        {{ form.price.label }}<br/>
+        {{ form.price(size=32) }}<br/>
+    </p>
+    <p>
+        {{ form.inventory.label }}<br/>
+        {{ form.inventory(size=32) }}<br/>
+    </p>
+    <p>
+        {{form.category.label}}<br/>
+        {{form.category}}<br/>
+    </p>
+    <p>
+        {{form.restaurant.label}}<br/>
+        {{form.restaurant}}<br/>
+    </p>
+    {{ form.submit(class_="btn btn-black") }}
+</form>
+
+{% endblock %}
+
+<!-- additional formatting to the add product form
+    <p>
+        {{ form.category.label }}<br/>
+        <select name="categories">
+            <option selected>Select a category</option>
+            {% for option in form.category.choices %}
+                <option value="{{ option[1] }}">{{ option[0] }}</option> 
+            {% endfor %}
+        </select>
+    </p>
+    <p>
+        {{ form.restaurant.label }}<br/>
+        {% for option in form.restaurant.choices %}
+            <input type="checkbox" class="select" value="{{ option[1] }}">{{ option[0] }}</option>
+        {% endfor %}
+    </p>
+    -->

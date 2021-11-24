@@ -3,13 +3,15 @@
 {% block content %}
 
 <!-- place product image on left-hand side (set of images corresponding to categories for testing purposes)-->
-
+{% if os.path.exists('app/static/images/products/' + product_info.id|string + '.png') %}
+    <img src = "{{ url_for('static', filename='images/products/' + product_info.id|string + '.png') }}" class="prod-image"/>
+{% else %}
+    <img src = "{{ url_for('static', filename='images/products/na.png') }}" class="prod-image"/>
+{% endif %}
 <div>
 <h1>{{product_info.name}}</h1>
 </div>
-
-<br></br>
-<h2>{{product_info.description}}</h2> 
+<em>{{product_info.description}}</em>
 <br></br>
 <!-- refer back to base.html for css styling changes -->
 <table class = 'product-info'>

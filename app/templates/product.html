@@ -2,10 +2,10 @@
 
 {% block content %}
 <img src = "{{ url_for('static', filename='images/' + vender_id|string + '.png') }}" height="100"/>
-<br><br>
 <h1>Products for sale at {{product_sellers[vender_id]}}:</h1>
-<select id="categoryFilter" onchange="location = this.value;">
-  <option value="/product?id={{vender_id}}">Filter by:</option>
+<a href="/filter-price?id={{vender_id}}" type="button" class="btn btn-gray left">Filter by price</a>
+<select id="categoryFilter" class="btn btn-gray left" onchange="location = this.value;">
+  <option value="/product?id={{vender_id}}">Filter by category</option>
   <tbody>
     {% for category in categories%}
       <tr>
@@ -14,6 +14,11 @@
       {% endfor %}
   </tbody>
 </select>
+<form action="/search" class="right">
+  <input type="hidden" name="id" value="{{vender_id}}">
+  <input type="text" placeholder="Search for product" name="search">
+  <button type="submit">Submit</button>
+</form>
 
 <br><br>
 

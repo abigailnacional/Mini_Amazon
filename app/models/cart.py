@@ -45,56 +45,26 @@ class Cart:
                 ))
         return products_in_cart
 
-    def get_purchases_from_cart(self) -> Optional[List[Purchase]]:
+    def get_purchases(self) -> Optional[List[Purchase]]:
         purchases = Purchase.get_by_cart(self.id)
         return purchases
 
-    def get_total_price_of_cart(self) -> int:
+    def get_total_current_price(self) -> int:
         total_price = 0
         for product_in_cart in self.get_products_in_cart():
             total_price += product_in_cart.product.price * product_in_cart.quantity
         return total_price
 
-    def convert_cart_to_purchase(self):
+    def mark_as_purchased(self):
         app.db.execute_with_no_return(
             """
             UPDATE Cart
             SET is_current = False, time_purchased = :time_purchased
             WHERE id = :cart_id
             """,
-            cart_id=self.id,
-            time_purchased=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            time_purchased=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            cart_id=self.id
         )
-
-        for product_in_cart in self.get_products_in_cart():  # TODO need to add final prices somehow
-            # TODO figure out why prepared statement isn't working
-            # rows = app.db.execute(
-            #     """
-            #     EXECUTE insert_purchase(:product_id, :user_id, :cart_id)
-            #     """,
-            #     product_id=product_in_cart.id,
-            #     user_id=self.user_id,
-            #     cart_id=self.id
-            # )
-            # print(rows)
-
-            # print(app.db.execute(
-            #     """
-            #     SELECT * FROM Purchase
-            #     WHERE product_in_cart_id = :product_id
-            #     """,
-            #     product_id=product_in_cart.id
-            # ))
-            app.db.execute_with_no_return(
-                """
-                INSERT INTO Purchase(product_in_cart_id, user_id, cart_id)
-                VALUES (:product_id, :user_id, :cart_id)
-                """,
-                product_id=product_in_cart.id,
-                user_id=self.user_id,
-                cart_id=self.id
-            )
-        Cart.create_new_cart(self.user_id)
 
     @staticmethod
     def get_cart_by_id(cart_id: Optional[int]) -> "Cart":
@@ -173,7 +143,7 @@ class Cart:
             FROM Cart
             WHERE user_id = :user_id
             AND NOT is_current
-            ORDER BY id DESC
+            ORDER BY time_purchased DESC
             """,
             user_id=user_id
         )

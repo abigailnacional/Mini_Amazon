@@ -2,6 +2,7 @@ from flask_login import UserMixin
 from flask import current_app as app
 from werkzeug.security import generate_password_hash, check_password_hash
 from typing import Optional
+from sqlalchemy import text
 
 from .. import login
 
@@ -98,22 +99,37 @@ RETURNING id
             id=self.id,
         )[0][0] >= total_price
 
-    def decrement_balance(self, total_price):
-        app.db.execute_with_no_return(
+    """
+    This method is used to decrease balance without committing to allow for rollback when purchasing a cart
+    """
+    def decrease_balance_without_commit(self, connection, total_price):
+        connection.execute(text(
             """
             UPDATE Users
             SET balance = balance - :total_price
-            WHERE id = :id
-            AND balance > :total_price
-            """,
-            id=self.id,
-            total_price=total_price
+                        WHERE id = :user_id
+            """),
+            {
+                "total_price": total_price,
+                "user_id": self.id
+            },
         )
 
-#The function below is just the same as the one above except it returns rows.
-#I created it to avoid potential merge conflicts that would
-#   result from changing the use of the top function in files related to Cart.
-#TODO: Combine the functions above and below this comment block.
+    """
+    This method is used to increase balance without committing to allow for rollback when purchasing a cart
+    """
+    def increase_balance_without_commit(self, connection, total_price):
+        connection.execute(text(
+            """
+            UPDATE Users
+            SET balance = balance + :total_price
+            WHERE id = :user_id
+            """),
+            {
+                "total_price": total_price,
+                "user_id": self.id
+            },
+        )
 
     def decrement_balance2(self, total_price):
         return app.db.execute(

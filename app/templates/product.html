@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
+<img src = "{{ url_for('static', filename='images/' + vender_id|string + '.png') }}" height="100"/>
+<br><br>
 <h1>Products for sale at {{product_sellers[vender_id]}}:</h1>
-
 <select id="categoryFilter" onchange="location = this.value;">
   <option value="/product?id={{vender_id}}">Filter by:</option>
   <tbody>

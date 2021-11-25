@@ -1,0 +1,2 @@
+NOT_ENOUGH_MONEY = "You do not have enough money to purchase your cart (check to see if prices changed)"
+NOT_ENOUGH_INVENTORY = "The seller of product {0} does not enough inventory (check product page to see if inventory changed)"

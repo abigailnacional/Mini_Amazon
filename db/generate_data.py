@@ -3,17 +3,40 @@ import string
 import csv
 import math
 
+import names
+from random_address import real_random_address
+
 letters = string.ascii_lowercase
 
-base = 1000
+base = 2000
 num_total_users = 1000
 num_users_with_carts = 5
-num_resturants = 6
+num_restaurants = 6
 num_sellers = 20
 num_products = 5000
 num_reviews = 1000
 num_carts_per_user = 1000
 num_carts_populated_per_user = 3
+
+# sample realistic product data to show functionality of site (source: Duke Mobile Dining app)
+sample_products = {1000: {'product-id': 1000, 'id': 1, 'name': 'Au Lait', 'description': 'coffee and steamed milk', 'category': 'Beverages', 'price': 3.10, 'is_available': 'True', 'link': 'x', 'creator_id': random.randint(base, base + num_total_users - 1), 'image': 'x'}, 
+                    1001: {'product-id': 1001, 'id': 1, 'name': 'Mexican Coffee', 'description': 'chocalate cinnamon nutmeg and steamed milk', 'category': 'Beverages', 'price': 3.35, 'is_available': 'True', 'link': 'x', 'creator_id': random.randint(base, base + num_total_users - 1), 'image': 'x'},
+                    1002: {'product-id': 1002, 'id': 1, 'name': 'Caramello', 'description': 'caramell, vanilla, steamed milk, and caramel drizzle', 'category': 'Beverages', 'price': 4.65, 'is_available': 'True', 'link': 'x', 'creator_id': random.randint(base, base + num_total_users - 1), 'image': 'x'}, 
+                    1003: {'product-id': 1003, 'id': 2, 'name': 'Black Bean Burger', 'description': 'spicy black bean patty with lettuce, tomato, onion, and fat free ranch on wheat roll', 'category': 'Entrées', 'price': 10.39, 'is_available': 'True', 'link': 'x', 'creator_id': random.randint(base, base + num_total_users - 1), 'image': 'x'}, 
+                    1004: {'product-id': 1004, 'id': 2, 'name': 'Strawberry Banana Shake', 'description': 'real ice cream milk and strawberries, hand dipped and topped with whipped cream', 'category': 'Desserts', 'price': 5.69, 'is_available': 'True', 'link': 'x', 'creator_id': random.randint(base, base + num_total_users - 1), 'image': 'x'},
+                    1005: {'product-id': 1005, 'id': 2, 'name': 'Onion Rings', 'description': '10 panko battered onion rings served with a creamy jalapeño horse raddish sauce', 'category': 'Sides', 'price': 6.89, 'is_available': 'True', 'link': 'x', 'creator_id': random.randint(base, base + num_total_users - 1), 'image': 'x'}, 
+                    1006: {'product-id': 1006, 'id': 3, 'name': 'Big Mac', 'description': 'two 100% pure beef patties and Big Mac sauce sandwiched between a sesame seed bun', 'category': 'Entrées', 'price': 4.99, 'is_available': 'True', 'link': 'x', 'creator_id': random.randint(base, base + num_total_users - 1), 'image': 'x'}, 
+                    1007: {'product-id': 1007, 'id': 3, 'name': 'French Fries', 'description': 'world famous fries made with prenium potatoes', 'category': 'Sides', 'price': 3.19, 'is_available': 'True', 'link': 'x', 'creator_id': random.randint(base, base + num_total_users - 1), 'image': 'x'},
+                    1008: {'product-id': 1008, 'id': 3, 'name': 'Mango Pineapple Smoothie', 'description': 'sweet combination of fruit juices and purees such as mango and pineapple', 'category': 'Beverages', 'price': 3.89, 'is_available': 'True', 'link': 'x', 'creator_id': random.randint(base, base + num_total_users - 1), 'image': 'x'}, 
+                    1009: {'product-id': 1009, 'id': 4, 'name': 'Beijing Beef', 'description': 'crispy beef, bell peppers and onions in a sweet-tangy sauce', 'category': 'Entrées', 'price': 6.40, 'is_available': 'True', 'link': 'x', 'creator_id': random.randint(base, base + num_total_users - 1), 'image': 'x'}, 
+                    1010: {'product-id': 1010, 'id': 4, 'name': 'Crispy Almond Chicken', 'description': 'all-white meat chicken with out crunchy, signature puffed-rice breading that is wok-tossed with toasted almonds & freshly chopped green onions in a savory soy garlic sauce', 'category': 'Entrées', 'price': 6.40, 'is_available': 'True', 'link': 'x', 'creator_id': random.randint(base, base + num_total_users - 1), 'image': 'x'},
+                    1011: {'product-id': 1011, 'id': 4, 'name': 'Bottled Drink', 'description': 'description unavailable', 'category': 'Beverages', 'price': 2.10, 'is_available': 'True', 'link': 'x', 'creator_id': random.randint(base, base + num_total_users - 1), 'image': 'x'}, 
+                    1012: {'product-id': 1012, 'id': 5, 'name': 'Spicy Il Forno', 'description': 'fennel sausage, spicy arrabbiata sauce, peppers & onions, rigatoni, green onions, roasted tomatoes, romano', 'category': 'Entrées', 'price': 9.35, 'is_available': 'True', 'link': 'x', 'creator_id': random.randint(base, base + num_total_users - 1), 'image': 'x'},        
+                    1013: {'product-id': 1013, 'id': 5, 'name': 'Garden Pesto', 'description': 'pesto sauce, fettuccine, spinach, tomatoes, mushrooms, red peppers, basil, romano', 'category': 'Entrées', 'price': 9.35, 'is_available': 'True', 'link': 'x', 'creator_id': random.randint(base, base + num_total_users - 1), 'image': 'x'},
+                    1014: {'product-id': 1014, 'id': 5, 'name': 'Lemon Pelligrino', 'description': 'description unavailable', 'category': 'Beverages', 'price': 3.35, 'is_available': 'True', 'link': 'x', 'creator_id': random.randint(base, base + num_total_users - 1), 'image': 'x'}, 
+                    1015: {'product-id': 1015, 'id': 6, 'name': 'Arepa Bowl', 'description': 'latin bowl customized with your choice of toppings', 'category': 'Entrées', 'price': 9.35, 'is_available': 'True', 'link': 'x', 'creator_id': random.randint(base, base + num_total_users - 1), 'image': 'x'}, 
+                    1016: {'product-id': 1016, 'id': 6, 'name': '2 Tacos', 'description': 'tacos customized with your choice of protein and toppings', 'category': 'Beverages', 'price': 9.35, 'is_available': 'True', 'link': 'x', 'creator_id': random.randint(base, base + num_total_users - 1), 'image': 'x'},
+                    1017: {'product-id': 1017, 'id': 6, 'name': 'Smart Water', 'description': 'description unavailable', 'category': 'Beverages', 'price': 2.00, 'is_available': 'True', 'link': 'x', 'creator_id': random.randint(base, base + num_total_users - 1), 'image': 'x'}}
 
 # TODO: create modules for each csv so we don't have to re-create all the data every time
 
@@ -29,11 +52,15 @@ with open('db/data/Users.csv', 'w', newline='') as users_file:
             password = ''.join(random.choice(letters) for i in range(random.randint(8, 16)))
 
         id = num
-        first = ''.join(random.choice(letters) for i in range(random.randint(3, 20)))
-        last = ''.join(random.choice(letters) for i in range(random.randint(3, 20)))
+        # names are generated using the names Python module created by Trey Hunner
+        # source: https://moonbooks.org/Articles/How-to-generate-random-names-first-and-last-names-with-python-/
+        first = names.get_first_name()
+        last = names.get_last_name()
         balance = random.randint(0, 1000000000)
-        address = ''.join(random.choice(letters) for i in range(random.randint(20, 40)))
-
+        # addresses are generated using the random address Python tool which accurately geocodes to data collected from the Open
+        # Addresses project (would need additional data for other states - beyond scope of this project)
+        # source: 
+        address = real_random_address()['address1']
         writer.writerow([id, email, password, first, last, balance, address])
 
 purchased_cart_ids = []
@@ -53,9 +80,12 @@ with open('db/data/Cart.csv', 'w', newline='') as cart_file:
 
             cart_id += 1
 
-
 with open('db/data/Product.csv', 'w', newline='') as product_file:
     writer = csv.writer(product_file, delimiter=',')
+    for sample in sample_products:
+        writer.writerow([sample_products[sample]['product-id'], sample_products[sample]['name'], sample_products[sample]['description'], 
+                        sample_products[sample]['category'], sample_products[sample]['price'], sample_products[sample]['is_available'], 
+                        sample_products[sample]['link'], sample_products[sample]['creator_id'], sample_products[sample]['image']])
     for num in range(base, base + num_products):
         id = num
         name = ''.join(random.choice(letters) for i in range(random.randint(3, 20)))
@@ -73,13 +103,16 @@ with open('db/data/Product.csv', 'w', newline='') as product_file:
 sells = set()
 with open('db/data/Sells.csv', 'w', newline='') as sells_file:
     writer = csv.writer(sells_file, delimiter=',')
+    for sample in sample_products:
+         writer.writerow([sample_products[sample]['id'], random.randint(base, base + (num_sellers * 5)),
+                        sample_products[sample]['product-id'], random.randint(0, 1000000)])
     for num in range(base, base + (num_sellers * 5), 5):  # for first 100 users, every 5th user is a seller
         seller_id = num
         for _ in range(random.randint(1,  2000)):  # have each seller sell 1 to 2000 items for now
 
             product_id = random.randint(base, base + num_products - 1)
             inventory = random.randint(0, 1000000)
-            seller_affiliation = random.randint(1, num_resturants)
+            seller_affiliation = random.randint(1, num_restaurants)
 
             if (seller_id, product_id) not in sells:
                 sells.add((seller_id, product_id))
@@ -121,8 +154,18 @@ with open('db/data/Purchase.csv', 'w', newline='') as purchase_file:
             time_of_fulfillment = None
             if is_fulfilled:
                 time_of_fulfillment = "2021-09-10 13:12:58"
+            final_price = random.randint(0, 1000)
 
-            writer.writerow([product_in_cart_id, user_id, "2021-09-10 13:12:58", is_fulfilled, time_of_fulfillment, cart_id])
+            writer.writerow(
+                [
+                    product_in_cart_id,
+                    user_id,
+                    "2021-09-10 13:12:58",
+                    is_fulfilled,
+                    time_of_fulfillment,
+                    cart_id,
+                    final_price]
+            )
 
 with open('db/data/Feedback.csv', 'w', newline='') as feedback_file:
     writer = csv.writer(feedback_file, delimiter=',')
@@ -134,6 +177,7 @@ with open('db/data/Feedback.csv', 'w', newline='') as feedback_file:
         reviewer_id = reviewer_ids[i]
         product_id = product_ids[i]
         rating = random.randint(1, 5)
+        upvotes = random.randint(0, 10)
         review = ''.join(random.choice(letters) for x in range(random.randint(3, 20)))
 
-        writer.writerow([reviewer_id, rating, review, product_id, None, "2021-11-01 18:54:37"])
+        writer.writerow([reviewer_id, rating, review, product_id, None, "2021-11-01 18:54:37", upvotes])

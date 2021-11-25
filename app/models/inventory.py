@@ -1,6 +1,7 @@
 from flask import current_app as app
 # from .product import Product
 from typing import List
+from sqlalchemy import text
 
 
 class InventoryEntry:
@@ -85,3 +86,38 @@ class InventoryEntry:
 # Possible additional features:
 # Add visualization/analytics to the inventory and/or order fulfillment pages to show popularity and trends of one’s products.
 # Add analytics about buyers who have worked with this seller, e.g., ratings, number of messages, etc.
+
+    @staticmethod
+    def get_amount_available(seller_id, product_id):
+        return app.db.execute(
+            """
+            SELECT inventory
+            FROM Sells
+            WHERE seller_id = :seller_id
+            AND product_id = :product_id
+            """,
+            seller_id=seller_id,
+            product_id=product_id
+        )[0][0]
+
+    """
+    This method is used to decrease seller inventory of a product without committing to allow 
+    for rollback when purchasing a cart
+    """
+    @staticmethod
+    def decrease_seller_inventory_without_commit(conn, product_id, seller_id, quantity):
+        conn.execute(text(
+            """
+            UPDATE Sells
+            SET inventory = inventory - :quantity
+            WHERE seller_id = :seller_id
+            AND product_id = :product_id
+            """),
+            {
+                "product_id": product_id,
+                "seller_id": seller_id,
+                "quantity": quantity
+            },
+        )
+
+

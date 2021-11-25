@@ -7,7 +7,7 @@ from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from flask_babel import _, lazy_gettext as _l
 
 from .models.user import User
-from .models.seller import Seller
+from .products import product_sellers
 
 from flask import Blueprint
 bp = Blueprint('users', __name__)
@@ -88,7 +88,8 @@ def view_public_profile(public_user_id):
             #If user is a seller, render user profile with extra seller info
             return render_template(
                 'public_seller_profile.html',
-                seller = Seller.get_seller_info(public_user_id)
+                seller =  User.get_seller_info(public_user_id),
+                product_sellers = product_sellers
             )
         
         #If user is not a seller, render user profile with limited info

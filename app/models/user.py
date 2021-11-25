@@ -15,7 +15,8 @@ class User(UserMixin):
             last_name:  str,
             password: Optional[str] = "",
             balance: Optional[int] = 0,
-            address: Optional[str] = ""):
+            address: Optional[str] = "",
+            seller_affiliation: Optional[int] = -1):
             
         self.id = id
         self.email = email
@@ -24,6 +25,7 @@ class User(UserMixin):
         self.address = address
         self.password = password
         self.balance = balance
+        self.seller_affiliation = seller_affiliation
 
     @staticmethod
     def get_by_auth(email, password):
@@ -232,3 +234,15 @@ WHERE product_id = :id
             """,
             id=id)
         return True if rows else False
+
+    @staticmethod
+    def get_seller_info(id):
+        rows = app.db.execute(
+            """
+            SELECT Users.id, email, first_name, last_name, password, balance, address, seller_affiliation
+            FROM Users
+            RIGHT OUTER JOIN Sells ON Users.id=Sells.seller_id
+            WHERE id = :id
+            """,
+            id=id)
+        return User(*(rows[0])) if rows else None

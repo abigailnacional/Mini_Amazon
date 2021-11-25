@@ -3,7 +3,7 @@ from typing import Optional
 from flask import current_app as app
 from .product import Product
 from .product_in_cart import ProductInCart
-
+from sqlalchemy import text
 from datetime import datetime
 
 
@@ -81,7 +81,7 @@ class Purchase:
     @staticmethod
     def get_all_by_uid_since(uid, since):
         rows = app.db.execute('''
-SELECT product_in_cart_id, time_purchased, is_fulfilled, time_of_fulfillment, cart_id, user_id
+SELECT product_in_cart_id, time_purchased, is_fulfilled, time_of_fulfillment, cart_id, user_id, final_unit_price
 FROM Purchase
 WHERE user_id = :user_id
 AND time_purchased >= :since
@@ -90,3 +90,22 @@ ORDER BY time_purchased DESC
                               user_id=uid,
                               since=since)
         return [Purchase(*row) for row in rows]
+
+    """
+    This method inserts a new row into the Purchase table without committing it to allow for rollbacks while 
+    purchasing a cart
+    """
+    @staticmethod
+    def insert_new_purchase_without_commit(conn, product_in_cart_id, user_id, cart_id, final_unit_price):
+        conn.execute(text(
+            """
+            INSERT INTO Purchase(product_in_cart_id, user_id, cart_id, final_unit_price)
+            VALUES (:product_in_cart_id, :user_id, :cart_id, :final_unit_price)
+            """),
+            {
+                "product_in_cart_id": product_in_cart_id,
+                "user_id": user_id,
+                "cart_id": cart_id,
+                "final_unit_price": final_unit_price
+            }
+        )

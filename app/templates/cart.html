@@ -9,7 +9,7 @@
     ${{total_cart_price}}
 </tbody>
 
-<br><br><br>
+<br><br>
 
      {% if user_can_order %}
         <form action="order_cart">
@@ -31,6 +31,42 @@
       {% endfor %}
    {% endif %}
 {% endwith %}
+
+<br>
+
+<form action="" method="post" novalidate>
+  {{ form.hidden_tag() }}
+  <p>
+    {{ form.coupon_code.label }}<br/>
+    {{ form.coupon_code(size=60) }}<br/>
+    {% for error in form.coupon_code.errors %}
+    <span style="color: red;">[{{ error }}]</span>
+    {% endfor %}
+  </p>
+  <p>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+      {% for message in messages %}
+      <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+  </p>
+  <p>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+      {% for message in messages %}
+      <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+  </p>
+  {{ form.submit(class_="btn btn-black") }}
+</form>
 
 
 <br><br><br>

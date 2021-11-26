@@ -16,7 +16,8 @@ class User(UserMixin):
             last_name:  str,
             password: Optional[str] = "",
             balance: Optional[int] = 0,
-            address: Optional[str] = ""):
+            address: Optional[str] = "",
+            seller_affiliation: Optional[int] = -1):
             
         self.id = id
         self.email = email
@@ -25,6 +26,7 @@ class User(UserMixin):
         self.address = address
         self.password = password
         self.balance = balance
+        self.seller_affiliation = seller_affiliation
 
     @staticmethod
     def get_by_auth(email, password):
@@ -105,7 +107,7 @@ RETURNING id
             """
             UPDATE Users
             SET balance = balance - :total_price
-            WHERE id = :user_id
+                        WHERE id = :user_id
             """),
             {
                 "total_price": total_price,
@@ -128,6 +130,31 @@ RETURNING id
                 "user_id": self.id
             },
         )
+
+    def decrement_balance2(self, total_price):
+        return app.db.execute(
+            """
+            UPDATE Users
+            SET balance = balance - :total_price
+            WHERE id = :id
+            AND balance > :total_price
+            RETURNING*
+            """,
+            id=self.id,
+            total_price=total_price
+        )[0][0]
+
+    def increment_balance(self, total_price):
+        return app.db.execute(
+            """
+            UPDATE Users
+            SET balance = balance + :total_price
+            WHERE id = :id
+            RETURNING*
+            """,
+            id=self.id,
+            total_price=total_price
+        )[0][0]
 
     def edit_email(self, email) -> bool:
         return app.db.execute(
@@ -183,11 +210,11 @@ RETURNING id
             UPDATE Users
             SET password = :password
             WHERE id = :id
-            RETURNING password
+            RETURNING id
             """,
             id=self.id,
-            password = password
-        )[0][0] == password
+            password = generate_password_hash(password)
+        )[0][0] == self.id
 
     def edit_balance(self, balance) -> bool:
         return app.db.execute(
@@ -209,5 +236,29 @@ FROM Users
 RIGHT OUTER JOIN Sells ON Users.id=Sells.seller_id
 WHERE product_id = :id
 ''',
-                            id=id)
+                            id=id)     
         return  rows if rows is not None else None 
+
+    @staticmethod
+    def check_seller(id) -> bool:
+        rows = app.db.execute(
+            """
+            SELECT id
+            FROM Users
+            RIGHT OUTER JOIN Sells ON Users.id=Sells.seller_id
+            WHERE id = :id
+            """,
+            id=id)
+        return True if rows else False
+
+    @staticmethod
+    def get_seller_info(id):
+        rows = app.db.execute(
+            """
+            SELECT Users.id, email, first_name, last_name, password, balance, address, seller_affiliation
+            FROM Users
+            RIGHT OUTER JOIN Sells ON Users.id=Sells.seller_id
+            WHERE id = :id
+            """,
+            id=id)
+        return User(*(rows[0])) if rows else None

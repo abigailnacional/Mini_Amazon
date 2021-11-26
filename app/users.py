@@ -7,7 +7,6 @@ from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from flask_babel import _, lazy_gettext as _l
 
 from .models.user import User
-from .products import product_sellers
 
 from flask import Blueprint
 bp = Blueprint('users', __name__)
@@ -79,25 +78,6 @@ def logout():
 def view_account():
     if current_user.is_authenticated:
         return render_template('account.html')
-    return redirect(url_for('users.login'))
-
-@bp.route('/view_public_profile/<public_user_id>')
-def view_public_profile(public_user_id):
-    if current_user.is_authenticated:
-        if User.check_seller(public_user_id):
-            #If user is a seller, render user profile with extra seller info
-            return render_template(
-                'public_seller_profile.html',
-                seller =  User.get_seller_info(public_user_id),
-                product_sellers = product_sellers
-            )
-        
-        #If user is not a seller, render user profile with limited info
-        return render_template(
-        'public_user_profile.html',
-        user = User.get(public_user_id)
-        )
-        
     return redirect(url_for('users.login'))
 
 class EditEmailForm(FlaskForm):
@@ -173,23 +153,14 @@ def edit_password():
     return render_template('edit_password.html', title='Edit Password', form=form)
 
 class EditBalanceForm(FlaskForm):
-    balance = FloatField(_l('Amount to Withdraw/Deposit'), validators=[DataRequired()])
+    balance = FloatField(_l('Balance'), validators=[DataRequired()])
     submit = SubmitField(_l('Update Balance'))
 
-@bp.route('/decrement_balance', methods=['GET', 'POST'])
-def decrement_balance():
+@bp.route('/edit_balance', methods=['GET', 'POST'])
+def edit_balance():
     form = EditBalanceForm()
     if form.validate_on_submit():
-        if User.decrement_balance2(current_user, form.balance.data):
-            flash('Money has been withdrawn from your account.')
+        if User.edit_balance(current_user, form.balance.data):
+            flash('Balance has been changed.')
             return redirect(url_for('users.view_account'))
-    return render_template('withdraw_money.html', title='Withdraw Money', form=form)
-
-@bp.route('/increment_balance', methods=['GET', 'POST'])
-def increment_balance():
-    form = EditBalanceForm()
-    if form.validate_on_submit():
-        if User.increment_balance(current_user, form.balance.data):
-            flash('Money has been deposited into your account.')
-            return redirect(url_for('users.view_account'))
-    return render_template('deposit_money.html', title='Deposit Money', form=form)
+    return render_template('edit_balance.html', title='Edit Balance', form=form)

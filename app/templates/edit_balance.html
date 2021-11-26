@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h1>Withdraw Money</h1>
+<h1>Edit Balance</h1>
 
 <form action="" method="post" novalidate>
   {{ form.hidden_tag() }}
@@ -12,6 +12,17 @@
     {% for error in form.balance.errors %}
     <span style="color: red;">[{{ error }}]</span>
     {% endfor %}
+  </p>
+  <p>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+      {% for message in messages %}
+      <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
   </p>
   <p>
     {% with messages = get_flashed_messages() %}

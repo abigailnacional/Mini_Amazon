@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for
 from flask_login import current_user
 from typing import List
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, SelectField, TextField, IntegerField, DecimalField, SelectMultipleField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, SelectField, TextField, IntegerField, DecimalField, SelectMultipleField, FileField, RadioField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from flask_babel import _, lazy_gettext as _l
 
@@ -37,11 +37,12 @@ class AddProductForm(FlaskForm):
         validators=[DataRequired()]
     )
     # have to input restaurant id as string for flask form constraints (later convert back to int for sql query)
-    restaurant = SelectMultipleField(_l('Locations Served'),
-        choices = [('', 'Select a restaurant'), ('1', 'Beyu Blue'), ('2', 'The Loop'), ('3', 'McDonalds'), ('4', 'Panda Express'), ('5', 'Il Forno'), ('6', 'Sazon')],
+    restaurant = RadioField(_l('Locations Served'),
+        choices = [('1', 'Beyu Blue'), ('2', 'The Loop'), ('3', 'McDonalds'), ('4', 'Panda Express'), ('5', 'Il Forno'), ('6', 'Sazon')],
         validators=[DataRequired()]
     )
     inventory = IntegerField(_l('Product Inventory'), validators=[DataRequired()])
+    image = FileField(_l('Product Image'), validators=[DataRequired()])
     submit = SubmitField(_l('Start Selling Product'))
 
 

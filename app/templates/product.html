@@ -14,9 +14,14 @@
       {% endfor %}
   </tbody>
 </select>
+<form action="/id-search" class="right">
+  <input type="hidden" name="id" value="{{vender_id}}">
+  <input type="text" placeholder="Search for product ID" name="search">
+  <button type="submit">Submit</button>
+</form>
 <form action="/search" class="right">
   <input type="hidden" name="id" value="{{vender_id}}">
-  <input type="text" placeholder="Search for product" name="search">
+  <input type="text" placeholder="Search for product name" name="search">
   <button type="submit">Submit</button>
 </form>
 

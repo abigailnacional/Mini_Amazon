@@ -49,6 +49,16 @@ def search_filter():
     return render_template('product.html', vender_id=vender_id, product_sellers=product_sellers, 
                             avail_products=products, categories=categories, average_ratings=average_ratings)  
 
+@bp.route('/id-search', methods=['GET'])
+def search_id():
+    vender_id = int(request.args.get('id'))
+    search = request.args.get('search')
+    products = Product.search_id(search)
+    categories = Product.get_categories()
+    average_ratings = ProductReview.get_product_average_rating([product.id for product in products])
+    return render_template('product.html', vender_id=vender_id, product_sellers=product_sellers, 
+                            avail_products=products, categories=categories, average_ratings=average_ratings)  
+
 @bp.route('/view', methods=['GET'])
 def ind_view():
     prod_id = int(request.args.get('id'))

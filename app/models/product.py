@@ -99,4 +99,14 @@ WHERE LOWER(name) LIKE '%' || :search || '%' OR UPPER(name) LIKE '%' || :search 
 ''',
                             search=search)
         return [Product(*row) for row in rows] 
+
+    @staticmethod
+    def search_id(id):
+        rows = app.db.execute('''
+SELECT DISTINCT id, name, description, category, price, is_available, link, creator_id, image
+FROM Product
+WHERE id = :id
+''',
+                            id=id)
+        return [Product(*row) for row in rows] 
     

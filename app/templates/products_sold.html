@@ -27,7 +27,7 @@
         <td scope="row">{{ item.inventory }}</td>
         <td scope="row">{{ item.name }}</td>
         <td scope="row">{{ item.category }}</td>
-        <td scope="row">{{ item.price }}</td>
+        <td scope="row">${{ item.price }}</td>
         <td scope="row">{{ item.is_available }}</td>
         {% if item.product_id in coupons %}
           <td scope="row">{{ coupons[item.product_id] }}</td>
@@ -36,7 +36,7 @@
           </td>
         {% else %}
           <td scope="row">No current coupon</td>
-          <td><form action="/generate_coupon/{{item.product_id}}">
+          <td><form action="/generate_coupon/{{item.product_id}}/{{item.seller_id}}">
             <button>Click here!</button>
           </form></td>
         {% endif %}

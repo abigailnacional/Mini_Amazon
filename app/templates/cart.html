@@ -32,9 +32,9 @@
    {% endif %}
 {% endwith %}
 
-<br>
+<br><br>
 
-<form action="" method="post" novalidate>
+<form action="cart" method="post" novalidate>
   {{ form.hidden_tag() }}
   <p>
     {{ form.coupon_code.label }}<br/>
@@ -42,28 +42,6 @@
     {% for error in form.coupon_code.errors %}
     <span style="color: red;">[{{ error }}]</span>
     {% endfor %}
-  </p>
-  <p>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <ul>
-      {% for message in messages %}
-      <li>{{ message }}</li>
-      {% endfor %}
-    </ul>
-    {% endif %}
-    {% endwith %}
-  </p>
-  <p>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <ul>
-      {% for message in messages %}
-      <li>{{ message }}</li>
-      {% endfor %}
-    </ul>
-    {% endif %}
-    {% endwith %}
   </p>
   {{ form.submit(class_="btn btn-black") }}
 </form>

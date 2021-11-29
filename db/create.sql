@@ -50,7 +50,9 @@ CREATE TABLE Coupon (
     code VARCHAR(255) PRIMARY KEY,
     expiration_date timestamp without time zone NOT NULL,
     product_id INT NOT NULL,
+    seller_id INT NOT NULL,
     percent_off INT NOT NULL,
+    FOREIGN KEY (seller_id, product_id) REFERENCES Sells(seller_id, product_id),
     CHECK (percent_off > 0 AND percent_off <= 100)
 );
 
@@ -82,7 +84,7 @@ CREATE TABLE Purchase (
     is_fulfilled BOOLEAN DEFAULT FALSE,
     time_of_fulfillment timestamp without time zone DEFAULT NULL,
     cart_id INT NOT NULL,
-    final_unit_price INT NOT NULL,
+    final_unit_price DECIMAL NOT NULL,
     FOREIGN KEY (cart_id) REFERENCES Cart(id),
     FOREIGN KEY (user_id) REFERENCES Users(id),
     FOREIGN KEY (product_in_cart_id) REFERENCES ProductInCart(id)

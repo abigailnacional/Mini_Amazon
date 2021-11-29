@@ -186,14 +186,15 @@ with open('db/data/Feedback.csv', 'w', newline='') as feedback_file:
 codes = set()
 with open('db/data/Coupon.csv', 'w', newline='') as coupon_file:
     writer = csv.writer(coupon_file, delimiter=',')
-
-    for num in range(base, base + num_products, 3):
+    sells_list = list(sells)
+    for num in range(0, len(sells_list), 5):
+        seller_id, product_id = sells_list[num]
         code = ''.join(random.choice(letters) for i in range(random.randint(10, 12)))
         while code in codes:
             code = ''.join(random.choice(letters) for i in range(random.randint(10, 12)))
         codes.add(code)
 
         expiration_date = datetime.datetime.now() + datetime.timedelta(days=7)
-        percent_off = random.randint(1, 100)
+        percent_off = 50
 
-        writer.writerow([code, expiration_date, num, percent_off])
+        writer.writerow([code, expiration_date, product_id, seller_id, percent_off])

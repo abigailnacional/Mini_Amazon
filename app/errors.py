@@ -1,4 +1,6 @@
 NOT_ENOUGH_MONEY = "You do not have enough money to purchase your cart (check to see if prices changed)"
 COUPON_DOES_NOT_EXIST = "This coupon code does not exist!"
-COUPON_SUCCESSFUL = "This coupon gives you {0} percent off on product {1}"
+COUPON_SUCCESSFUL = "Coupon {0} is applied and has given you {1}% off 1 unit of product {2} sold by seller {3}"
+COUPON_FOR_ITEM_NOT_IN_CART = "Coupon {0} cannot be applied. Product {1} sold by seller {2} is not in your cart"
+COUPON_EXPIRED = "Coupon {0} is no longer valid!"
 NOT_ENOUGH_INVENTORY = "The seller of product {0} does not enough inventory (check product page to see if inventory changed)"

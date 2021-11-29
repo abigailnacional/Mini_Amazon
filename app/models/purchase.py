@@ -28,6 +28,13 @@ class Purchase:
         self.final_unit_price = final_unit_price
         self.product_in_cart = product_in_cart
 
+    def get_total_price_paid(self, coupon):
+        discount = 0
+        if coupon and coupon.product_id == self.product_in_cart.product.id and \
+                coupon.seller_id == self.product_in_cart.seller_id:
+            discount = float(self.final_unit_price) * (coupon.percent_off / 100)
+        return round((float(self.final_unit_price) * self.product_in_cart.quantity) - discount, 2)
+
     @staticmethod
     def get_by_cart(cart_id):
         rows = app.db.execute(

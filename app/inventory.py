@@ -2,14 +2,13 @@ from flask import render_template, redirect, url_for
 from flask_login import current_user
 from typing import List
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, SelectField, TextField, IntegerField, DecimalField, SelectMultipleField
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
+from wtforms import StringField, SubmitField, SelectField, IntegerField, DecimalField, SelectMultipleField
+from wtforms.validators import DataRequired
 from flask_babel import _, lazy_gettext as _l
 
-import datetime
-
 from .models.inventory import InventoryEntry
-# from .models.purchase import Purchase
+from .models.coupon import Coupon
+
 
 from flask import Blueprint
 
@@ -24,9 +23,18 @@ def inventory():
     items: List[InventoryEntry] = InventoryEntry.get_all_entries_by_seller(
         seller_id=current_user.id)
 
+    coupons = {}
+    for item in items:
+        coupon = Coupon.get_current_coupon_for_product(item.product_id)
+        if coupon:
+            coupons[item.product_id] = coupon.code
+
     return render_template(
         'products_sold.html', 
-        inventory=items)
+        inventory=items,
+        coupons=coupons
+    )
+
 
 class AddProductForm(FlaskForm):
     name = StringField(_l('Product Name'), validators=[DataRequired()])
@@ -56,6 +64,5 @@ def add_product():
         return redirect(url_for('inventory.inventory'))
     print(form.errors)
     return render_template('add_product.html', form=form)
-
 
 

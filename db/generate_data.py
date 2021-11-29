@@ -2,6 +2,7 @@ import random
 import string
 import csv
 import math
+import datetime
 
 import names
 from random_address import real_random_address
@@ -76,7 +77,7 @@ with open('db/data/Cart.csv', 'w', newline='') as cart_file:
                 time_purchased = "2021-09-10 13:12:58"
                 purchased_cart_ids.append(cart_id)
 
-            writer.writerow([cart_id, user_id, is_current, time_purchased, False])
+            writer.writerow([cart_id, user_id, is_current, time_purchased, False, None])
 
             cart_id += 1
 
@@ -181,3 +182,19 @@ with open('db/data/Feedback.csv', 'w', newline='') as feedback_file:
         review = ''.join(random.choice(letters) for x in range(random.randint(3, 20)))
 
         writer.writerow([reviewer_id, rating, review, product_id, None, "2021-11-01 18:54:37", upvotes])
+
+codes = set()
+with open('db/data/Coupon.csv', 'w', newline='') as coupon_file:
+    writer = csv.writer(coupon_file, delimiter=',')
+    sells_list = list(sells)
+    for num in range(0, len(sells_list), 5):
+        seller_id, product_id = sells_list[num]
+        code = ''.join(random.choice(letters) for i in range(random.randint(10, 12)))
+        while code in codes:
+            code = ''.join(random.choice(letters) for i in range(random.randint(10, 12)))
+        codes.add(code)
+
+        expiration_date = datetime.datetime.now() + datetime.timedelta(days=7)
+        percent_off = 50
+
+        writer.writerow([code, expiration_date, product_id, seller_id, percent_off])

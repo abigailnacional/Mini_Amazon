@@ -1,5 +1,9 @@
 from flask_login import current_user
 from flask import render_template, redirect, url_for, flash, request, current_app as app
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired
+from flask_babel import _, lazy_gettext as _l
 
 
 from .models.cart import Cart
@@ -8,37 +12,71 @@ from .models.product import Product
 from .models.purchase import Purchase
 from .inventory import InventoryEntry
 from .models.user import User
-from app.errors import NOT_ENOUGH_MONEY, NOT_ENOUGH_INVENTORY
-
+from .models.coupon import Coupon
+from .errors import *
+import datetime
 
 from flask import Blueprint
 
 bp = Blueprint('cart', __name__)
 
 
-@bp.route('/cart')
+class AddCouponForm(FlaskForm):
+    coupon_code = StringField(_l('Coupon Code'), validators=[DataRequired()])
+    submit = SubmitField(_l('Add Coupon Code'))
+
+
+@bp.route('/cart', methods=['GET', 'POST'])
 def view_cart():
     if current_user.is_authenticated:
         current_cart = Cart.get_current_cart(current_user.id)
-        total_price = current_cart.get_total_current_price()
+        total_price = current_cart.get_total_current_price(None)
+        form = AddCouponForm()
+
+        if request.method == 'POST':
+            if form.validate_on_submit():
+                coupon = Coupon.get(form.coupon_code.data)
+                if not coupon:
+                    flash(COUPON_DOES_NOT_EXIST)
+                elif coupon.expiration_date < datetime.datetime.now():
+                    flash(COUPON_EXPIRED.format(coupon.code))
+                elif not current_cart.is_product_by_seller_in_cart(coupon.product_id, coupon.seller_id):
+                    flash(COUPON_FOR_ITEM_NOT_IN_CART.format(coupon.code, coupon.product_id, coupon.seller_id))
+                else:
+                    flash(COUPON_SUCCESSFUL.format(coupon.code, coupon.percent_off, coupon.product_id,
+                                                   coupon.seller_id))
+                    total_price = current_cart.get_total_current_price(coupon)
+                    current_cart.add_coupon(coupon.code)
+        else:
+            coupon = Coupon.get(current_cart.coupon_applied)
+            if coupon:
+                flash(COUPON_SUCCESSFUL.format(coupon.code, coupon.percent_off, coupon.product_id, coupon.seller_id))
+                total_price = current_cart.get_total_current_price(coupon)
 
         return render_template(
             'cart.html',
             products_in_cart=current_cart.get_products_in_cart(),
             total_cart_price=total_price,
-            user_can_order=total_price <= User.get(current_user.id).balance
+            user_can_order=total_price <= User.get(current_user.id).balance,
+            form=form
         )
+
     return redirect(url_for('users.login'))
+
 
 @bp.route('/order/<cart_id>')
 def view_purchased_cart(cart_id):
     if current_user.is_authenticated:
+
         purchased_cart = Cart.get_cart_by_id(cart_id)
         purchases = purchased_cart.get_purchases()
+        coupon = None
+        if purchased_cart.coupon_applied:
+            coupon = Coupon.get(purchased_cart.coupon_applied)
 
         final_price = 0
         for purchase in purchases:
-            final_price += purchase.final_unit_price * purchase.product_in_cart.quantity
+            final_price += purchase.get_total_price_paid(coupon)
 
 
         return render_template(
@@ -47,7 +85,8 @@ def view_purchased_cart(cart_id):
             cart=purchased_cart,
             purchases=purchases,
             total_cart_price=final_price,
-            cart_id=cart_id
+            cart_id=cart_id,
+            coupon=coupon
         )
     return redirect(url_for('users.login'))
 
@@ -113,10 +152,8 @@ def order_cart():
 
             for product_in_cart in current_cart.get_products_in_cart():  # TODO need to add final prices somehow
 
-                # fetch product price
-                product_price_by_unit = Product.get(product_in_cart.product.id).price
-
-                total_product_price = product_price_by_unit * product_in_cart.quantity
+                # get product price
+                total_product_price = product_in_cart.get_total_price_to_pay(Coupon.get(current_cart.coupon_applied))
 
                 # ensure user has enough money
                 user_has_enough_money = User.get(current_user.id).balance >= total_product_price
@@ -154,7 +191,7 @@ def order_cart():
                     product_in_cart.id,
                     current_user.id,
                     current_cart.id,
-                    product_price_by_unit
+                    product_in_cart.product.price
                 )
 
             conn.commit()
@@ -162,5 +199,4 @@ def order_cart():
             Cart.create_new_cart(current_user.id)
             return redirect(url_for('order.view_orders'))
     return redirect(url_for('users.login'))
-
 

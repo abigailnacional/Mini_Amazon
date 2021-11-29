@@ -133,7 +133,17 @@
       </p>
     {% if not current_user.is_authenticated %}
       <p><a href="{{ url_for('users.login') }}">Log in</a> to see your purchase history!</p>
-    {% endif %} 
+    {% endif %}
+    <br><br>
+    <h3>Random Coupon</h3>
+    <p>Use the code {{ random_coupon.code }}
+      to get {{ random_coupon.percent_off }}% off
+      <a href="{{ url_for('products.ind_view', id=random_coupon.product_id)}}">
+      {{ random_coupon.product_name }}
+      (product #{{ random_coupon.product_id }})</a>
+      from seller {{ random_coupon.seller_name }} (user #{{ random_coupon.seller_id }})
+
+    </p>
     {% endblock %}
 
   </div>

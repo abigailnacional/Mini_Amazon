@@ -1,6 +1,7 @@
 from flask import current_app as app
 from .product import Product
 from .inventory import InventoryEntry
+from app.models.coupon import Coupon
 
 
 class ProductInCart:
@@ -19,6 +20,11 @@ class ProductInCart:
         self.quantity = quantity
         self.seller_id = seller_id
 
+    def get_total_price_to_pay(self, coupon):
+        discount = 0
+        if coupon and coupon.product_id == self.product.id and coupon.seller_id == self.seller_id:
+            discount = float(self.product.price) * (coupon.percent_off / 100)
+        return round((float(self.product.price) * self.quantity) - discount, 2)
 
     @staticmethod
     def get(product_in_cart_id: int):

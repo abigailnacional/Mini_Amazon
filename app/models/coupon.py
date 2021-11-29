@@ -3,6 +3,8 @@ from flask import current_app as app
 import string
 import random
 import datetime
+from .product import Product
+from .user import User
 
 letters = string.ascii_lowercase
 PERCENT_OFF = 50 # currently a constant half off, but could change in the future
@@ -23,8 +25,18 @@ class Coupon:
         self.seller_id = seller_id
         self.percent_off = percent_off
 
+        self.product_name = self.get_product_name()
+        self.seller_name = self.get_seller_name()
+
     def is_expired(self):
         return datetime.datetime.now() <= self.expiration_date
+
+    def get_product_name(self):
+        return Product.get(self.product_id).name
+
+    def get_seller_name(self):
+        seller = User.get(self.seller_id)
+        return seller.first_name + " " + seller.last_name
 
     @staticmethod
     def get(code):

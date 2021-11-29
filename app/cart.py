@@ -144,8 +144,6 @@ def order_cart():
     if current_user.is_authenticated:
         current_cart = Cart.get_current_cart(current_user.id)
 
-        print("value from discount: ", current_cart.coupon_applied)
-
         if len(current_cart.get_products_in_cart()) == 0:
             flash("You have nothing in your cart!")
             return redirect(url_for('cart.view_cart'))

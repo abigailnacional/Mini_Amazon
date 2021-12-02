@@ -16,7 +16,17 @@
   {% endif %}
 {% endwith %}
 
-<h2>Product: {{ data.product.name }}</h2>
+{% if data.review_type == 'product' %}
+  <h2>Product Name: {{ data.review_obj.name }}</h2>
+  <h3>Product ID: {{ data.review_obj.id }}</h3>
+{% endif %}
+
+{% if data.review_type == 'seller' %}
+  <h2>Seller Name: {{ data.review_obj.first_name }} {{ data.review_obj.last_name }}</h2>
+  <h3>Seller ID: {{ data.review_obj.id }}</h3>
+{% endif %}
+
+<br>
 
 <form action="" method=post>
   {{ form.csrf_token }}

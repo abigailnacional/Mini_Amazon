@@ -40,6 +40,7 @@
       <th scope="col">Quantity</th>
       <th scope="col">Fulfilled</th>
       <th scope="col">Time of Fulfillment</th>
+      <th scope="col">Review This Seller</th>
     </tr>
   </thead>
   <tbody>
@@ -56,6 +57,9 @@
         {% else %}
           <td>-</td>
         {% endif %}
+        <td>
+          <a href="{{ url_for('product_rating.create_review', review_type='seller', id=purchase.product_in_cart.seller_id) }}" type="button" class="btn btn-dark">Leave a Review</a>
+        </td>
       </tr>
     {% endfor %}
   </tbody>

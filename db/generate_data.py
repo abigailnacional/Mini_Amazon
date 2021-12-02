@@ -64,6 +64,8 @@ with open('db/data/Users.csv', 'w', newline='') as users_file:
         address = real_random_address()['address1']
         writer.writerow([id, email, password, first, last, balance, address])
 
+    writer.writerow([-1, " ", " ", " ", " ", 0, " "])
+
 purchased_cart_ids = []
 with open('db/data/Cart.csv', 'w', newline='') as cart_file:
     writer = csv.writer(cart_file, delimiter=',')
@@ -99,6 +101,8 @@ with open('db/data/Product.csv', 'w', newline='') as product_file:
         image = ''.join(random.choice(letters) for i in range(random.randint(3, 20)))
 
         writer.writerow([id, name, description, category, price, is_available, link, creator_id, image])
+
+    writer.writerow([-1, " ", " ", " ", 0, False, " ", -1, " "])
 
 
 sells = set()
@@ -173,15 +177,17 @@ with open('db/data/Feedback.csv', 'w', newline='') as feedback_file:
 
     reviewer_ids = random.sample(list(range(base, base + num_total_users)), num_reviews)
     product_ids = random.sample(list(range(base, base + num_products)), num_reviews)
+    seller_ids = random.sample(list(range(base, base + num_total_users)), num_reviews)
 
     for i in range(num_reviews):
         reviewer_id = reviewer_ids[i]
         product_id = product_ids[i]
+        seller_id = seller_ids[i]
         rating = random.randint(1, 5)
         upvotes = random.randint(0, 10)
         review = ''.join(random.choice(letters) for x in range(random.randint(3, 20)))
 
-        writer.writerow([reviewer_id, rating, review, product_id, None, "2021-11-01 18:54:37", upvotes])
+        writer.writerow([reviewer_id, rating, review, product_id, seller_id, "2021-11-01 18:54:37", upvotes])
 
 codes = set()
 with open('db/data/Coupon.csv', 'w', newline='') as coupon_file:

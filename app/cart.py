@@ -93,8 +93,8 @@ def view_purchased_cart(cart_id):
 @bp.route('/add_item_to_cart/<product_id>/<seller_id>')
 def add_item_to_cart(product_id, seller_id):
     if current_user.is_authenticated:
-        current_cart_id = Cart.get_id_of_current_cart(current_user.id)
-        ProductInCart.add_to_cart(product_id, seller_id, current_cart_id)
+        current_cart = Cart.get_current_cart(current_user.id)
+        ProductInCart.add_to_cart(product_id, seller_id, current_cart.id)
         return redirect(request.referrer)
     return redirect(url_for('users.login'))
 

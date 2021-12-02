@@ -78,7 +78,7 @@ def logout():
 @bp.route('/view_account')
 def view_account():
     if current_user.is_authenticated:
-        return render_template('account.html')
+        return render_template('edit_acct_info/account.html')
     return redirect(url_for('users.login'))
 
 @bp.route('/view_public_profile/<public_user_id>')
@@ -115,7 +115,7 @@ def edit_email():
         if User.edit_email(current_user, form.email.data):
             flash('Email has been changed.')
             return redirect(url_for('users.view_account'))
-    return render_template('edit_email.html', title='Edit Email', form=form)
+    return render_template('edit_acct_info/edit_email.html', title='Edit Email', form=form)
 
 class EditFnameForm(FlaskForm):
     first_name = StringField(_l('First Name'), validators=[DataRequired()])
@@ -128,7 +128,7 @@ def edit_fname():
         if User.edit_fname(current_user, form.first_name.data):
             flash('First name has been changed.')
             return redirect(url_for('users.view_account'))
-    return render_template('edit_fname.html', title='Edit First Name', form=form)
+    return render_template('edit_acct_info/edit_fname.html', title='Edit First Name', form=form)
 
 class EditLnameForm(FlaskForm):
     last_name = StringField(_l('Last Name'), validators=[DataRequired()])
@@ -141,7 +141,7 @@ def edit_lname():
         if User.edit_lname(current_user, form.last_name.data):
             flash('Last name has been changed.')
             return redirect(url_for('users.view_account'))
-    return render_template('edit_lname.html', title='Edit Last Name', form=form)
+    return render_template('edit_acct_info/edit_lname.html', title='Edit Last Name', form=form)
 
 class EditAddressForm(FlaskForm):
     address = StringField(_l('Address'), validators=[DataRequired()])
@@ -154,7 +154,7 @@ def edit_address():
         if User.edit_address(current_user, form.address.data):
             flash('Address has been changed.')
             return redirect(url_for('users.view_account'))
-    return render_template('edit_address.html', title='Edit Address', form=form)
+    return render_template('edit_acct_info/edit_address.html', title='Edit Address', form=form)
 
 class EditPasswordForm(FlaskForm):
     password = PasswordField(_l('Password'), validators=[DataRequired()])
@@ -170,7 +170,7 @@ def edit_password():
         if User.edit_password(current_user, form.password.data):
             flash('Password has been changed.')
             return redirect(url_for('users.view_account'))
-    return render_template('edit_password.html', title='Edit Password', form=form)
+    return render_template('edit_acct_info/edit_password.html', title='Edit Password', form=form)
 
 class EditBalanceForm(FlaskForm):
     balance = FloatField(_l('Amount to Withdraw/Deposit'), validators=[DataRequired()])
@@ -183,7 +183,7 @@ def decrement_balance():
         if User.decrement_balance2(current_user, form.balance.data):
             flash('Money has been withdrawn from your account.')
             return redirect(url_for('users.view_account'))
-    return render_template('withdraw_money.html', title='Withdraw Money', form=form)
+    return render_template('edit_acct_info/withdraw_money.html', title='Withdraw Money', form=form)
 
 @bp.route('/increment_balance', methods=['GET', 'POST'])
 def increment_balance():
@@ -192,4 +192,4 @@ def increment_balance():
         if User.increment_balance(current_user, form.balance.data):
             flash('Money has been deposited into your account.')
             return redirect(url_for('users.view_account'))
-    return render_template('deposit_money.html', title='Deposit Money', form=form)
+    return render_template('edit_acct_info/deposit_money.html', title='Deposit Money', form=form)

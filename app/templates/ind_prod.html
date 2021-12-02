@@ -57,7 +57,7 @@
   </tbody>
 </table>
 <br><br>
-<a href="{{ url_for('product_rating.create_review', product_id=product_info.id) }}" type="button" class="btn btn-dark">Leave a Review</a>
+<a href="{{ url_for('product_rating.create_review', review_type='product', id=product_info.id) }}" type="button" class="btn btn-dark">Leave a Review</a>
 <br><br>
 <h2>All Reviews:</h2>
 <table class='table table-hover table-bordered container'>
@@ -78,7 +78,7 @@
         <td>{{ reviews[i].time_posted }}</td>
         <td>{{ reviews[i].upvotes }}</td>
         <td>
-          <a href="{{ url_for('product_rating.upvote_review', product_id=product_info.id) }}" type="button" class="btn btn-dark">Upvote This Review</a>
+          <a href="{{ url_for('product_rating.upvote_review', review_type='product', id=product_info.id) }}" type="button" class="btn btn-dark">Upvote This Review</a>
         </td>
       </tr>
     {% endfor %}

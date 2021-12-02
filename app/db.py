@@ -34,7 +34,10 @@ class DB:
             return result
 
 
-    # the use of .fetchall() causes the execute method to error for SQL that does not return rows (i.e. UPDATE)
+    """
+    This method executes SQL that does not return any rows.
+    The use of .fetchall() causes the execute method to error for SQL that does not return rows (i.e. UPDATE)
+    """
     def execute_with_no_return(self, sqlstr, **kwargs):
         with self.engine.connect() as conn:
             result = conn.execute(text(sqlstr), kwargs)

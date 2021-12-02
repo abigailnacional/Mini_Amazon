@@ -6,6 +6,10 @@ from .product_in_cart import ProductInCart
 from sqlalchemy import text
 from datetime import datetime
 
+"""
+This class represents a purchased product in a cart
+"""
+
 
 class Purchase:
     def __init__(
@@ -35,6 +39,9 @@ class Purchase:
             discount = float(self.final_unit_price) * (coupon.percent_off / 100)
         return round((float(self.final_unit_price) * self.product_in_cart.quantity) - discount, 2)
 
+    """
+    Gets all the purchases for a certain cart with all relevant data, which also comes from ProductInCart
+    """
     @staticmethod
     def get_by_cart(cart_id):
         rows = app.db.execute(
@@ -84,19 +91,6 @@ class Purchase:
                 seller_id,
                 quantity,
             ) in rows] if rows else []
-
-    @staticmethod
-    def get_all_by_uid_since(uid, since):
-        rows = app.db.execute('''
-SELECT product_in_cart_id, time_purchased, is_fulfilled, time_of_fulfillment, cart_id, user_id, final_unit_price
-FROM Purchase
-WHERE user_id = :user_id
-AND time_purchased >= :since
-ORDER BY time_purchased DESC
-''',
-                              user_id=uid,
-                              since=since)
-        return [Purchase(*row) for row in rows]
 
     """
     This method inserts a new row into the Purchase table without committing it to allow for rollbacks while 

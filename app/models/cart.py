@@ -6,6 +6,10 @@ from .coupon import Coupon
 from typing import List, Optional
 from datetime import datetime
 
+"""
+This class represents a user's cart. Each user has one current cart and the rest of their carts are past orders
+"""
+
 
 class Cart:
 
@@ -25,6 +29,9 @@ class Cart:
         self.is_fulfilled = is_fulfilled
         self.coupon_applied = coupon_applied
 
+    """
+    Get a list of the products currently in a user's cart 
+    """
     def get_products_in_cart(self) -> Optional[List[ProductInCart]]:
         rows = app.db.execute(
             """
@@ -48,16 +55,27 @@ class Cart:
                 ))
         return products_in_cart
 
+    """
+    Get a list of the purchases in a user's cart. This method is only applicable if the cart has been purchased and 
+    is not the user's current cart
+    """
     def get_purchases(self) -> Optional[List[Purchase]]:
         purchases = Purchase.get_by_cart(self.id)
         return purchases
 
+    """
+    Returns the current price of the cart based on the price at this moment of the products in the cart.
+    Not meant to return the "final" price that was actually paid for a cart
+    """
     def get_total_current_price(self, coupon: Optional[Coupon]) -> int:
         total_price = 0
         for product_in_cart in self.get_products_in_cart():
             total_price += product_in_cart.get_total_price_to_pay(coupon)
         return total_price
 
+    """
+    Changes a current cart to a purchased cart
+    """
     def mark_as_purchased(self):
         app.db.execute_with_no_return(
             """
@@ -69,6 +87,9 @@ class Cart:
             cart_id=self.id
         )
 
+    """
+    Checks if a specific product sold by a specific seller is currently in the cart
+    """
     def is_product_by_seller_in_cart(self, product_id, seller_id):
         return bool(
             app.db.execute(
@@ -84,6 +105,9 @@ class Cart:
             seller_id=seller_id
         ))
 
+    """
+    Adds a coupon code that has been applied to the cart to the database 
+    """
     def add_coupon(self, coupon_code):
         app.db.execute_with_no_return(
             """
@@ -96,6 +120,9 @@ class Cart:
         )
         self.coupon_applied = coupon_code
 
+    """
+    Removes this cart's coupon code if one exists
+    """
     def remove_coupon(self):
         app.db.execute_with_no_return(
             """
@@ -107,6 +134,9 @@ class Cart:
         )
         self.coupon_applied = None
 
+    """
+    Returns a cart for the given id
+    """
     @staticmethod
     def get_cart_by_id(cart_id: Optional[int]) -> "Cart":
         rows = app.db.execute(
@@ -119,6 +149,9 @@ class Cart:
         )
         return Cart(*(rows[0])) if rows else None
 
+    """
+    Returns the user's current cart. If the user does not have a cart, a new one is created
+    """
     @staticmethod
     def get_current_cart(user_id: int) -> "Cart":
         rows = app.db.execute(
@@ -153,7 +186,9 @@ class Cart:
 
         return current_cart
 
-
+    """
+    Creates a new cart for the given user
+    """
     @staticmethod
     def create_new_cart(user_id: int) -> int:
         app.db.execute_with_no_return(
@@ -173,6 +208,9 @@ class Cart:
             user_id=user_id,
         )[0][0]
 
+    """
+    Gets the id of the user's current cart
+    """
     @staticmethod
     def get_id_of_current_cart(user_id: int) -> Optional[int]:
         rows = app.db.execute(
@@ -190,6 +228,9 @@ class Cart:
             return None
         return rows[0][0]
 
+    """
+    Gets all purchased carts for a user
+    """
     @staticmethod
     def get_purchased_carts(user_id: int) -> List[Optional['Cart']]:
         rows = app.db.execute(

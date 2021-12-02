@@ -104,3 +104,5 @@ CREATE TABLE Feedback (
     FOREIGN KEY (product_id) REFERENCES Product(id),
     CHECK((product_id IS NOT NULL) OR (seller_id IS NOT NULL))
 );
+
+CREATE INDEX PRODUCT_IN_CART_CART_ID_INDEX ON ProductInCart(cart_id)

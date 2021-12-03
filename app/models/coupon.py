@@ -7,7 +7,13 @@ from .product import Product
 from .user import User
 
 letters = string.ascii_lowercase
-PERCENT_OFF = 50 # currently a constant half off, but could change in the future
+PERCENT_OFF = 50  # currently a constant half off, but could change in the future
+
+"""
+This class represents a coupon that a user may use to get some percent off a specific product from a specific seller
+prior to the coupon's expiration date
+"""
+
 
 class Coupon:
 
@@ -28,12 +34,21 @@ class Coupon:
         self.product_name = self.get_product_name()
         self.seller_name = self.get_seller_name()
 
+    """
+    Checks if the coupon has expired
+    """
     def is_expired(self):
         return datetime.datetime.now() <= self.expiration_date
 
+    """
+    Returns the name of the product for which the coupon applies
+    """
     def get_product_name(self):
         return Product.get(self.product_id).name
 
+    """
+    Returns the name of the seller for which the coupon applies
+    """
     def get_seller_name(self):
         seller = User.get(self.seller_id)
         return seller.first_name + " " + seller.last_name
@@ -52,8 +67,11 @@ class Coupon:
             return None
         return Coupon(*(rows[0]))
 
+    """
+    Gets the current valid coupon for the specific product and seller if one exists
+    """
     @staticmethod
-    def get_current_coupon_for_product(product_id):
+    def get_current_coupon_for_product_seller(product_id, seller_id):
         rows = app.db.execute(
             """
             SELECT code, expiration_date, product_id, seller_id, percent_off
@@ -62,12 +80,18 @@ class Coupon:
             AND product_id = :product_id
             """,
             product_id=product_id,
+            seller_id=seller_id,
             now=datetime.datetime.now()
         )
         if not rows:  # coupon not found
             return None
         return Coupon(*(rows[0]))
 
+    """
+    Generates a new coupon for the specific product and seller. The expiration date is automatically set to 1 week in
+    the future and the discount is automatically set to 50% off. THis could be changed to be more flexible in 
+    the future
+    """
     @staticmethod
     def generate_new_coupon(product_id, seller_id):
         new_code = ''.join(random.choice(letters) for _ in range(random.randint(10, 12)))
@@ -87,8 +111,11 @@ class Coupon:
             percent_off=PERCENT_OFF
         )
 
+    """
+    Returns a random coupon from all valid coupons
+    """
     @staticmethod
-    def get_random_coupon_code():
+    def get_random_coupon():
         rows = app.db.execute(
             """
             SELECT code, expiration_date, product_id, seller_id, percent_off

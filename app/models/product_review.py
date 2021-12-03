@@ -13,7 +13,6 @@ class ProductReview:
     @staticmethod
     def get_reviews(id, review_type):
         if review_type == "product":
-            # automatically ordered by upvotes
             rows = app.db.execute(
                 '''
                 SELECT *
@@ -27,7 +26,18 @@ class ProductReview:
 
             return reviews
         else:
-            pass
+            rows = app.db.execute(
+                '''
+                SELECT *
+                FROM Feedback
+                WHERE seller_id = :id
+                ORDER BY upvotes DESC
+                ''',
+                id=id)
+
+            reviews = [ProductReview(*row) for row in rows]
+
+            return reviews
 
     @staticmethod
     def get_reviews_by_user(reviewer_id):
@@ -36,6 +46,7 @@ class ProductReview:
             SELECT *
             FROM Feedback
             WHERE reviewer_id = :id
+            ORDER BY time_posted DESC
             ''',
             id=reviewer_id)
 
@@ -69,6 +80,52 @@ class ProductReview:
             return ProductReview(*(rows[0])) if rows else []
 
     @staticmethod
+    def remove_specific_review_by_user(user_id, id, review_type):
+        if review_type == "product":
+            app.db.execute_with_no_return(
+                '''
+                DELETE FROM Feedback
+                WHERE (reviewer_id = :user_id and product_id = :product_id)
+                ''',
+                user_id=user_id,
+                product_id=id)
+        else:
+            app.db.execute_with_no_return(
+                '''
+                DELETE FROM Feedback
+                WHERE (reviewer_id = :user_id and seller_id = :seller_id)
+                ''',
+                user_id=user_id,
+                seller_id=id)
+
+    @staticmethod
+    def get_summary_rating(id, review_type):
+        if review_type == "product":
+            rows = app.db.execute(
+                '''
+                SELECT COUNT(rating), AVG(rating)
+                FROM Feedback
+                WHERE product_id = :id
+                ''',
+                id=id)
+
+            ret = (rows[0][0], "{:.1f}".format(rows[0][1]) if rows[0][0] != 0 else "No ratings yet")
+
+            return ret
+        else:
+            rows = app.db.execute(
+                '''
+                SELECT COUNT(rating), AVG(rating)
+                FROM Feedback
+                WHERE seller_id = :id
+                ''',
+                id=id)
+
+            ret = (rows[0][0], "{:.1f}".format(rows[0][1]) if rows[0][0] != 0 else "No ratings yet")
+
+            return ret
+
+    @staticmethod
     def get_product_average_rating(product_ids):
         ret = []
 
@@ -80,7 +137,7 @@ class ProductReview:
             """
         )
 
-        # fast computation through sorting and dict lookups
+        # fast computation of average rating through sorting and dict lookups
         rows.sort(key=lambda x:x[0])
         rows_dict = {i[0]: i[1] for i in rows}
         for product_id in product_ids:
@@ -97,6 +154,7 @@ class ProductReview:
 
     @staticmethod
     def upvote_review(contents):
+        # TODO: reviewer_id used to prevent one reviewer from upvoting same review more than once
         reviewer_id = contents['reviewer_id']
         product_id = contents['product_id']
         seller_id = contents['seller_id']
@@ -105,9 +163,8 @@ class ProductReview:
             """
             UPDATE Feedback
             SET upvotes = upvotes + 1
-            WHERE reviewer_id = :reviewer_id AND product_id = :product_id AND seller_id = :seller_id
+            WHERE product_id = :product_id AND seller_id = :seller_id
             """,
-            reviewer_id=reviewer_id,
             product_id=product_id,
             seller_id=seller_id
         )

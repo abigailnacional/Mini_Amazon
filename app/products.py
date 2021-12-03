@@ -36,7 +36,8 @@ def ind_view():
     product = Product.get(prod_id)
     sellers = User.get_sellers(prod_id)
     reviews = ProductReview.get_reviews(prod_id, "product")
+    summary_ratings = ProductReview.get_summary_rating(prod_id, "product")
     return render_template('ind_prod.html', product_info=product, sellers=sellers, 
-                            product_sellers=product_sellers, reviews=reviews)
+                            product_sellers=product_sellers, reviews=reviews, summary_ratings=summary_ratings)
     
 

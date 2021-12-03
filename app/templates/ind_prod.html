@@ -20,12 +20,16 @@
         <th>Category</th>
         <th>Price</th>
         <th>Creator ID</th>
+        <th>Average Rating</th>
+        <th># of Reviews</th>
     </tr>
     <tr>
         <td>{{product_info.id}}</td>
         <td>{{product_info.category}}</td>
         <td>${{product_info.price}}</td>
         <td>{{product_info.creator_id}}</td>
+        <td>{{summary_ratings[1]}}</td>
+        <td>{{summary_ratings[0]}}</td>
     </tr>
 </table>
 <br></br>

@@ -182,12 +182,24 @@ with open('db/data/Feedback.csv', 'w', newline='') as feedback_file:
     for i in range(num_reviews):
         reviewer_id = reviewer_ids[i]
         product_id = product_ids[i]
+        rating = random.randint(1, 5)
+        upvotes = random.randint(0, 10)
+        review = ''.join(random.choice(letters) for x in range(random.randint(3, 20)))
+
+        writer.writerow([reviewer_id, rating, review, product_id, -1,
+        datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), upvotes])
+
+    for i in range(num_reviews):
+        reviewer_id = reviewer_ids[i]
         seller_id = seller_ids[i]
         rating = random.randint(1, 5)
         upvotes = random.randint(0, 10)
         review = ''.join(random.choice(letters) for x in range(random.randint(3, 20)))
 
-        writer.writerow([reviewer_id, rating, review, product_id, seller_id, "2021-11-01 18:54:37", upvotes])
+        writer.writerow([reviewer_id, rating, review, -1, seller_id,
+        datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), upvotes])
+
+    
 
 codes = set()
 with open('db/data/Coupon.csv', 'w', newline='') as coupon_file:

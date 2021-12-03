@@ -249,7 +249,7 @@ class Cart:
 
     #Gets the number of products in a cart
     def get_num_of_items(self) -> Optional[int]:
-        num = len(Cart.get_products_in_cart(self))
-        return num
-
-    
+        total_items = 0
+        for product_in_cart in self.get_products_in_cart():
+            total_items += product_in_cart.quantity
+        return total_items

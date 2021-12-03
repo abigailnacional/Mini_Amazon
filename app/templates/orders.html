@@ -9,6 +9,7 @@
   <thead class="thead-dark">
     <tr>
       <th scope="col">Order ID</th>
+      <th scope="col">Number of Items</th>
       <th scope="col">Time of Order</th>
       <th scope="col">Fulfilled</th>
     </tr>
@@ -19,6 +20,7 @@
         <th scope="row">
           <a href="{{ url_for('cart.view_purchased_cart', cart_id=purchased_cart.id) }}">{{purchased_cart.id}}</a>
         </th>
+        <td>{{purchased_cart.number_of_items}}</td>
         <td>{{purchased_cart.time_purchased}}</td>
         <td>{{purchased_cart.is_fulfilled}}</td>
       </tr>

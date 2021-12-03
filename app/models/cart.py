@@ -16,7 +16,7 @@ class Cart:
             is_current: bool,
             time_purchased: Optional[datetime] = None,
             is_fulfilled: Optional[bool] = None,
-            coupon_applied: Optional[str] = None,
+            coupon_applied: Optional[str] = None
     ):
         self.id = id
         self.user_id = user_id
@@ -24,6 +24,7 @@ class Cart:
         self.time_purchased = time_purchased
         self.is_fulfilled = is_fulfilled
         self.coupon_applied = coupon_applied
+        self.number_of_items = self.get_num_of_items()
 
     def get_products_in_cart(self) -> Optional[List[ProductInCart]]:
         rows = app.db.execute(
@@ -205,3 +206,9 @@ class Cart:
 
         return [Cart(*row) for row in rows] if rows else []
 
+    #Gets the number of products in a cart
+    def get_num_of_items(self) -> Optional[int]:
+        num = len(Cart.get_products_in_cart(self))
+        return num
+
+    

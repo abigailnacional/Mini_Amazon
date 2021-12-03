@@ -1,7 +1,10 @@
 from flask import current_app as app
 from .product import Product
 from .inventory import InventoryEntry
-from app.models.coupon import Coupon
+
+"""
+This class represents a product in a user's cart with the unique attributes such a product would have, such as quantity
+"""
 
 
 class ProductInCart:
@@ -20,6 +23,9 @@ class ProductInCart:
         self.quantity = quantity
         self.seller_id = seller_id
 
+    """
+    Gets the total price of the product in the cart taking into account unit price, quantity and coupons
+    """
     def get_total_price_to_pay(self, coupon):
         discount = 0
         if coupon and coupon.product_id == self.product.id and coupon.seller_id == self.seller_id:
@@ -45,6 +51,9 @@ class ProductInCart:
             quantity=rows[4]
         )
 
+    """
+    Increases the quantity of a product in the cart by 1
+    """
     @staticmethod
     def increase_quantity(product_in_cart_id: int):  # product_in_cart_id refers to the id in the ProductInCart table
         product_in_cart = ProductInCart.get(product_in_cart_id)
@@ -61,10 +70,12 @@ class ProductInCart:
                 SET quantity = quantity + 1
                 WHERE id = :id
                 """,
-                # TODO add upper bound
                 id=product_in_cart_id,
             )
 
+    """
+    Decreases the quantity of a product in the cart by 1
+    """
     @staticmethod
     def decrease_quantity(product_in_cart_id: int):
         app.db.execute_with_no_return(
@@ -77,6 +88,9 @@ class ProductInCart:
             id=product_in_cart_id
         )
 
+    """
+    Removes a product from the cart
+    """
     @staticmethod
     def remove_from_cart(product_in_cart_id: int):
         app.db.execute_with_no_return(
@@ -87,6 +101,9 @@ class ProductInCart:
             id=product_in_cart_id
         )
 
+    """
+    Adds a product to the cart
+    """
     @staticmethod
     def add_to_cart(product_id: int, seller_id: int, cart_id):
         rows = app.db.execute(

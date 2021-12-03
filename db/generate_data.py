@@ -134,7 +134,7 @@ with open('db/data/ProductInCart.csv', 'w', newline='') as product_in_cart_file:
 
             num_items_in_cart_range = range(random.randint(10, 20))
             if cart_num > 997:
-                num_items_in_cart_range = range(random.randint(100, 200))
+                num_items_in_cart_range = range(random.randint(50, 70))
 
             cart_id = user_num + cart_num + base
 

@@ -8,7 +8,6 @@ from flask_babel import _, lazy_gettext as _l
 
 from .models.cart import Cart
 from .models.product_in_cart import ProductInCart
-from .models.product import Product
 from .models.purchase import Purchase
 from .inventory import InventoryEntry
 from .models.user import User
@@ -26,6 +25,10 @@ class AddCouponForm(FlaskForm):
     submit = SubmitField(_l('Add Coupon Code'))
 
 
+"""
+This method gets all products in the user's current cart as well as any applied coupons.
+It also allows the user to add a new coupon through the POST method and validates the coupon
+"""
 @bp.route('/cart', methods=['GET', 'POST'])
 def view_cart():
     if current_user.is_authenticated:
@@ -64,6 +67,9 @@ def view_cart():
     return redirect(url_for('users.login'))
 
 
+"""
+This method gets a purchased cart with the given cart id  
+"""
 @bp.route('/order/<cart_id>')
 def view_purchased_cart(cart_id):
     if current_user.is_authenticated:
@@ -78,7 +84,6 @@ def view_purchased_cart(cart_id):
         for purchase in purchases:
             final_price += purchase.get_total_price_paid(coupon)
 
-
         return render_template(
             'purchase.html',
             products_in_cart=purchased_cart.get_products_in_cart(),
@@ -90,6 +95,10 @@ def view_purchased_cart(cart_id):
         )
     return redirect(url_for('users.login'))
 
+
+"""
+This method add an item from a specific seller to the user's current cart
+"""
 @bp.route('/add_item_to_cart/<product_id>/<seller_id>')
 def add_item_to_cart(product_id, seller_id):
     if current_user.is_authenticated:
@@ -99,6 +108,9 @@ def add_item_to_cart(product_id, seller_id):
     return redirect(url_for('users.login'))
 
 
+"""
+This method increases the quantity of a product in a cart
+"""
 @bp.route('/increase_quantity/<product_in_cart_id>')
 def increase_quantity_in_cart(product_in_cart_id):
     if current_user.is_authenticated:
@@ -107,6 +119,9 @@ def increase_quantity_in_cart(product_in_cart_id):
     return redirect(url_for('users.login'))
 
 
+"""
+This method decreases the quantity of a product in a cart
+"""
 @bp.route('/decrease_quantity/<product_in_cart_id>')
 def decrease_quantity_in_cart(product_in_cart_id):
     if current_user.is_authenticated:
@@ -115,6 +130,9 @@ def decrease_quantity_in_cart(product_in_cart_id):
     return redirect(url_for('users.login'))
 
 
+"""
+This method removes a product in a cart
+"""
 @bp.route('/remove_item_from_cart/<product_in_cart_id>')
 def remove_item_from_cart(product_in_cart_id):
     if current_user.is_authenticated:
@@ -124,7 +142,7 @@ def remove_item_from_cart(product_in_cart_id):
 
 
 """
-This method converts a cart into a purchase by:
+This method converts the user's current cart into a purchase by:
     for each product in the cart,
     1) validating the buyer has enough money 
     2) validating the seller has enough inventory

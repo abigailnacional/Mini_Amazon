@@ -25,7 +25,7 @@ def inventory():
 
     coupons = {}
     for item in items:
-        coupon = Coupon.get_current_coupon_for_product(item.product_id)
+        coupon = Coupon.get_current_coupon_for_product_seller(item.product_id, item.seller_id)
         if coupon:
             coupons[item.product_id] = coupon.code
 

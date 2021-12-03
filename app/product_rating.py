@@ -83,6 +83,18 @@ def edit_review():
         return render_template("create_review.html", title='Product Review Form', action="Edit", form=form, data=data, message="")
     return redirect(url_for('users.login'))
 
+@bp.route('/remove_review', methods=['GET', 'POST'])
+def remove_review():
+    if current_user.is_authenticated:
+        review_type = request.args.get('review_type')
+        id = request.args.get('id')
+        user_id = current_user.id
+
+        pr.remove_specific_review_by_user(user_id, id, review_type)
+
+        return redirect(request.referrer)
+    return redirect(url_for('users.login'))
+
 # TODO: perhaps only one upvote per review per user to prevent spam clicking
 @bp.route('/upvote_review')
 def upvote_review():

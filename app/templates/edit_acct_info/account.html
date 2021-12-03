@@ -15,6 +15,7 @@
     </ul>
     {% endif %}
     {% endwith %}
+    <a class="btn btn-secondary" href="{{ url_for('users.view_public_profile', public_user_id=current_user.id) }}" type="button" class="btn btn-light">View My Public Profile</a>
   </p>
 <dl>
     <dt>Account ID</dt>

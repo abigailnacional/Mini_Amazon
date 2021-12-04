@@ -20,7 +20,7 @@
   <tbody>
     {% for i in range(product_reviews|length) %}
       <tr>
-        <th scope="row">{{ product_names[i] }}</th>
+        <th scope="row"><a href="/view?id={{ product_ids[i] }}">{{ product_names[i] }}</a></th>
         <td>{{ product_reviews[i].rating }}</td>
         <td>{{ product_reviews[i].review }}</td>
         <td>{{ product_reviews[i].time_posted }}</td>
@@ -46,7 +46,7 @@
   <tbody>
     {% for i in range(seller_reviews|length) %}
       <tr>
-        <th scope="row">{{ seller_names[i] }}</th>
+        <th scope="row"><a href="{{ url_for('users.view_public_profile', public_user_id=seller_ids[i])}}">{{ seller_names[i] }}</a></th>
         <td>{{ seller_reviews[i].rating }}</td>
         <td>{{ seller_reviews[i].review }}</td>
         <td>{{ seller_reviews[i].time_posted }}</td>

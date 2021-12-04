@@ -110,3 +110,42 @@ class Purchase:
                 "final_unit_price": final_unit_price
             }
         )
+
+    """
+    This method updates a purchase's fulfillment status which could change the cart fulfillment status as well
+    """
+    def mark_as_fulfilled(self):
+        app.db.execute_with_no_return(
+            """
+            UPDATE Purchase
+            SET is_fulfilled = :is_fulfilled, time_of_fulfillment = :time_of_fulfillment
+            WHERE product_in_cart_id = :product_in_cart_id
+            """,
+            product_in_cart_id=self.id,
+            is_fulfilled=True,
+            time_of_fulfillment=datetime.now()
+        )
+
+        unfulfilled_purchases_in_cart = app.db.execute(
+            """
+            SELECT id 
+            FROM Purchase
+            WHERE cart_id = :cart_id
+            AND is_fulfilled = :is_fulfilled
+            """,
+            cart_id=self.cart_id,
+            is_fulfilled=False
+        )
+        if not unfulfilled_purchases_in_cart:
+            app.db.execute_with_no_return(
+                """
+                UPDATE CART
+                SET is_fulfilled = :is_fulfilled
+                WHERE id = :cart_id
+                """,
+                cart_id=self.cart_id,
+                is_fulfilled=True,
+            )
+
+
+

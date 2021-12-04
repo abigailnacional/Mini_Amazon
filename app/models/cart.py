@@ -28,7 +28,7 @@ class Cart:
         self.time_purchased = time_purchased
         self.is_fulfilled = is_fulfilled
         self.coupon_applied = coupon_applied
-        self.number_of_items = self.get_num_of_items()
+        self.number_of_items = 0
 
     """
     Get a list of the products currently in a user's cart 
@@ -54,6 +54,7 @@ class Cart:
                     seller_id=product_in_cart_row[2],
                     quantity=product_in_cart_row[3]
                 ))
+            self.number_of_items += product_in_cart_row[3]
         return products_in_cart
 
     """
@@ -134,6 +135,7 @@ class Cart:
             cart_id=self.id,
         )
         self.coupon_applied = None
+
 
     """
     Returns a cart for the given id
@@ -247,9 +249,10 @@ class Cart:
 
         return [Cart(*row) for row in rows] if rows else []
 
-    #Gets the number of products in a cart
-    def get_num_of_items(self) -> Optional[int]:
-        total_items = 0
-        for product_in_cart in self.get_products_in_cart():
-            total_items += product_in_cart.quantity
-        return total_items
+    # #Gets the number of products in a cart
+    # def get_num_of_items(self) -> Optional[int]:
+    #     total_items = 0
+    #     for product_in_cart in self.get_products_in_cart():
+    #         total_items += product_in_cart.quantity
+    #     self.number_of_items = self.get_num_of_items()
+    #     return total_items

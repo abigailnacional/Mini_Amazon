@@ -7,28 +7,35 @@
 <form action="" method="post" novalidate>
     {{ form.csrf_token }}
     <p>
-        {{ form.name.label }}<br/>
+        <b>{{ form.name.label }}</b><br/>
         {{ form.name(size=32) }}<br/>
     </p>
     <p>
-        {{ form.description.label }}<br/>
+        <b>{{ form.description.label }}</b><br/>
         {{ form.description(size=32) }}<br/>
     </p>
     <p>
-        {{ form.price.label }}<br/>
+        <b>{{ form.price.label }}</b><br/>
         {{ form.price(size=32) }}<br/>
     </p>
     <p>
-        {{ form.inventory.label }}<br/>
+        <b>{{ form.inventory.label }}</b><br/>
         {{ form.inventory(size=32) }}<br/>
     </p>
     <p>
-        {{form.category.label}}<br/>
+        <b>{{form.category.label}}</b><br/>
         {{form.category}}<br/>
     </p>
+    <b>{{form.restaurant.label}}</b><br/>
+    {% for subfield in form.restaurant %}
+    <tr>
+        <td>{{subfield.label}}</td>
+        <td>{{subfield}}</td>
+    </tr>
+    {% endfor %}
     <p>
-        {{form.restaurant.label}}<br/>
-        {{form.restaurant}}<br/>
+        <b>{{form.image.label}}</b><br/>
+        {{form.image}}<br/>
     </p>
     {{ form.submit(class_="btn btn-black") }}
 </form>

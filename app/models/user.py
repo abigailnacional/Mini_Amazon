@@ -34,7 +34,7 @@ class User(UserMixin):
     account.
     """
     @staticmethod
-    def get_by_auth(input_email, input_password):
+    def get_by_auth(input_email, password):
         rows = app.db.execute("""
 SELECT password, id, email, first_name, last_name
 FROM Users
@@ -46,7 +46,7 @@ WHERE email = :inputted_email
         elif not check_password_hash(rows[0][0], password):
             return None
         else:
-            return 
+            return User(*(rows[0][1:]))
 
     """
     This method is used to confirm if there is a user account with the

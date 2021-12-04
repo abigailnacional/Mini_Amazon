@@ -1,7 +1,7 @@
 from flask import current_app as app
 
 class ProductReview:
-    def __init__(self, reviewer_id, rating, review, product_id, seller_id, time_posted, upvotes):
+    def __init__(self, reviewer_id, rating, review, product_id, seller_id, time_posted, upvotes, reports):
         self.reviewer_id = reviewer_id
         self.rating = rating
         self.review = review
@@ -9,6 +9,7 @@ class ProductReview:
         self.seller_id = seller_id
         self.time_posted = time_posted
         self.upvotes = upvotes
+        self.reports = reports
 
     @staticmethod
     def get_reviews(id, review_type):
@@ -153,23 +154,6 @@ class ProductReview:
         return review != []
 
     @staticmethod
-    def upvote_review(contents):
-        # TODO: reviewer_id used to prevent one reviewer from upvoting same review more than once
-        reviewer_id = contents['reviewer_id']
-        product_id = contents['product_id']
-        seller_id = contents['seller_id']
-
-        app.db.execute_with_no_return(
-            """
-            UPDATE Feedback
-            SET upvotes = upvotes + 1
-            WHERE product_id = :product_id AND seller_id = :seller_id
-            """,
-            product_id=product_id,
-            seller_id=seller_id
-        )
-
-    @staticmethod
     def update_review(review_contents):
         reviewer_id = review_contents['reviewer_id']
         rating = review_contents['rating']
@@ -192,7 +176,6 @@ class ProductReview:
             time_posted=time_posted
         )
 
-
     @staticmethod
     def add_review(contents):
         reviewer_id = contents['reviewer_id']
@@ -202,11 +185,12 @@ class ProductReview:
         seller_id = contents['seller_id']
         time_posted = contents['time_posted']
         upvotes = contents['upvotes']
+        reports = contents['reports']
 
         app.db.execute_with_no_return(
             """
-            INSERT INTO Feedback(reviewer_id, rating, review, product_id, seller_id, time_posted, upvotes)
-                VALUES (:reviewer_id, :rating, :review, :product_id, :seller_id, :time_posted, :upvotes)
+            INSERT INTO Feedback(reviewer_id, rating, review, product_id, seller_id, time_posted, upvotes, reports)
+                VALUES (:reviewer_id, :rating, :review, :product_id, :seller_id, :time_posted, :upvotes, :reports)
             """,
             reviewer_id=reviewer_id,
             rating=rating,
@@ -214,5 +198,162 @@ class ProductReview:
             product_id=product_id,
             seller_id=seller_id,
             time_posted=time_posted,
-            upvotes=upvotes
+            upvotes=upvotes,
+            reports=reports
         )
+
+    @staticmethod
+    def check_upvote_exists(upvoter_id, reviewer_id, product_id, seller_id):
+        rows = app.db.execute(
+            '''
+            SELECT *
+            FROM Feedback_Upvotes
+            WHERE upvoter_id = :upvoter_id AND reviewer_id = :reviewer_id AND product_id = :product_id AND seller_id = :seller_id
+            ''',
+            upvoter_id=upvoter_id,
+            reviewer_id=reviewer_id,
+            product_id=product_id,
+            seller_id=seller_id)
+    
+        return rows != []
+
+    @staticmethod
+    def upvote_review(upvoter_id, reviewer_id, product_id, seller_id):
+        app.db.execute_with_no_return(
+            """
+            UPDATE Feedback
+            SET upvotes = upvotes + 1
+            WHERE reviewer_id = :reviewer_id AND product_id = :product_id AND seller_id = :seller_id
+            """,
+            reviewer_id=reviewer_id,
+            product_id=product_id,
+            seller_id=seller_id
+        )
+
+        app.db.execute_with_no_return(
+            """
+            INSERT INTO Feedback_Upvotes(upvoter_id, reviewer_id, product_id, seller_id)
+                VALUES(:upvoter_id, :reviewer_id, :product_id, :seller_id)
+            """,
+            upvoter_id=upvoter_id,
+            reviewer_id=reviewer_id,
+            product_id=product_id,
+            seller_id=seller_id
+        )
+
+    @staticmethod
+    def remove_upvote(upvoter_id, reviewer_id, product_id, seller_id):
+        app.db.execute_with_no_return(
+            """
+            UPDATE Feedback
+            SET upvotes = upvotes - 1
+            WHERE reviewer_id = :reviewer_id AND product_id = :product_id AND seller_id = :seller_id
+            """,
+            reviewer_id=reviewer_id,
+            product_id=product_id,
+            seller_id=seller_id
+        )
+
+        app.db.execute_with_no_return(
+            """
+            DELETE FROM Feedback_Upvotes
+            WHERE upvoter_id = :upvoter_id AND reviewer_id = :reviewer_id AND product_id = :product_id AND seller_id = :seller_id
+            """,
+            upvoter_id=upvoter_id,
+            reviewer_id=reviewer_id,
+            product_id=product_id,
+            seller_id=seller_id
+        )
+
+    @staticmethod
+    def check_report_exists(reporter_id, reviewer_id, product_id, seller_id):
+        rows = app.db.execute(
+            '''
+            SELECT *
+            FROM Feedback_Reports
+            WHERE reporter_id = :reporter_id AND reviewer_id = :reviewer_id AND product_id = :product_id AND seller_id = :seller_id
+            ''',
+            reporter_id=reporter_id,
+            reviewer_id=reviewer_id,
+            product_id=product_id,
+            seller_id=seller_id)
+    
+        return rows != []
+
+    @staticmethod
+    def get_user_review_reports(user_id):
+        rows = app.db.execute(
+            '''
+            SELECT *
+            FROM Feedback_Reports
+            WHERE reporter_id = :reporter_id
+            ''',
+            reporter_id=user_id)
+
+        return rows
+
+    @staticmethod
+    def report_review(reporter_id, reviewer_id, product_id, seller_id):
+        app.db.execute_with_no_return(
+            """
+            UPDATE Feedback
+            SET reports = reports + 1
+            WHERE reviewer_id = :reviewer_id AND product_id = :product_id AND seller_id = :seller_id
+            """,
+            reviewer_id=reviewer_id,
+            product_id=product_id,
+            seller_id=seller_id
+        )
+
+        app.db.execute_with_no_return(
+            """
+            INSERT INTO Feedback_Reports(reporter_id, reviewer_id, product_id, seller_id)
+                VALUES(:reporter_id, :reviewer_id, :product_id, :seller_id)
+            """,
+            reporter_id=reporter_id,
+            reviewer_id=reviewer_id,
+            product_id=product_id,
+            seller_id=seller_id
+        )
+
+        rows = app.db.execute(
+            '''
+            SELECT reports
+            FROM Feedback
+            WHERE reviewer_id = :reviewer_id AND product_id = :product_id AND seller_id = :seller_id
+            ''',
+            reviewer_id=reviewer_id,
+            product_id=product_id,
+            seller_id=seller_id)
+
+        if rows[0][0] >= 5:
+            # The system automatically deletes any reviews that have 5 reports
+            app.db.execute_with_no_return(
+                """
+                DELETE FROM Feedback
+                WHERE reviewer_id = :reviewer_id AND product_id = :product_id AND seller_id = :seller_id
+                """,
+                reviewer_id=reviewer_id,
+                product_id=product_id,
+                seller_id=seller_id
+            )
+
+            # Getting rid of any remaining data from related tables
+            app.db.execute_with_no_return(
+                """
+                DELETE FROM Feedback_Upvotes
+                WHERE reviewer_id = :reviewer_id AND product_id = :product_id AND seller_id = :seller_id
+                """,
+                reviewer_id=reviewer_id,
+                product_id=product_id,
+                seller_id=seller_id
+            )
+            app.db.execute_with_no_return(
+                """
+                DELETE FROM Feedback_Reports
+                WHERE reviewer_id = :reviewer_id AND product_id = :product_id AND seller_id = :seller_id
+                """,
+                reviewer_id=reviewer_id,
+                product_id=product_id,
+                seller_id=seller_id
+            )

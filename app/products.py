@@ -39,6 +39,16 @@ def filtered_price():
     return render_template('product.html', vender_id=vender_id, product_sellers=product_sellers, 
                             avail_products=products, categories=categories, average_ratings=average_ratings)  
 
+@bp.route('/filter-rat', methods=['GET'])
+def filtered_rating():
+    vender_id = int(request.args.get('id'))
+    stars = int(request.args.get('stars'))
+    products = Product.filteredRating(stars)
+    categories = Product.get_categories()
+    average_ratings = ProductReview.get_product_average_rating([product.id for product in products])
+    return render_template('product.html', vender_id=vender_id, product_sellers=product_sellers, 
+                            avail_products=products, categories=categories, average_ratings=average_ratings) 
+
 @bp.route('/search', methods=['GET'])
 def search_filter():
     vender_id = int(request.args.get('id'))

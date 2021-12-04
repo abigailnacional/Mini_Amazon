@@ -64,19 +64,19 @@ class InventoryEntry:
                        price, 
                        is_available) in rows]
 
-        
-    # TODO: MAKE WAY FOR SELLERS TO ADD PRODUCTS TO THEIR INVENTORY
-    # @staticmethod
-    # def add_product_to_inventory(seller_id, product_id, inventory):
+    @staticmethod
+    def add_product_to_inventory(current_seller, seller_affiliation, product_id, inventory):
 
-    #     app.db.execture_non_select_statement(
-    #         """
-    #         INSERT INTO Sells
-    #         VALUES ()
-    #         """
-
-
-    #     )
+        rows = app.db.execute_with_no_return('''
+    FOR restaurant IN seller_affiliation
+        INSERT INTO Sells (restaurant, seller_id, product_id, inventory)
+        VALUES (:seller_affiliation[restaurant], :seller_id, :product_id, :inventory);
+    END LOOP;
+        ''',
+            seller_affiliation=seller_affiliation,
+            seller_id=current_seller.id,
+            product_id=product_id,
+            inventory=inventory)
 
 
 # Basic requirements:

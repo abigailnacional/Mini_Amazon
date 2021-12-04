@@ -1,5 +1,5 @@
 from flask import current_app as app
-
+import random
 
 class Product:
     def __init__(
@@ -89,6 +89,18 @@ ORDER BY price ASC
         return [Product(*row) for row in rows] 
 
     @staticmethod
+    def filteredRating(stars):
+        rows = app.db.execute('''
+SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
+FROM Product FULL OUTER JOIN Feedback ON Product.id = Feedback.product_id
+GROUP BY id
+HAVING AVG(rating) >= :stars
+ORDER BY id
+''',
+                            stars=stars)
+        return [Product(*row) for row in rows] 
+
+    @staticmethod
     def search_filter(search):
         rows = app.db.execute('''
 SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
@@ -109,12 +121,12 @@ WHERE id = :id
         return [Product(*row) for row in rows] 
 
     @staticmethod
-    def add_product(id, name, description, price, category, image, current_user):
-        rows = app.db.execute_with_no_return('''
-INSERT INTO Product (id, name, description, category, price, is_available, image, creator_id)
-VALUES (:id, :name, :description, :category, :price, :is_available, :image, :creator_id)
+    def add_product(name, description, price, category, image, current_user):
+        rows = app.db.execute('''
+INSERT INTO Product (name, description, category, price, is_available, image, creator_id)
+VALUES (:name, :description, :category, :price, :is_available, :image, :creator_id)
+RETURNING id
     ''',
-        id=id,
         name=name,
         description=description,
         category=category,
@@ -123,5 +135,7 @@ VALUES (:id, :name, :description, :category, :price, :is_available, :image, :cre
         creator_id=current_user.id,
         is_available=True
         )
+        id = rows[0][0]
+        return id
 
     

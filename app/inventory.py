@@ -10,7 +10,6 @@ from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = './app/static/images/products/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
-base = 0 #for assigning product IDs
 
 import datetime
 
@@ -64,8 +63,8 @@ def add_product():
                 f = request.files['image']
                 filename = secure_filename(image)
                 f.save(os.path.join(UPLOAD_FOLDER, filename))
-                base += 1
-                Product.add_product(base, form.name.data, form.description.data, form.price.data, form.category.data, form.image.data.filename, current_user)
+                prod_id = Product.add_product(form.name.data, form.description.data, form.price.data, form.category.data, form.image.data.filename, current_user)
+                InventoryEntry.add_product_to_inventory(current_user, form.restaurant.data, prod_id, form.inventory.data)
                 return redirect(url_for('inventory.inventory'))
             else:
                 flash('Incorrect file type [png, jpg, jpeg accepted]')

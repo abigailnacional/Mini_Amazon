@@ -14,6 +14,14 @@
       {% endfor %}
   </tbody>
 </select>
+<select id="ratingFilter" class="btn btn-gray left" onchange="location = this.value;">
+  <option value="/product?id={{vender_id}}">Filter by rating</option>
+  <tbody>
+      <tr> document.write('<option value="/filter-rat?id={{vender_id}}&stars=5">5 stars</option>'); </tr>
+      <tr> document.write('<option value="/filter-rat?id={{vender_id}}&stars=4">≥ 4 stars</option>'); </tr>
+      <tr> document.write('<option value="/filter-rat?id={{vender_id}}&stars=3">≥ 3 stars</option>'); </tr>
+  </tbody>
+</select>
 <form action="/id-search" class="right">
   <input type="hidden" name="id" value="{{vender_id}}">
   <input type="text" placeholder="Search for product ID" name="search">

@@ -69,7 +69,7 @@ WHERE is_available = :is_available
 
 # method to return filtered view of venue products by category (entrées, beverages, etc.)
     @staticmethod
-    def filtered(seller_affiliation, category):
+    def filteredCat(seller_affiliation, category):
         rows = app.db.execute('''
 SELECT DISTINCT id, name, description, category, price, is_available, link, creator_id, image
 FROM Product
@@ -79,4 +79,34 @@ ORDER BY id
 ''',
                               seller_affiliation=seller_affiliation,
                               category=category)
-        return [Product(*row) for row in rows]   
+        return [Product(*row) for row in rows]  
+
+    @staticmethod
+    def filteredPrice():
+        rows = app.db.execute('''
+SELECT DISTINCT id, name, description, category, price, is_available, link, creator_id, image
+FROM Product
+ORDER BY price ASC
+''',)
+        return [Product(*row) for row in rows] 
+
+    @staticmethod
+    def search_filter(search):
+        rows = app.db.execute('''
+SELECT DISTINCT id, name, description, category, price, is_available, link, creator_id, image
+FROM Product
+WHERE LOWER(name) LIKE '%' || :search || '%' OR UPPER(name) LIKE '%' || :search || '%' OR name LIKE '%' || :search || '%'
+''',
+                            search=search)
+        return [Product(*row) for row in rows] 
+
+    @staticmethod
+    def search_id(id):
+        rows = app.db.execute('''
+SELECT DISTINCT id, name, description, category, price, is_available, link, creator_id, image
+FROM Product
+WHERE id = :id
+''',
+                            id=id)
+        return [Product(*row) for row in rows] 
+    

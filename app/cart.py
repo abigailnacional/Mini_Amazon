@@ -35,7 +35,10 @@ def view_cart():
         current_cart = Cart.get_current_cart(current_user.id)
         total_price = current_cart.get_total_current_price(None)
         form = AddCouponForm()
-        page_num = int(request.args.get('page'))
+
+        page_num = 1
+        if request.args.get('page'):
+            page_num = int(request.args.get('page'))
 
         if request.method == 'POST':
             if form.validate_on_submit():

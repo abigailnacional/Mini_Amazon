@@ -136,7 +136,6 @@ class Cart:
         )
         self.coupon_applied = None
 
-    """Checks the fulfillment status of the cart based on the fulfillment statuses of the purchases"""
 
     """
     Returns a cart for the given id

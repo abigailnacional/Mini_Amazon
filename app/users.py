@@ -41,14 +41,19 @@ def login():
 
 
 class RegistrationForm(FlaskForm):
-    first_name = StringField(_l('First Name'), validators=[DataRequired()])
-    last_name = StringField(_l('Last Name'), validators=[DataRequired()])
-    email = StringField(_l('Email'), validators=[DataRequired(), Email()])
-    password = PasswordField(_l('Password'), validators=[DataRequired()])
+    first_name = StringField(_l('First Name'), validators=[DataRequired(),
+        Length(min=0, max=32, message='First name must be between 0 and 32 characters in length.')])
+    last_name = StringField(_l('Last Name'), validators=[DataRequired(),
+        Length(min=0, max=32, message='Last name must be between 0 and 32 characters in length.')])
+    email = StringField(_l('Email'), validators=[DataRequired(), Email(),
+        Length(min=0, max=64, message='Email must be between 0 and 64 characters in length.')])
+    password = PasswordField(_l('Password'), validators=[DataRequired(),
+        Length(min=0, max=32, message='Password must be between 0 and 32 characters in length.')])
     password2 = PasswordField(
         _l('Repeat Password'), validators=[DataRequired(),
                                            EqualTo('password')])
-    address = StringField(_l('Address'), validators=[DataRequired()])
+    address = StringField(_l('Address'), validators=[DataRequired(),
+        Length(min=0, max=60, message='Address must be between 0 and 60 characters in length.')])
     submit = SubmitField(_l('Register'))
 
     def validate_email(self, email):
@@ -106,7 +111,8 @@ def view_public_profile(public_user_id):
     return redirect(url_for('users.login'))
 
 class EditEmailForm(FlaskForm):
-    email = StringField(_l('New Email'), validators=[DataRequired(), Email()])
+    email = StringField(_l('New Email'), validators=[DataRequired(), Email(),
+        Length(min=0, max=64, message='Email must be between 0 and 64 characters in length.')])
     submit = SubmitField(_l('Update Email'))
 
     def validate_email(self, email):
@@ -123,7 +129,8 @@ def edit_email():
     return render_template('edit_acct_info/edit_email.html', title='Edit Email', form=form)
 
 class EditFnameForm(FlaskForm):
-    first_name = StringField(_l('First Name'), validators=[DataRequired()])
+    first_name = StringField(_l('First Name'), validators=[DataRequired(),
+        Length(min=0, max=32, message='First name must be between 0 and 32 characters in length.')])
     submit = SubmitField(_l('Update First Name'))
 
 @bp.route('/edit_fname', methods=['GET', 'POST'])
@@ -137,7 +144,7 @@ def edit_fname():
 
 class EditLnameForm(FlaskForm):
     last_name = StringField(_l('Last Name'), validators=[DataRequired(),
-        Length(min=0, max=32, message='Address must be between 0 and 32 characters in length.')])
+        Length(min=0, max=32, message='Last name must be between 0 and 32 characters in length.')])
     submit = SubmitField(_l('Update Last Name'))
 
 @bp.route('/edit_lname', methods=['GET', 'POST'])

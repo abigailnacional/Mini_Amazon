@@ -99,6 +99,16 @@ RETURNING id
             id=self.id,
         )[0][0] >= total_price
 
+    def under_max_balance(self, total_price):
+        return app.db.execute(
+            """
+            SELECT balance
+            FROM Users
+            WHERE id = :id
+            """,
+            id=self.id,
+        )[0][0] + total_price <= 2147483647 #max int value in SQL
+
     """
     This method is used to decrease balance without committing to allow for rollback when purchasing a cart
     """
@@ -137,7 +147,7 @@ RETURNING id
             UPDATE Users
             SET balance = balance - :total_price
             WHERE id = :id
-            AND balance > :total_price
+            AND balance >= :total_price
             RETURNING*
             """,
             id=self.id,

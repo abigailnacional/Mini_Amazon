@@ -3,7 +3,7 @@ from werkzeug.urls import url_parse
 from flask_login import login_user, logout_user, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, NumberRange
+from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, NumberRange, Length
 from flask_babel import _, lazy_gettext as _l
 
 from .models.user import User
@@ -136,7 +136,8 @@ def edit_fname():
     return render_template('edit_acct_info/edit_fname.html', title='Edit First Name', form=form)
 
 class EditLnameForm(FlaskForm):
-    last_name = StringField(_l('Last Name'), validators=[DataRequired()])
+    last_name = StringField(_l('Last Name'), validators=[DataRequired(),
+        Length(min=0, max=32, message='Address must be between 0 and 32 characters in length.')])
     submit = SubmitField(_l('Update Last Name'))
 
 @bp.route('/edit_lname', methods=['GET', 'POST'])
@@ -149,7 +150,8 @@ def edit_lname():
     return render_template('edit_acct_info/edit_lname.html', title='Edit Last Name', form=form)
 
 class EditAddressForm(FlaskForm):
-    address = StringField(_l('Address'), validators=[DataRequired()])
+    address = StringField(_l('Address'), validators=[DataRequired(),
+        Length(min=0, max=60, message='Address must be between 0 and 60 characters in length.')])
     submit = SubmitField(_l('Update Address'))
 
 @bp.route('/edit_address', methods=['GET', 'POST'])
@@ -162,7 +164,8 @@ def edit_address():
     return render_template('edit_acct_info/edit_address.html', title='Edit Address', form=form)
 
 class EditPasswordForm(FlaskForm):
-    password = PasswordField(_l('Password'), validators=[DataRequired()])
+    password = PasswordField(_l('Password'), validators=[DataRequired(),
+        Length(min=0, max=32, message='Password must be between 0 and 32 characters in length.')])
     password2 = PasswordField(
         _l('Repeat Password'), validators=[DataRequired(),
                                            EqualTo('password')])
@@ -178,26 +181,30 @@ def edit_password():
     return render_template('edit_acct_info/edit_password.html', title='Edit Password', form=form)
 
 class EditBalanceForm(FlaskForm):
-    balance = FloatField(_l('Amount to Withdraw/Deposit'), 
+    amount = FloatField(_l('Amount to Withdraw/Deposit'), 
         validators=[DataRequired(message='Please enter a number.'),
         NumberRange(min=0, max=1000000000.1, 
-        message='You must enter a number between 0 and 1000000000 (1 million).')])
+        message='You must enter a number between 0 and 1000000000 (1 billion).')])
     submit = SubmitField(_l('Update Balance'))
 
 @bp.route('/decrement_balance', methods=['GET', 'POST'])
 def decrement_balance():
     form = EditBalanceForm()
     if form.validate_on_submit():
-        if User.decrement_balance(current_user, form.balance.data):
-            flash('Money has been withdrawn from your account.')
-            return redirect(url_for('users.view_account'))
+        if User.has_enough_money(current_user, form.amount.data):
+            if User.decrement_balance(current_user, form.amount.data):
+                flash('Money has been withdrawn from your account.')
+                return redirect(url_for('users.view_account'))
+        flash('You do not have enough money in your account!')
     return render_template('edit_acct_info/withdraw_money.html', title='Withdraw Money', form=form)
 
 @bp.route('/increment_balance', methods=['GET', 'POST'])
 def increment_balance():
     form = EditBalanceForm()
     if form.validate_on_submit():
-        if User.increment_balance(current_user, form.balance.data):
-            flash('Money has been deposited into your account.')
-            return redirect(url_for('users.view_account'))
+        if User.under_max_balance(current_user, form.amount.data):
+            if User.increment_balance(current_user, form.amount.data):
+                flash('Money has been deposited into your account.')
+                return redirect(url_for('users.view_account'))
+        flash('Your account will exceed the maximum balance if this amount is deposited.')
     return render_template('edit_acct_info/deposit_money.html', title='Deposit Money', form=form)

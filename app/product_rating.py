@@ -95,23 +95,65 @@ def remove_review():
         return redirect(request.referrer)
     return redirect(url_for('users.login'))
 
-# TODO: perhaps only one upvote per review per user to prevent spam clicking
 @bp.route('/upvote_review')
 def upvote_review():
     if current_user.is_authenticated:
+        reviewer_id = request.args.get('reviewer_id')
         review_type = request.args.get('review_type')
         id = request.args.get('id')
         user_id = current_user.id
 
-        upvote_review_contents = {
-            'reviewer_id': user_id,
-            'product_id': int(id) if review_type == "product" else -1,
-            'seller_id': int(id) if review_type == "seller" else -1
-        }
+        reviewer_id = reviewer_id
+        upvoter_id = user_id
+        product_id = int(id) if review_type == "product" else -1
+        seller_id = int(id) if review_type == "seller" else -1
 
-        pr.upvote_review(upvote_review_contents)
+        pr.upvote_review(upvoter_id, reviewer_id, product_id, seller_id)
 
         return redirect(request.referrer)
+    return redirect(url_for('users.login'))
+
+@bp.route('/remove_upvote')
+def remove_upvote():
+    if current_user.is_authenticated:
+        reviewer_id = request.args.get('reviewer_id')
+        review_type = request.args.get('review_type')
+        id = request.args.get('id')
+        user_id = current_user.id
+
+        upvoter_id = user_id
+        reviewer_id = reviewer_id
+        product_id = int(id) if review_type == "product" else -1
+        seller_id = int(id) if review_type == "seller" else -1
+
+        if pr.check_upvote_exists(upvoter_id, reviewer_id, product_id, seller_id):
+            pr.remove_upvote(upvoter_id, reviewer_id, product_id, seller_id)
+        else:
+            flash("This upvote doesn't exist!")
+
+        return redirect(request.referrer)
+    return redirect(url_for('users.login'))
+
+@bp.route('/report_review')
+def report_review():
+    if current_user.is_authenticated:
+        reviewer_id = request.args.get('reviewer_id')
+        review_type = request.args.get('review_type')
+        id = request.args.get('id')
+        user_id = current_user.id
+
+        reporter_id = user_id
+        reviewer_id = reviewer_id
+        product_id = int(id) if review_type == "product" else -1
+        seller_id = int(id) if review_type == "seller" else -1
+
+        if pr.check_report_exists(user_id, reviewer_id, product_id, seller_id):
+            flash("You cannot report your own review! If there is a problem, remove it instead.")
+        else:
+            pr.report_review(reporter_id, reviewer_id, product_id, seller_id)
+        
+        return redirect(request.referrer)
+
     return redirect(url_for('users.login'))
 
 @bp.route('/create_review', methods=['GET', 'POST'])
@@ -143,7 +185,8 @@ def create_review():
                     'product_id': int(id) if review_type == "product" else -1, #temp fix for db cols not accepting NULL values
                     'seller_id': int(id) if review_type == "seller" else -1,
                     'time_posted': time.strftime('%Y-%m-%d %H:%M:%S'),
-                    'upvotes': 0
+                    'upvotes': 0,
+                    'reports': 0
                 }
 
                 pr.add_review(create_review_contents)

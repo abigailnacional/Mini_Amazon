@@ -20,7 +20,12 @@ class LoginForm(FlaskForm):
     remember_me = BooleanField(_l('Remember Me'))
     submit = SubmitField(_l('Sign In'))
 
-
+"""
+This method allows the user to log in with a valid email and password.
+If the user is already logged in, they are redirected to the home page.
+If invalid information is entered, the user is notified.
+After the user has logged in, they are redirected to the home page.
+"""
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -56,11 +61,18 @@ class RegistrationForm(FlaskForm):
         Length(min=0, max=60, message='Address must be between 0 and 60 characters in length.')])
     submit = SubmitField(_l('Register'))
 
+    """
+    This method validates whether or not the email being inputted is already
+    within the database.
+    """
     def validate_email(self, email):
         if User.email_exists(email.data):
             raise ValidationError(_('Already a user with this email.'))
 
-
+"""
+This method allows the user to register with at minimum an email, password,
+and first and last name. The user may also enter an address.
+"""
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -76,37 +88,51 @@ def register():
             return redirect(url_for('users.login'))
     return render_template('register.html', title='Register', form=form)
 
+"""
+This method allows the user to log out of their account.
+After logging out, the user is redirected to the home page.
+"""
 @bp.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('index.index'))
 
+"""
+This method allows a logged-in user to view their account information page.
+"""
 @bp.route('/view_account')
 def view_account():
     if current_user.is_authenticated:
         return render_template('edit_acct_info/account.html')
     return redirect(url_for('users.login'))
 
+"""
+This method allows a user to view the public profile of any user, including themselves.
+If the owner of the public profile is not a seller, only their account ID, first name,
+and last name will be displayed on the profile page.
+If the owner of the public profile is a seller, their account ID, first name, last name,
+email, address, seller affiliation, and seller reviews will be displayed on the profile
+page.
+"""
 @bp.route('/view_public_profile/<public_user_id>')
 def view_public_profile(public_user_id):
-    if current_user.is_authenticated:
-        if User.check_seller(public_user_id):
-            #If user is a seller, render user profile with extra seller info
-            reviews = ProductReview.get_reviews(User.get_seller_info(public_user_id).id, "seller")
-            summary_ratings = ProductReview.get_summary_rating(User.get_seller_info(public_user_id).id, "seller")
-            return render_template(
-                'public_seller_profile.html',
-                seller =  User.get_seller_info(public_user_id),
-                product_sellers = product_sellers,
-                reviews=reviews,
-                summary_ratings=summary_ratings
-            )
-        
-        #If user is not a seller, render user profile with limited info
+    if User.check_seller(public_user_id):
+        #If user is a seller, render user profile with extra seller info
+        reviews = ProductReview.get_reviews(User.get_seller_info(public_user_id).id, "seller")
+        summary_ratings = ProductReview.get_summary_rating(User.get_seller_info(public_user_id).id, "seller")
         return render_template(
-        'public_user_profile.html',
-        user = User.get(public_user_id)
+            'public_seller_profile.html',
+            seller =  User.get_seller_info(public_user_id),
+            product_sellers = product_sellers,
+            reviews=reviews,
+            summary_ratings=summary_ratings
         )
+        
+    #If user is not a seller, render user profile with limited info
+    return render_template(
+    'public_user_profile.html',
+    user = User.get(public_user_id)
+    )
         
     return redirect(url_for('users.login'))
 

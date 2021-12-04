@@ -10,7 +10,6 @@ class Product:
             category,
             price,
             is_available,
-            link,
             creator_id,
             image
     ):
@@ -20,14 +19,13 @@ class Product:
         self.is_available = is_available
         self.description = description
         self.category = category
-        self.link = link
         self.creator_id = creator_id
         self.image = image
 
     @staticmethod
     def get(id):
         rows = app.db.execute('''
-SELECT id, name, description, category, price, is_available, link, creator_id, image
+SELECT id, name, description, category, price, is_available, creator_id, image
 FROM Product
 WHERE id = :id
 ''',
@@ -38,7 +36,7 @@ WHERE id = :id
     @staticmethod
     def get_specific(seller_affiliation):
         rows = app.db.execute('''
-SELECT DISTINCT id, name, description, category, price, is_available, link, creator_id, image
+SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
 FROM Product
 RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
 WHERE seller_affiliation = :seller_affiliation AND is_available = True
@@ -50,7 +48,7 @@ ORDER BY id
     @staticmethod
     def get_all(is_available=True):
         rows = app.db.execute('''
-SELECT id, name, description, category, price, is_available, link, creator_id, image
+SELECT id, name, description, category, price, is_available, creator_id, image
 FROM Product
 WHERE is_available = :is_available
 ''',
@@ -71,7 +69,7 @@ WHERE is_available = :is_available
     @staticmethod
     def filteredCat(seller_affiliation, category):
         rows = app.db.execute('''
-SELECT DISTINCT id, name, description, category, price, is_available, link, creator_id, image
+SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
 FROM Product
 RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
 WHERE seller_affiliation = :seller_affiliation AND is_available = True AND category = :category
@@ -84,7 +82,7 @@ ORDER BY id
     @staticmethod
     def filteredPrice():
         rows = app.db.execute('''
-SELECT DISTINCT id, name, description, category, price, is_available, link, creator_id, image
+SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
 FROM Product
 ORDER BY price ASC
 ''',)
@@ -93,7 +91,7 @@ ORDER BY price ASC
     @staticmethod
     def search_filter(search):
         rows = app.db.execute('''
-SELECT DISTINCT id, name, description, category, price, is_available, link, creator_id, image
+SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
 FROM Product
 WHERE LOWER(name) LIKE '%' || :search || '%' OR UPPER(name) LIKE '%' || :search || '%' OR name LIKE '%' || :search || '%'
 ''',
@@ -103,10 +101,27 @@ WHERE LOWER(name) LIKE '%' || :search || '%' OR UPPER(name) LIKE '%' || :search 
     @staticmethod
     def search_id(id):
         rows = app.db.execute('''
-SELECT DISTINCT id, name, description, category, price, is_available, link, creator_id, image
+SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
 FROM Product
 WHERE id = :id
 ''',
                             id=id)
         return [Product(*row) for row in rows] 
+
+    @staticmethod
+    def add_product(id, name, description, price, category, image, current_user):
+        rows = app.db.execute_with_no_return('''
+INSERT INTO Product (id, name, description, category, price, is_available, image, creator_id)
+VALUES (:id, :name, :description, :category, :price, :is_available, :image, :creator_id)
+    ''',
+        id=id,
+        name=name,
+        description=description,
+        category=category,
+        price=price,
+        image=image,
+        creator_id=current_user.id,
+        is_available=True
+        )
+
     

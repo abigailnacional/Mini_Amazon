@@ -3,12 +3,16 @@
 {% block content %}
 
 <h1>Add New Product</h1> 
+<h5>* <em>required information</em></h5>
 
-<form action="" method="post" novalidate>
-    {{ form.csrf_token }}
+<form action="/add-product" method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
     <p>
         <b>{{ form.name.label }}</b><br/>
         {{ form.name(size=32) }}<br/>
+        {% for error in form.name.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
     </p>
     <p>
         <b>{{ form.description.label }}</b><br/>
@@ -17,25 +21,48 @@
     <p>
         <b>{{ form.price.label }}</b><br/>
         {{ form.price(size=32) }}<br/>
+        {% for error in form.price.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
     </p>
     <p>
         <b>{{ form.inventory.label }}</b><br/>
         {{ form.inventory(size=32) }}<br/>
+        {% for error in form.inventory.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
     </p>
     <p>
         <b>{{form.category.label}}</b><br/>
         {{form.category}}<br/>
+        {% for error in form.category.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
     </p>
-    <b>{{form.restaurant.label}}</b><br/>
-    {% for subfield in form.restaurant %}
-    <tr>
-        <td>{{subfield.label}}</td>
-        <td>{{subfield}}</td>
-    </tr>
-    {% endfor %}
+    <p>
+        <b>{{form.restaurant.label}}</b><br/>
+        {{form.restaurant}}<br/>
+        {% for error in form.restaurant.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>   
     <p>
         <b>{{form.image.label}}</b><br/>
         {{form.image}}<br/>
+        {% for error in form.image.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+          {% for message in messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
     </p>
     {{ form.submit(class_="btn btn-black") }}
 </form>

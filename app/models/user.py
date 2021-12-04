@@ -38,9 +38,6 @@ WHERE email = :email
                               email=email)
         if not rows:  # email not found
             return None
-        # second check allows us to use the preloaded csv data (remove at some point)
-        elif not check_password_hash(rows[0][0], password) \
-                and not check_password_hash(generate_password_hash(rows[0][0]), password):
             # incorrect password
             return None
         else:

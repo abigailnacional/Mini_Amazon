@@ -33,15 +33,27 @@ class Cart:
     """
     Get a list of the products currently in a user's cart 
     """
-    def get_products_in_cart(self) -> Optional[List[ProductInCart]]:
-        rows = app.db.execute(
-            """
+    def get_products_in_cart(self, page_num: Optional[int]=None) -> Optional[List[ProductInCart]]:
+        query_string = """
             SELECT id, product_id, seller_id, quantity
             FROM ProductInCart
             WHERE cart_id = :cart_id
             ORDER BY product_id
-            """,
-            cart_id=self.id
+            """
+        if page_num:
+            query_string = """
+            SELECT id, product_id, seller_id, quantity
+            FROM ProductInCart
+            WHERE cart_id = :cart_id
+            ORDER BY product_id
+            LIMIT 20
+            OFFSET ((:page_num - 1) * 20)
+            """
+
+        rows = app.db.execute(
+            query_string,
+            cart_id=self.id,
+            page_num=page_num
         )
 
         products_in_cart = []
@@ -61,8 +73,8 @@ class Cart:
     Get a list of the purchases in a user's cart. This method is only applicable if the cart has been purchased and 
     is not the user's current cart
     """
-    def get_purchases(self) -> Optional[List[Purchase]]:
-        purchases = Purchase.get_by_cart(self.id)
+    def get_purchases(self, page_num: Optional[int]=None) -> Optional[List[Purchase]]:
+        purchases = Purchase.get_by_cart(self.id, page_num)
         return purchases
 
     """
@@ -235,7 +247,7 @@ class Cart:
     Gets all purchased carts for a user
     """
     @staticmethod
-    def get_purchased_carts(user_id: int) -> List[Optional['Cart']]:
+    def get_purchased_carts(user_id: int, page_num: int) -> List[Optional['Cart']]:
         rows = app.db.execute(
             """
             SELECT id, user_id, is_current, time_purchased, is_fulfilled, coupon_applied
@@ -243,8 +255,11 @@ class Cart:
             WHERE user_id = :user_id
             AND NOT is_current
             ORDER BY time_purchased DESC, id DESC
+            LIMIT 20
+            OFFSET ((:page_num - 1) * 20)
             """,
-            user_id=user_id
+            user_id=user_id,
+            page_num=page_num
         )
 
         return [Cart(*row) for row in rows] if rows else []
@@ -256,3 +271,4 @@ class Cart:
     #         total_items += product_in_cart.quantity
     #     self.number_of_items = self.get_num_of_items()
     #     return total_items
+

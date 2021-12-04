@@ -67,5 +67,12 @@
   </tbody>
 </table>
 
+{% if purchases %}
+<a href="{{ url_for('cart.view_purchased_cart', cart_id=cart_id)}}?page={{page_num + 1}}" type="button" class="btn btn-gray right">Next</a>
+{% endif %}
+{% if page_num != 1 %}
+<a href="{{ url_for('cart.view_purchased_cart', cart_id=cart_id)}}?page={{page_num - 1}}" type="button" class="btn btn-gray right">Previous</a>
+{% endif %}
+<br><br>
 {% endblock %}
 ml>

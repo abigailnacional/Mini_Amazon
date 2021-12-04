@@ -278,6 +278,10 @@ RETURNING id
             password = generate_password_hash(password)
         )[0][0] == self.id
 
+    """
+    This method gets all of the users that are sellers and relevant information
+    about them.
+    """
     @staticmethod
     def get_sellers(id):
         rows = app.db.execute('''
@@ -289,6 +293,9 @@ WHERE product_id = :id
                             id=id)     
         return  rows if rows is not None else None 
 
+    """
+    This method checks if a user is a seller when given a user ID.
+    """
     @staticmethod
     def check_seller(id) -> bool:
         rows = app.db.execute(
@@ -301,6 +308,10 @@ WHERE product_id = :id
             id=id)
         return True if rows else False
 
+    """
+    This method gets useful information about ONLY ONE seller when given
+    a seller's user ID.
+    """
     @staticmethod
     def get_seller_info(id):
         rows = app.db.execute(

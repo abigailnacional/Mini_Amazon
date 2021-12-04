@@ -98,10 +98,37 @@ CREATE TABLE Feedback (
     seller_id INT,
     time_posted timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
     upvotes INT NOT NULL DEFAULT 0,
+    reports INT NOT NULL DEFAULT 0,
     PRIMARY KEY (reviewer_id, product_id, seller_id),
     FOREIGN KEY (reviewer_id) REFERENCES Users(id),
     FOREIGN KEY (seller_id) REFERENCES Users(id),
     FOREIGN KEY (product_id) REFERENCES Product(id),
+    CHECK((product_id IS NOT NULL) OR (seller_id IS NOT NULL))
+);
+
+CREATE TABLE Feedback_Upvotes (
+    upvoter_id INT NOT NULL,
+    reviewer_id INT NOT NULL,
+    product_id INT,
+    seller_id INT,
+    PRIMARY KEY (upvoter_id, reviewer_id, product_id, seller_id),
+    FOREIGN KEY (upvoter_id) REFERENCES Users(id),
+    FOREIGN KEY (reviewer_id) REFERENCES Users(id),
+    FOREIGN KEY (product_id) REFERENCES Product(id),
+    FOREIGN KEY (seller_id) REFERENCES Users(id),
+    CHECK((product_id IS NOT NULL) OR (seller_id IS NOT NULL))
+);
+
+CREATE TABLE Feedback_Reports (
+    reporter_id INT NOT NULL,
+    reviewer_id INT NOT NULL,
+    product_id INT,
+    seller_id INT,
+    PRIMARY KEY (reporter_id, reviewer_id, product_id, seller_id),
+    FOREIGN KEY (reporter_id) REFERENCES Users(id),
+    FOREIGN KEY (reviewer_id) REFERENCES Users(id),
+    FOREIGN KEY (product_id) REFERENCES Product(id),
+    FOREIGN KEY (seller_id) REFERENCES Users(id),
     CHECK((product_id IS NOT NULL) OR (seller_id IS NOT NULL))
 );
 

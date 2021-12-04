@@ -66,7 +66,14 @@ def ind_view():
     sellers = User.get_sellers(prod_id)
     reviews = ProductReview.get_reviews(prod_id, "product")
     summary_ratings = ProductReview.get_summary_rating(prod_id, "product")
+    upvote_exists, user_product_reports = [], []
+    if current_user.is_authenticated:
+        upvote_exists = [ProductReview.check_upvote_exists(current_user.id, review.reviewer_id, prod_id, -1) for review in reviews]
+        user_review_reports = ProductReview.get_user_review_reports(current_user.id)
+        user_product_reports = [(user_review_report[1], user_review_report[2]) for user_review_report in user_review_reports]
     return render_template('ind_prod.html', product_info=product, sellers=sellers, 
-                            product_sellers=product_sellers, reviews=reviews, summary_ratings=summary_ratings)
+                            product_sellers=product_sellers, reviews=reviews,
+                            summary_ratings=summary_ratings, upvote_exists=upvote_exists,
+                            user_product_reports=user_product_reports)
     
 

@@ -14,7 +14,6 @@
       <th scope="col">Review Message</th> <!-- TODO: perhaps not review the entire message in this one column? -->
       <th scope="col">Date</th>
       <th scope="col">Edit Your Review</th>
-      <th scope="col">Remove Your Review</th>
     </tr>
   </thead>
   <tbody>
@@ -24,8 +23,11 @@
         <td>{{ product_reviews[i].rating }}</td>
         <td>{{ product_reviews[i].review }}</td>
         <td>{{ product_reviews[i].time_posted }}</td>
-        <td><a href="{{ url_for('product_rating.edit_review', review_type='product', id=product_reviews[i].product_id) }}">Edit</a></td>
-        <td><a href="{{ url_for('product_rating.remove_review', review_type='product', id=product_reviews[i].product_id) }}">x</a></td>
+        <td>
+          <a href="{{ url_for('product_rating.edit_review', review_type='product', id=product_reviews[i].product_id) }}">Edit</a>
+           / 
+          <a href="{{ url_for('product_rating.remove_review', review_type='product', id=product_reviews[i].product_id) }}">Remove</a>
+        </td>
       </tr>
     {% endfor %}
   </tbody>
@@ -40,7 +42,6 @@
       <th scope="col">Review Message</th> <!-- TODO: perhaps not review the entire message in this one column? -->
       <th scope="col">Date</th>
       <th scope="col">Edit Your Review</th>
-      <th scope="col">Remove Your Review</th>
     </tr>
   </thead>
   <tbody>
@@ -50,8 +51,11 @@
         <td>{{ seller_reviews[i].rating }}</td>
         <td>{{ seller_reviews[i].review }}</td>
         <td>{{ seller_reviews[i].time_posted }}</td>
-        <td><a href="{{ url_for('product_rating.edit_review', review_type='seller', id=seller_reviews[i].seller_id) }}">Edit</a></td>
-        <td><a href="{{ url_for('product_rating.remove_review', review_type='seller', id=seller_reviews[i].seller_id) }}">x</a></td>
+        <td>
+          <a href="{{ url_for('product_rating.edit_review', review_type='seller', id=seller_reviews[i].seller_id) }}">Edit</a>
+           / 
+          <a href="{{ url_for('product_rating.remove_review', review_type='seller', id=seller_reviews[i].seller_id) }}">Remove</a>
+        </td>
       </tr>
     {% endfor %}
   </tbody>

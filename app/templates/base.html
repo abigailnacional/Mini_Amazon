@@ -141,7 +141,9 @@
       <a href="{{ url_for('products.ind_view', id=random_coupon.product_id)}}">
       {{ random_coupon.product_name }}
       (product #{{ random_coupon.product_id }})</a>
-      from seller {{ random_coupon.seller_name }} (user #{{ random_coupon.seller_id }})
+      from seller
+      <a href="{{ url_for('users.view_public_profile', public_user_id=random_coupon.seller_id)}}">
+        {{ random_coupon.seller_name }} (user #{{ random_coupon.seller_id }})</a>
 
     </p>
     {% endblock %}

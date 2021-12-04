@@ -47,7 +47,7 @@
   <tbody>
     {% for seller in sellers%}
       <tr>
-        <td>{{seller.id}}</td>
+        <th scope="row"><a href="{{ url_for('users.view_public_profile', public_user_id=seller.id) }}">{{seller.id}}</a></th>
         <td>{{seller.first_name}}</td>
         <td>{{seller.last_name}}</td>
         <td>{{seller.email}}</td>

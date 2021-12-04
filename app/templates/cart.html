@@ -68,7 +68,7 @@
         <th scope="row"><a href="/view?id={{product_in_cart.product.id}}">{{product_in_cart.product.id}}</a></th>
         <td>{{product_in_cart.product.name}}</td>
         <td>${{product_in_cart.product.price}}</td>
-        <td>{{product_in_cart.seller_id}}</td>
+        <th scope="row"><a href="{{ url_for('users.view_public_profile', public_user_id=product_in_cart.seller_id) }}">{{product_in_cart.seller_id}}</a></th>
         <td>{{product_in_cart.quantity}}</td>
         <td>
           <form action="increase_quantity/{{product_in_cart.id}}">

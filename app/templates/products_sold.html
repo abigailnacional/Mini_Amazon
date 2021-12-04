@@ -23,7 +23,7 @@
   <tbody>
     {% for item in inventory %}
       <tr>
-        <td scope="row">{{ item.product_id }}</td>
+        <th scope="row"><a href="/view?id={{ item.product_id }}">{{ item.product_id }}</a></th>
         <td scope="row">{{ item.inventory }}</td>
         <td scope="row">{{ item.name }}</td>
         <td scope="row">{{ item.category }}</td>

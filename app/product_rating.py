@@ -40,8 +40,10 @@ def view_reviews():
                 reviewed_seller_ids.append(review.seller_id)
                 seller_reviews.append(review)
 
-        return render_template('reviews.html', product_names=reviewed_product_names,
-                                               seller_names=reviewed_seller_names,
+        return render_template('reviews.html', product_names=reviewed_product_names, 
+                                               product_ids=reviewed_product_ids,
+                                               seller_names=reviewed_seller_names, 
+                                               seller_ids=reviewed_seller_ids,
                                                product_reviews=product_reviews,
                                                seller_reviews=seller_reviews)
     return redirect(url_for('users.login'))

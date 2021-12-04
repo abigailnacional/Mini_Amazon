@@ -28,24 +28,30 @@ class User(UserMixin):
         self.balance = balance
         self.seller_affiliation = seller_affiliation
 
+    """
+    This method is used to confirm if there is a user account with the
+    given email and if the given password is the correct password for that
+    account.
+    """
     @staticmethod
-    def get_by_auth(email, password):
+    def get_by_auth(input_email, input_password):
         rows = app.db.execute("""
 SELECT password, id, email, first_name, last_name
 FROM Users
-WHERE email = :email
+WHERE email = :inputted_email
 """,
-                              email=email)
-        if not rows:  # email not found
+                              inputted_email=input_email)
+        if not rows:  # Email does not exist
             return None
-        # second check allows us to use the preloaded csv data (remove at some point)
-        elif not check_password_hash(rows[0][0], password) \
-                and not check_password_hash(generate_password_hash(rows[0][0]), password):
-            # incorrect password
+        elif not check_password_hash(rows[0][0], password):
             return None
         else:
-            return User(*(rows[0][1:]))
+            return 
 
+    """
+    This method is used to confirm if there is a user account with the
+    given email.
+    """
     @staticmethod
     def email_exists(email):
         rows = app.db.execute("""
@@ -56,6 +62,12 @@ WHERE email = :email
                               email=email)
         return len(rows) > 0
 
+    """
+    This method is used to save the information from the registration
+    form to the database. Email, first name, last name, and address
+    (if one is provided) are saved as is to the database. The password
+    is hashed and the hashed version is saved to the database.
+    """
     @staticmethod
     def register(email, password, first_name, last_name, address):
         try:
@@ -77,6 +89,9 @@ RETURNING id
             # reporting needed
             return None
 
+    """
+    This method is used to grab all of the user's info when given a user ID.
+    """
     @staticmethod
     @login.user_loader
     def get(id):
@@ -89,6 +104,10 @@ RETURNING id
             id=id)
         return User(*(rows[0])) if rows else None
 
+    """
+    This method is used to determine whether the user has enough money
+    after a given amount is subtracted from their balance.
+    """
     def has_enough_money(self, total_price):
         return app.db.execute(
             """
@@ -98,6 +117,21 @@ RETURNING id
             """,
             id=self.id,
         )[0][0] >= total_price
+
+    """
+    This method is used to determine whether the user's balance
+    will exceed the max int value for SQL after a given amount
+    is added to their balance.
+    """
+    def under_max_balance(self, total_price):
+        return app.db.execute(
+            """
+            SELECT balance
+            FROM Users
+            WHERE id = :id
+            """,
+            id=self.id,
+        )[0][0] + total_price <= 2147483647 #max int value in SQL
 
     """
     This method is used to decrease balance without committing to allow for rollback when purchasing a cart
@@ -131,31 +165,43 @@ RETURNING id
             },
         )
 
-    def decrement_balance2(self, total_price):
+    """
+    This method is used to subtract off a given amount from the user's balance.
+    It returns the new balance.
+    """
+    def decrement_balance(self, amount):
         return app.db.execute(
             """
             UPDATE Users
-            SET balance = balance - :total_price
+            SET balance = balance - :amount
             WHERE id = :id
-            AND balance > :total_price
+            AND balance >= :amount
             RETURNING*
             """,
             id=self.id,
-            total_price=total_price
+            amount=amount
         )[0][0]
 
-    def increment_balance(self, total_price):
+    """
+    This method is used to add a given amount to the user's balance.
+    It returns the new balance.
+    """
+    def increment_balance(self, amount):
         return app.db.execute(
             """
             UPDATE Users
-            SET balance = balance + :total_price
+            SET balance = balance + :amount
             WHERE id = :id
             RETURNING*
             """,
             id=self.id,
-            total_price=total_price
+            amount=amount
         )[0][0]
 
+    """
+    This method is used to update the user's email. It returns a boolean
+    so that the update can be confirmed.
+    """
     def edit_email(self, email) -> bool:
         return app.db.execute(
             """
@@ -168,6 +214,10 @@ RETURNING id
             email=email,
         )[0][0] == email
 
+    """
+    This method is used to update the user's first name. It returns a boolean
+    so that the update can be confirmed.
+    """
     def edit_fname(self, first_name) -> bool:
         return app.db.execute(
             """
@@ -180,6 +230,10 @@ RETURNING id
             first_name=first_name,
         )[0][0] == first_name
 
+    """
+    This method is used to update the user's last name. It returns a boolean
+    so that the update can be confirmed.
+    """
     def edit_lname(self, last_name) -> bool:
         return app.db.execute(
             """
@@ -192,6 +246,10 @@ RETURNING id
             last_name=last_name,
         )[0][0] == last_name
 
+    """
+    This method is used to update the user's address. It returns a boolean
+    so that the update can be confirmed.
+    """
     def edit_address(self, address) -> bool:
         return app.db.execute(
             """
@@ -204,6 +262,10 @@ RETURNING id
             address = address
         )[0][0] == address
         
+    """
+    This method is used to update the user's password. It returns a boolean
+    so that the update can be confirmed.
+    """
     def edit_password(self, password) -> bool:
         return app.db.execute(
             """
@@ -216,18 +278,10 @@ RETURNING id
             password = generate_password_hash(password)
         )[0][0] == self.id
 
-    def edit_balance(self, balance) -> bool:
-        return app.db.execute(
-            """
-            UPDATE Users
-            SET balance = :balance
-            WHERE id = :id
-            RETURNING balance
-            """,
-            id=self.id,
-            balance = balance
-        )[0][0] == balance
-
+    """
+    This method gets all of the users that are sellers and relevant information
+    about them.
+    """
     @staticmethod
     def get_sellers(id):
         rows = app.db.execute('''
@@ -239,6 +293,9 @@ WHERE product_id = :id
                             id=id)     
         return  rows if rows is not None else None 
 
+    """
+    This method checks if a user is a seller when given a user ID.
+    """
     @staticmethod
     def check_seller(id) -> bool:
         rows = app.db.execute(
@@ -251,6 +308,10 @@ WHERE product_id = :id
             id=id)
         return True if rows else False
 
+    """
+    This method gets useful information about ONLY ONE seller when given
+    a seller's user ID.
+    """
     @staticmethod
     def get_seller_info(id):
         rows = app.db.execute(

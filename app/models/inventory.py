@@ -65,15 +65,13 @@ class InventoryEntry:
                        is_available) in rows]
 
     @staticmethod
-    def add_product_to_inventory(current_seller, seller_affiliation, product_id, inventory):
+    def add_product_to_inventory(current_seller, restaurant, product_id, inventory):
 
         rows = app.db.execute_with_no_return('''
-    FOR restaurant IN seller_affiliation
-        INSERT INTO Sells (restaurant, seller_id, product_id, inventory)
-        VALUES (:seller_affiliation[restaurant], :seller_id, :product_id, :inventory);
-    END LOOP;
+    INSERT INTO Sells (seller_affiliation, seller_id, product_id, inventory)
+    VALUES (:restaurant, :seller_id, :product_id, :inventory);
         ''',
-            seller_affiliation=seller_affiliation,
+            restaurant=restaurant,
             seller_id=current_seller.id,
             product_id=product_id,
             inventory=inventory)

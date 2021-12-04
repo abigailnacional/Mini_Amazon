@@ -64,7 +64,9 @@ def add_product():
                 filename = secure_filename(image)
                 f.save(os.path.join(UPLOAD_FOLDER, filename))
                 prod_id = Product.add_product(form.name.data, form.description.data, form.price.data, form.category.data, form.image.data.filename, current_user)
-                InventoryEntry.add_product_to_inventory(current_user, form.restaurant.data, prod_id, form.inventory.data)
+                print(prod_id)
+                for restaurant in form.restaurant.data:
+                    InventoryEntry.add_product_to_inventory(current_user, restaurant, prod_id, form.inventory.data)
                 return redirect(url_for('inventory.inventory'))
             else:
                 flash('Incorrect file type [png, jpg, jpeg accepted]')

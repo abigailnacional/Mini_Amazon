@@ -60,4 +60,10 @@
   </tbody>
 </table>
 
+<a href="/product?id={{vender_id}}&page={{page_num + 1}}" type="button" class="btn btn-gray right">Next</a>
+{% if page_num != 1 %}
+<a href="/product?id={{vender_id}}&page={{page_num - 1}}" type="button" class="btn btn-gray right">Previous</a>
+{% endif %}
+<br></br>
+
 {% endblock %}

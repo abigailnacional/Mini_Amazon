@@ -34,15 +34,18 @@ WHERE id = :id
 
 # method to return products served by a specific on-campus resturant venue
     @staticmethod
-    def get_specific(seller_affiliation):
+    def get_specific(seller_affiliation, page_num):
         rows = app.db.execute('''
 SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
 FROM Product
 RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
 WHERE seller_affiliation = :seller_affiliation AND is_available = True
 ORDER BY id
+LIMIT 20
+OFFSET ((:page_num - 1) * 20)
 ''',
-                                seller_affiliation=seller_affiliation)
+                                seller_affiliation=seller_affiliation,
+                                page_num=page_num)
         return [Product(*row) for row in rows] if rows is not None else None                 
 
     @staticmethod

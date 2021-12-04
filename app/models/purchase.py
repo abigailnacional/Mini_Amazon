@@ -3,8 +3,12 @@ from typing import Optional
 from flask import current_app as app
 from .product import Product
 from .product_in_cart import ProductInCart
-
+from sqlalchemy import text
 from datetime import datetime
+
+"""
+This class represents a purchased product in a cart
+"""
 
 
 class Purchase:
@@ -28,6 +32,16 @@ class Purchase:
         self.final_unit_price = final_unit_price
         self.product_in_cart = product_in_cart
 
+    def get_total_price_paid(self, coupon):
+        discount = 0
+        if coupon and coupon.product_id == self.product_in_cart.product.id and \
+                coupon.seller_id == self.product_in_cart.seller_id:
+            discount = float(self.final_unit_price) * (coupon.percent_off / 100)
+        return round((float(self.final_unit_price) * self.product_in_cart.quantity) - discount, 2)
+
+    """
+    Gets all the purchases for a certain cart with all relevant data, which also comes from ProductInCart
+    """
     @staticmethod
     def get_by_cart(cart_id):
         rows = app.db.execute(
@@ -78,15 +92,21 @@ class Purchase:
                 quantity,
             ) in rows] if rows else []
 
+    """
+    This method inserts a new row into the Purchase table without committing it to allow for rollbacks while 
+    purchasing a cart
+    """
     @staticmethod
-    def get_all_by_uid_since(uid, since):
-        rows = app.db.execute('''
-SELECT product_in_cart_id, time_purchased, is_fulfilled, time_of_fulfillment, cart_id, user_id
-FROM Purchase
-WHERE user_id = :user_id
-AND time_purchased >= :since
-ORDER BY time_purchased DESC
-''',
-                              user_id=uid,
-                              since=since)
-        return [Purchase(*row) for row in rows]
+    def insert_new_purchase_without_commit(conn, product_in_cart_id, user_id, cart_id, final_unit_price):
+        conn.execute(text(
+            """
+            INSERT INTO Purchase(product_in_cart_id, user_id, cart_id, final_unit_price)
+            VALUES (:product_in_cart_id, :user_id, :cart_id, :final_unit_price)
+            """),
+            {
+                "product_in_cart_id": product_in_cart_id,
+                "user_id": user_id,
+                "cart_id": cart_id,
+                "final_unit_price": final_unit_price
+            }
+        )

@@ -7,6 +7,8 @@ from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from flask_babel import _, lazy_gettext as _l
 
 from .models.user import User
+from .models.product_review import ProductReview
+from .products import product_sellers
 
 from flask import Blueprint
 bp = Blueprint('users', __name__)
@@ -77,7 +79,30 @@ def logout():
 @bp.route('/view_account')
 def view_account():
     if current_user.is_authenticated:
-        return render_template('account.html')
+        return render_template('edit_acct_info/account.html')
+    return redirect(url_for('users.login'))
+
+@bp.route('/view_public_profile/<public_user_id>')
+def view_public_profile(public_user_id):
+    if current_user.is_authenticated:
+        if User.check_seller(public_user_id):
+            #If user is a seller, render user profile with extra seller info
+            reviews = ProductReview.get_reviews(User.get_seller_info(public_user_id).id, "seller")
+            summary_ratings = ProductReview.get_summary_rating(User.get_seller_info(public_user_id).id, "seller")
+            return render_template(
+                'public_seller_profile.html',
+                seller =  User.get_seller_info(public_user_id),
+                product_sellers = product_sellers,
+                reviews=reviews,
+                summary_ratings=summary_ratings
+            )
+        
+        #If user is not a seller, render user profile with limited info
+        return render_template(
+        'public_user_profile.html',
+        user = User.get(public_user_id)
+        )
+        
     return redirect(url_for('users.login'))
 
 class EditEmailForm(FlaskForm):
@@ -95,7 +120,7 @@ def edit_email():
         if User.edit_email(current_user, form.email.data):
             flash('Email has been changed.')
             return redirect(url_for('users.view_account'))
-    return render_template('edit_email.html', title='Edit Email', form=form)
+    return render_template('edit_acct_info/edit_email.html', title='Edit Email', form=form)
 
 class EditFnameForm(FlaskForm):
     first_name = StringField(_l('First Name'), validators=[DataRequired()])
@@ -108,7 +133,7 @@ def edit_fname():
         if User.edit_fname(current_user, form.first_name.data):
             flash('First name has been changed.')
             return redirect(url_for('users.view_account'))
-    return render_template('edit_fname.html', title='Edit First Name', form=form)
+    return render_template('edit_acct_info/edit_fname.html', title='Edit First Name', form=form)
 
 class EditLnameForm(FlaskForm):
     last_name = StringField(_l('Last Name'), validators=[DataRequired()])
@@ -121,7 +146,7 @@ def edit_lname():
         if User.edit_lname(current_user, form.last_name.data):
             flash('Last name has been changed.')
             return redirect(url_for('users.view_account'))
-    return render_template('edit_lname.html', title='Edit Last Name', form=form)
+    return render_template('edit_acct_info/edit_lname.html', title='Edit Last Name', form=form)
 
 class EditAddressForm(FlaskForm):
     address = StringField(_l('Address'), validators=[DataRequired()])
@@ -134,7 +159,7 @@ def edit_address():
         if User.edit_address(current_user, form.address.data):
             flash('Address has been changed.')
             return redirect(url_for('users.view_account'))
-    return render_template('edit_address.html', title='Edit Address', form=form)
+    return render_template('edit_acct_info/edit_address.html', title='Edit Address', form=form)
 
 class EditPasswordForm(FlaskForm):
     password = PasswordField(_l('Password'), validators=[DataRequired()])
@@ -150,17 +175,26 @@ def edit_password():
         if User.edit_password(current_user, form.password.data):
             flash('Password has been changed.')
             return redirect(url_for('users.view_account'))
-    return render_template('edit_password.html', title='Edit Password', form=form)
+    return render_template('edit_acct_info/edit_password.html', title='Edit Password', form=form)
 
 class EditBalanceForm(FlaskForm):
-    balance = FloatField(_l('Balance'), validators=[DataRequired()])
+    balance = FloatField(_l('Amount to Withdraw/Deposit'), validators=[DataRequired()])
     submit = SubmitField(_l('Update Balance'))
 
-@bp.route('/edit_balance', methods=['GET', 'POST'])
-def edit_balance():
+@bp.route('/decrement_balance', methods=['GET', 'POST'])
+def decrement_balance():
     form = EditBalanceForm()
     if form.validate_on_submit():
-        if User.edit_balance(current_user, form.balance.data):
-            flash('Balance has been changed.')
+        if User.decrement_balance2(current_user, form.balance.data):
+            flash('Money has been withdrawn from your account.')
             return redirect(url_for('users.view_account'))
-    return render_template('edit_balance.html', title='Edit Balance', form=form)
+    return render_template('edit_acct_info/withdraw_money.html', title='Withdraw Money', form=form)
+
+@bp.route('/increment_balance', methods=['GET', 'POST'])
+def increment_balance():
+    form = EditBalanceForm()
+    if form.validate_on_submit():
+        if User.increment_balance(current_user, form.balance.data):
+            flash('Money has been deposited into your account.')
+            return redirect(url_for('users.view_account'))
+    return render_template('edit_acct_info/deposit_money.html', title='Deposit Money', form=form)

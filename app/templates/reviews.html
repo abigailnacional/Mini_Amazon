@@ -5,7 +5,7 @@
 <br><br>
 
 {% if current_user.is_authenticated %}
-<h2>Your reviews:</h2>
+<h2>Your Product Reviews:</h2>
 <table class='table table-hover table-bordered container'>
   <thead class="thead-dark">
     <tr>
@@ -14,16 +14,44 @@
       <th scope="col">Review Message</th> <!-- TODO: perhaps not review the entire message in this one column? -->
       <th scope="col">Date</th>
       <th scope="col">Edit Your Review</th>
+      <th scope="col">Remove Your Review</th>
     </tr>
   </thead>
   <tbody>
-    {% for i in range(reviews|length) %}
+    {% for i in range(product_reviews|length) %}
       <tr>
         <th scope="row">{{ product_names[i] }}</th>
-        <td>{{ reviews[i].rating }}</td>
-        <td>{{ reviews[i].review }}</td>
-        <td>{{ reviews[i].time_posted }}</td>
-        <td><a href="{{ url_for('product_rating.edit_review', product_id=reviews[i].product_id) }}">Edit</a></td>
+        <td>{{ product_reviews[i].rating }}</td>
+        <td>{{ product_reviews[i].review }}</td>
+        <td>{{ product_reviews[i].time_posted }}</td>
+        <td><a href="{{ url_for('product_rating.edit_review', review_type='product', id=product_reviews[i].product_id) }}">Edit</a></td>
+        <td><a href="{{ url_for('product_rating.remove_review', review_type='product', id=product_reviews[i].product_id) }}">x</a></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2>Your Seller Reviews:</h2>
+<table class='table table-hover table-bordered container'>
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Seller Name</th>
+      <th scope="col">Star Rating</th>
+      <th scope="col">Review Message</th> <!-- TODO: perhaps not review the entire message in this one column? -->
+      <th scope="col">Date</th>
+      <th scope="col">Edit Your Review</th>
+      <th scope="col">Remove Your Review</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in range(seller_reviews|length) %}
+      <tr>
+        <th scope="row">{{ seller_names[i] }}</th>
+        <td>{{ seller_reviews[i].rating }}</td>
+        <td>{{ seller_reviews[i].review }}</td>
+        <td>{{ seller_reviews[i].time_posted }}</td>
+        <td><a href="{{ url_for('product_rating.edit_review', review_type='seller', id=seller_reviews[i].seller_id) }}">Edit</a></td>
+        <td><a href="{{ url_for('product_rating.remove_review', review_type='seller', id=seller_reviews[i].seller_id) }}">x</a></td>
       </tr>
     {% endfor %}
   </tbody>

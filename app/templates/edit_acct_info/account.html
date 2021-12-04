@@ -15,6 +15,7 @@
     </ul>
     {% endif %}
     {% endwith %}
+    <a class="btn btn-secondary" href="{{ url_for('users.view_public_profile', public_user_id=current_user.id) }}" type="button" class="btn btn-light">View My Public Profile</a>
   </p>
 <dl>
     <dt>Account ID</dt>
@@ -26,7 +27,6 @@
     <dt>First Name
         <a class="btn btn-secondary" href="{{ url_for('users.edit_fname') }}" role="button">Edit First Name</a>
     </dt>
-    </dt>
     <dd>{{current_user.first_name}}</dd>
     <dt>Last Name
         <a class="btn btn-secondary" href="{{ url_for('users.edit_lname') }}" role="button">Edit Last Name</a>
@@ -37,12 +37,14 @@
     </dt>
     <dd>{{current_user.address}}</dd>
     <dt>Password
-        <a class="btn btn-secondary" href="{{ url_for('users.edit_password') }}" role="button">Edit Password</a>
+        <a class="btn btn-secondary" href="{{ url_for('users.edit_password') }}" role="button">Create New Password</a>
     </dt>
-    <dd>{{current_user.password}}</dd>
+    <dd>Current password will not be displayed for security reasons.</dd>
     <dt>Balance
-        <a class="btn btn-secondary" href="{{ url_for('users.edit_balance') }}" role="button">Edit Balance</a>
     </dt>
+    <dd><a class="btn btn-secondary" href="{{ url_for('users.decrement_balance') }}" role="button">Withdraw Money</a>
+        <a class="btn btn-secondary" href="{{ url_for('users.increment_balance') }}" role="button">Deposit Money</a>
+    </dd>
     <dd>{{current_user.balance}}</dd>
 </dl> 
 

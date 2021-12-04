@@ -4,6 +4,11 @@
 
 <br><br>
 <h2>Order {{cart_id}}</h2>
+{% if coupon %}
+<br>
+<h4>You saved {{coupon.percent_off}}% on 1 unit of product
+  {{coupon.product_id}} by using coupon code {{coupon.code}} on this order!</h4>
+{% endif %}
 <br>
 <table class='table table-hover table-bordered container'>
   <thead class="thead-dark">
@@ -35,6 +40,7 @@
       <th scope="col">Quantity</th>
       <th scope="col">Fulfilled</th>
       <th scope="col">Time of Fulfillment</th>
+      <th scope="col">Review This Seller</th>
     </tr>
   </thead>
   <tbody>
@@ -51,6 +57,9 @@
         {% else %}
           <td>-</td>
         {% endif %}
+        <td>
+          <a href="{{ url_for('product_rating.create_review', review_type='seller', id=purchase.product_in_cart.seller_id) }}" type="button" class="btn btn-dark">Leave a Review</a>
+        </td>
       </tr>
     {% endfor %}
   </tbody>

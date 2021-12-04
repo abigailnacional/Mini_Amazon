@@ -67,28 +67,40 @@
 <table class='table table-hover table-bordered container'>
   <thead class="thead-dark">
     <tr>
+      <th scope="col">User</th>
       <th scope="col">Star Rating</th>
       <th scope="col">Review Message</th> <!-- TODO: perhaps not review the entire message in this one column? -->
       <th scope="col">Date</th>
-      <th scope="col">Temp upvote counter</th>
-      <th scope="col">Upvote</th>
+      <th scope="col">Upvotes</th>
+      <th scope="col">Upvote This Review</th>
+      <th scope="col">Report This Review</th>
     </tr>
   </thead>
   <tbody>
     {% for i in range(reviews|length) %}
-      <tr>
-        <td>{{ reviews[i].rating }}</td>
-        <td>{{ reviews[i].review }}</td>
-        <td>{{ reviews[i].time_posted }}</td>
-        <td>{{ reviews[i].upvotes }}</td>
-        <td>
-          <a href="{{ url_for('product_rating.upvote_review', review_type='product', id=product_info.id) }}" type="button" class="btn btn-dark">Upvote This Review</a>
-        </td>
-      </tr>
+      {% if (reviews[i].reviewer_id, product_info.id) not in user_product_reports %}
+        <tr>
+          <td>{{ reviews[i].reviewer_id }}</td>
+          <td>{{ reviews[i].rating }}</td>
+          <td>{{ reviews[i].review }}</td>
+          <td>{{ reviews[i].time_posted }}</td>
+          <td>{{ reviews[i].upvotes }}</td>
+          <td>
+            {% if upvote_exists|length != 0 and upvote_exists[i] %}
+              <a href="{{ url_for('product_rating.remove_upvote', reviewer_id=reviews[i].reviewer_id, review_type='product', id=product_info.id) }}" type="button" class="btn btn-dark">Remove Upvote</a>
+            {% else %}
+              <a href="{{ url_for('product_rating.upvote_review', reviewer_id=reviews[i].reviewer_id, review_type='product', id=product_info.id) }}" type="button" class="btn btn-dark">Upvote</a>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{{ url_for('product_rating.report_review', reviewer_id=reviews[i].reviewer_id, review_type='product', id=product_info.id) }}" type="button" class="btn btn-dark">Report</a>
+          </td>
+        </tr>
+      {% endif %}
     {% endfor %}
   </tbody>
 </table>
 
-<a href="{{ url_for('index.index') }}" type="button" class="btn btn-dark">Show More Reviews (TODO)</a>
+<!-- <a href="{{ url_for('index.index') }}" type="button" class="btn btn-dark">Show More Reviews (TODO)</a> -->
 
 {% endblock %}

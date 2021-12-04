@@ -3,7 +3,7 @@ from werkzeug.urls import url_parse
 from flask_login import login_user, logout_user, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
+from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, NumberRange
 from flask_babel import _, lazy_gettext as _l
 
 from .models.user import User
@@ -178,7 +178,10 @@ def edit_password():
     return render_template('edit_acct_info/edit_password.html', title='Edit Password', form=form)
 
 class EditBalanceForm(FlaskForm):
-    balance = FloatField(_l('Amount to Withdraw/Deposit'), validators=[DataRequired()])
+    balance = FloatField(_l('Amount to Withdraw/Deposit'), 
+        validators=[DataRequired(message='Please enter a number.'),
+        NumberRange(min=0, max=1000000000.1, 
+        message='You must enter a number between 0 and 1000000000 (1 million).')])
     submit = SubmitField(_l('Update Balance'))
 
 @bp.route('/decrement_balance', methods=['GET', 'POST'])

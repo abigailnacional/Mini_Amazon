@@ -48,6 +48,7 @@ OFFSET ((:page_num - 1) * 20)
                                 page_num=page_num)
         return [Product(*row) for row in rows] if rows is not None else None                 
 
+# method to return all available products
     @staticmethod
     def get_all(is_available=True):
         rows = app.db.execute('''
@@ -70,57 +71,77 @@ WHERE is_available = :is_available
 
 # method to return filtered view of venue products by category (entrées, beverages, etc.)
     @staticmethod
-    def filteredCat(seller_affiliation, category):
+    def filteredCat(seller_affiliation, category, page_num):
         rows = app.db.execute('''
 SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
 FROM Product
 RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
 WHERE seller_affiliation = :seller_affiliation AND is_available = True AND category = :category
 ORDER BY id
+LIMIT 20
+OFFSET ((:page_num - 1) * 20)
 ''',
                               seller_affiliation=seller_affiliation,
-                              category=category)
+                              category=category,
+                              page_num=page_num)
         return [Product(*row) for row in rows]  
 
+# method to filter by price (ordered from lowest to highest)
     @staticmethod
-    def filteredPrice():
+    def filteredPrice(seller_affiliation, page_num):
         rows = app.db.execute('''
 SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
-FROM Product
+FROM Product RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
+WHERE seller_affiliation = :seller_affiliation AND is_available = True
 ORDER BY price ASC
-''',)
+LIMIT 20
+OFFSET ((:page_num - 1) * 20)
+''',
+                                seller_affiliation=seller_affiliation,
+                                page_num=page_num)
         return [Product(*row) for row in rows] 
 
+# method to return filtered view of venue products by their current average rating
     @staticmethod
-    def filteredRating(stars):
+    def filteredRating(stars, page_num):
         rows = app.db.execute('''
 SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
 FROM Product FULL OUTER JOIN Feedback ON Product.id = Feedback.product_id
 GROUP BY id
 HAVING AVG(rating) >= :stars
 ORDER BY id
+LIMIT 20
+OFFSET ((:page_num - 1) * 20)
 ''',
-                            stars=stars)
+                            stars=stars,
+                            page_num=page_num)
         return [Product(*row) for row in rows] 
 
+# method to return filtered view of venue products by search query
     @staticmethod
-    def search_filter(search):
+    def search_filter(search, page_num):
         rows = app.db.execute('''
 SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
 FROM Product
 WHERE LOWER(name) LIKE '%' || :search || '%' OR UPPER(name) LIKE '%' || :search || '%' OR name LIKE '%' || :search || '%'
+LIMIT 20
+OFFSET ((:page_num - 1) * 20)
 ''',
-                            search=search)
+                            search=search,
+                            page_num=page_num)
         return [Product(*row) for row in rows] 
 
     @staticmethod
-    def search_id(id):
+    def search_id(id, page_num):
         rows = app.db.execute('''
 SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
 FROM Product
 WHERE id = :id
+LIMIT 20
+OFFSET ((:page_num - 1) * 20)
 ''',
-                            id=id)
+                            id=id,
+                            page_num=page_num)
         return [Product(*row) for row in rows] 
 
     @staticmethod

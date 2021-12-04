@@ -22,17 +22,16 @@ from flask import Blueprint
 bp = Blueprint('inventory', __name__)
 bp.config = {}
 
-@bp.route('/inventory')
+@bp.route('/inventory', methods=['GET'])
 def inventory():
+    page_num = int(request.args.get('page'))
     if not current_user.is_authenticated:
         return redirect(url_for('index.index'))
 
     items: List[InventoryEntry] = InventoryEntry.get_all_entries_by_seller(
-        seller_id=current_user.id)
+        page_num, seller_id=current_user.id)
 
-    return render_template(
-        'products_sold.html', 
-        inventory=items)
+    return render_template('products_sold.html', inventory=items, page_num=page_num, max_pages=len(items))
 
 class AddProductForm(FlaskForm):
     name = StringField(_l('* Product Name'), validators=[DataRequired()])

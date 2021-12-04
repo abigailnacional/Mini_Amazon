@@ -30,7 +30,7 @@ class InventoryEntry:
         self.is_available = is_available
 
     @staticmethod
-    def get_all_entries_by_seller(seller_id: int):
+    def get_all_entries_by_seller(page_num, seller_id: int):
         rows = app.db.execute(
             """
             SELECT Sells.seller_affiliation, Sells.seller_id, Sells.product_id, Sells.inventory,
@@ -42,8 +42,11 @@ class InventoryEntry:
             JOIN Product
             ON Product.id=Sells.product_id
             WHERE seller_id = :seller_id
+            LIMIT 20
+            OFFSET ((:page_num - 1) * 20)
             """,
-            seller_id=seller_id
+            seller_id=seller_id,
+            page_num=page_num
         )
 
         return [InventoryEntry(

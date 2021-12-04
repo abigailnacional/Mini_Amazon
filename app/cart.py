@@ -36,6 +36,10 @@ def view_cart():
         total_price = current_cart.get_total_current_price(None)
         form = AddCouponForm()
 
+        page_num = 1
+        if request.args.get('page'):
+            page_num = int(request.args.get('page'))
+
         if request.method == 'POST':
             if form.validate_on_submit():
                 coupon = Coupon.get(form.coupon_code.data)
@@ -58,10 +62,11 @@ def view_cart():
 
         return render_template(
             'cart.html',
-            products_in_cart=current_cart.get_products_in_cart(),
+            products_in_cart=current_cart.get_products_in_cart(page_num),
             total_cart_price=total_price,
             user_can_order=total_price <= User.get(current_user.id).balance,
-            form=form
+            form=form,
+            page_num=page_num
         )
 
     return redirect(url_for('users.login'))
@@ -74,24 +79,27 @@ This method gets a purchased cart with the given cart id
 def view_purchased_cart(cart_id):
     if current_user.is_authenticated:
 
+        page_num = int(request.args.get('page'))
+
         purchased_cart = Cart.get_cart_by_id(cart_id)
-        purchases = purchased_cart.get_purchases()
+        purchases = purchased_cart.get_purchases(page_num)
         coupon = None
         if purchased_cart.coupon_applied:
             coupon = Coupon.get(purchased_cart.coupon_applied)
 
         final_price = 0
-        for purchase in purchases:
+        for purchase in purchased_cart.get_purchases():
             final_price += purchase.get_total_price_paid(coupon)
+        purchased_cart.get_products_in_cart()
 
         return render_template(
             'purchase.html',
-            products_in_cart=purchased_cart.get_products_in_cart(),
             cart=purchased_cart,
             purchases=purchases,
             total_cart_price=final_price,
             cart_id=cart_id,
-            coupon=coupon
+            coupon=coupon,
+            page_num=page_num
         )
     return redirect(url_for('users.login'))
 
@@ -115,7 +123,7 @@ This method increases the quantity of a product in a cart
 def increase_quantity_in_cart(product_in_cart_id):
     if current_user.is_authenticated:
         ProductInCart.increase_quantity(product_in_cart_id)
-        return redirect(url_for('cart.view_cart'))
+        return redirect(request.referrer)
     return redirect(url_for('users.login'))
 
 
@@ -126,7 +134,7 @@ This method decreases the quantity of a product in a cart
 def decrease_quantity_in_cart(product_in_cart_id):
     if current_user.is_authenticated:
         ProductInCart.decrease_quantity(product_in_cart_id)
-        return redirect(url_for('cart.view_cart'))
+        return redirect(request.referrer)
     return redirect(url_for('users.login'))
 
 
@@ -137,7 +145,7 @@ This method removes a product in a cart
 def remove_item_from_cart(product_in_cart_id):
     if current_user.is_authenticated:
         ProductInCart.remove_from_cart(product_in_cart_id)
-        return redirect(url_for('cart.view_cart'))
+        return redirect(request.referrer)
     return redirect(url_for('users.login'))
 
 
@@ -164,7 +172,7 @@ def order_cart():
 
         if len(current_cart.get_products_in_cart()) == 0:
             flash("You have nothing in your cart!")
-            return redirect(url_for('cart.view_cart'))
+            return redirect(request.referrer)
 
         with app.db.engine.begin() as conn:
 
@@ -178,7 +186,7 @@ def order_cart():
                 if not user_has_enough_money:
                     flash(NOT_ENOUGH_MONEY)
                     conn.rollback()
-                    return redirect(url_for('cart.view_cart'))
+                    return redirect(request.referrer)
 
                 # ensure seller has enough inventory
                 seller_product_inventory = InventoryEntry.get_amount_available(
@@ -189,7 +197,7 @@ def order_cart():
                 if not seller_has_enough_inventory:
                     flash(NOT_ENOUGH_INVENTORY.format(product_in_cart.product.id))
                     conn.rollback()
-                    return redirect(url_for('cart.view_cart'))
+                    return redirect(request.referrer)
 
                 # take from buyer balance
                 User.get(current_user.id).decrease_balance_without_commit(conn, total_product_price)
@@ -215,6 +223,6 @@ def order_cart():
             conn.commit()
             current_cart.mark_as_purchased()
             Cart.create_new_cart(current_user.id)
-            return redirect(url_for('order.view_orders'))
+            return redirect(url_for('order.view_orders')+'?page=1')
     return redirect(url_for('users.login'))
 

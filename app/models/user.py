@@ -28,20 +28,23 @@ class User(UserMixin):
         self.balance = balance
         self.seller_affiliation = seller_affiliation
 
+    """
+    This method is used to decrease balance without committing to allow for rollback when purchasing a cart
+    """
     @staticmethod
-    def get_by_auth(email, password):
+    def get_by_auth(input_email, input_password):
         rows = app.db.execute("""
 SELECT password, id, email, first_name, last_name
 FROM Users
-WHERE email = :email
+WHERE email = :inputted_email
 """,
-                              email=email)
-        if not rows:  # email not found
+                              inputted_email=input_email)
+        if not rows:  # Email does not exist
             return None
-            # incorrect password
+        elif not check_password_hash(rows[0][0], password):
             return None
         else:
-            return User(*(rows[0][1:]))
+            return 
 
     @staticmethod
     def email_exists(email):

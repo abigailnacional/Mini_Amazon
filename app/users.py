@@ -14,10 +14,12 @@ from flask import Blueprint
 bp = Blueprint('users', __name__)
 
 """
-This form take input from the user, namely an email and a password,
+This form takes input from the user, namely an email and a password,
 so that the user may log in. If the user selects the 'Remember Me'
-option, the user will remain logged in to the website unless they
-click the 'Log Out' button.
+option, the user will remain logged in to the website even if they close their browser,
+unless they click the 'Log Out' button. If 'Remember Me' is not selected,
+the user will automatically be logged out if they close their browser (but
+not if they only close a tab).
 """
 class LoginForm(FlaskForm):
     email = StringField(_l('Email'), validators=[DataRequired(), Email()])

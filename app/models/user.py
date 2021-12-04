@@ -131,7 +131,7 @@ RETURNING id
             },
         )
 
-    def decrement_balance2(self, total_price):
+    def decrement_balance(self, total_price):
         return app.db.execute(
             """
             UPDATE Users

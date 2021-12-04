@@ -185,7 +185,7 @@ class EditBalanceForm(FlaskForm):
 def decrement_balance():
     form = EditBalanceForm()
     if form.validate_on_submit():
-        if User.decrement_balance2(current_user, form.balance.data):
+        if User.decrement_balance(current_user, form.balance.data):
             flash('Money has been withdrawn from your account.')
             return redirect(url_for('users.view_account'))
     return render_template('edit_acct_info/withdraw_money.html', title='Withdraw Money', form=form)

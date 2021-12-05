@@ -35,6 +35,39 @@ def inventory():
         coupons=coupons
     )
 
+@bp.route('/inventory/increment_quantity/<id>', methods=['POST'])
+def increment_quantity(id):
+    if not current_user.is_authenticated:
+        return redirect(url_for('index.index'))
+    
+    InventoryEntry.increase_quantity(id, current_user.id)
+
+
+    return redirect(url_for('inventory.inventory'))
+
+
+@bp.route('/inventory/decrement_quantity/<id>', methods=['POST'])
+def decrement_quantity(id):
+    if not current_user.is_authenticated:
+        return redirect(url_for('index.index'))
+    
+    InventoryEntry.decrease_quantity(id, current_user.id)
+
+    return redirect(url_for('inventory.inventory'))
+
+
+@bp.route('/inventory/delete_product/<id>', methods=['POST'])
+def delete_product(id):
+    """
+    Marks the Sells.is_available = false for this seller/item.
+    """
+
+    if not current_user.is_authenticated:
+        return redirect(url_for('index.index'))
+
+    InventoryEntry.delete_item(id, current_user.id)
+
+    return redirect(url_for('inventory.inventory'))
 
 class AddProductForm(FlaskForm):
     name = StringField(_l('Product Name'), validators=[DataRequired()])

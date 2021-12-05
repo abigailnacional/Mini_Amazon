@@ -6,40 +6,64 @@
 
 <a href="{{ url_for('inventory.add_product') }}" type="button" id = "vendor" class="btn btn-black"> Add new product </a> 
 
+<style>
+  .btn-updown {
+    width: 30px;
+    height: 30px;
+    display: block;
+    margin: 3px;
+  }
+</style>
+
 <br><br>
 <table class='table table-hover table-bordered container'>
   <thead class="thead-dark">
     <tr>
       <th scope="col">Product ID</th>
       <th scope="col">Quantity</th>
+      <th scope="col"></th>
       <th scope="col">Name</th>
       <th scope="col">Category</th>
       <th scope="col">Price</th>
       <th scope="col">Available</th>
       <th scope="col">Current Coupon</th>
-      <th scope="col">Generate Coupon</th>
+      <th scope="col"></th>
+      <th scope="col"></th>
     </tr>
   </thead>
   <tbody>
     {% for item in inventory %}
       <tr>
         <th scope="row"><a href="/view?id={{ item.product_id }}">{{ item.product_id }}</a></th>
+        <td scope="row">
+          {{ item.inventory }}
+        </td>
+        <td scope="row" style="text-align: center; vertical-align: middle;">
+          <div style="width: 100%; text-align: center;">
+
+            <form method="post" action="/inventory/increment_quantity/{{item.product_id}}"><button name="up" value="up" class="btn-updown">&and;</button></form>
+            <form method="post" action="/inventory/decrement_quantity/{{item.product_id}}"><button name="down" value="down" class="btn-updown">&or;</button></form>
+          </div>
+        </td>
         <td scope="row">{{ item.inventory }}</td>
         <td scope="row">{{ item.name }}</td>
         <td scope="row">{{ item.category }}</td>
         <td scope="row">${{ item.price }}</td>
         <td scope="row">{{ item.is_available }}</td>
-        {% if item.product_id in coupons %}
+        {% if item.product_id in coupons %} 
           <td scope="row">{{ coupons[item.product_id] }}</td>
           <td>
-            <button disabled>Click here!</button>
+            <button disabled>Generate Coupon</button>
           </td>
         {% else %}
           <td scope="row">No current coupon</td>
           <td><form action="/generate_coupon/{{item.product_id}}/{{item.seller_id}}">
-            <button>Click here!</button>
+            <button>Generate Coupon</button>
           </form></td>
         {% endif %}
+        <td scope="row">
+          <form method="post" action="/inventory/delete_product/{{item.product_id}}"><button name="delete" value="delete" class="btn-updown">X</button></form>
+        </td>
       </tr>
     {% endfor %}
   </tbody>

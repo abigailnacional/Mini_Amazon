@@ -125,10 +125,13 @@
             </span> 
       
             <a href="{{ url_for('index.index') }}" type="button" class="btn btn-light">Home</a>
-            <a href="{{ url_for('inventory.inventory') }}" type="button" class="btn btn-light">View My Products</a>
+            <a href="{{ url_for('inventory.inventory') }}" type="button" class="btn btn-light">My Products</a>
             <a href="{{ url_for('product_rating.view_reviews') }}" type="button" class="btn btn-light">My Reviews</a>
-            <a href="{{ url_for('cart.view_cart') }}?page=1" type="button" class="btn btn-light">View Cart</a>
-            <a href="{{ url_for('order.view_orders')}}?page=1" type="button" class="btn btn-light">Purchase History</a>
+            <a href="{{ url_for('cart.view_cart') }}" type="button" class="btn btn-light">View Cart</a>
+            <a href="{{ url_for('users.view_public_profile', public_user_id=current_user.id) }}" type="button" class="btn btn-light">View My Public Profile</a>
+            <a href="{{ url_for('order.view_orders') }}" type="button" class="btn btn-light">Purchase History</a>
+            <a href="{{ url_for('order.incoming_orders') }}" type="button" class="btn btn-light">Incoming Orders</a>
+            <a href="{{ url_for('order.fulfilled_orders') }}" type="button" class="btn btn-light">Fulfilled Orders</a>
             <a href="{{ url_for('users.view_account') }}" type="button" class="btn btn-light">Account Info</a>
             <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a>
           {% else %}

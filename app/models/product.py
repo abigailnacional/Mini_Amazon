@@ -38,10 +38,10 @@ WHERE id = :id
     @staticmethod
     def get_specific(seller_affiliation):
         rows = app.db.execute('''
-SELECT DISTINCT id, name, description, category, price, is_available, link, creator_id, image
+SELECT DISTINCT id, name, description, category, price, Sells.is_available, link, creator_id, image
 FROM Product
 RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
-WHERE seller_affiliation = :seller_affiliation AND is_available = True
+WHERE seller_affiliation = :seller_affiliation AND Sells.is_available = True
 ORDER BY id
 ''',
                                 seller_affiliation=seller_affiliation)
@@ -52,7 +52,8 @@ ORDER BY id
         rows = app.db.execute('''
 SELECT id, name, description, category, price, is_available, link, creator_id, image
 FROM Product
-WHERE is_available = :is_available
+RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
+WHERE Sells.is_available = :is_available
 ''',
                               is_available=is_available)
         return [Product(*row) for row in rows]
@@ -62,7 +63,8 @@ WHERE is_available = :is_available
         rows = app.db.execute('''
 SELECT DISTINCT category
 FROM Product
-WHERE is_available = :is_available
+RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
+WHERE Sells.is_available = :is_available
 ''',
                                 is_available=is_available)
         return rows 
@@ -71,10 +73,10 @@ WHERE is_available = :is_available
     @staticmethod
     def filteredCat(seller_affiliation, category):
         rows = app.db.execute('''
-SELECT DISTINCT id, name, description, category, price, is_available, link, creator_id, image
+SELECT DISTINCT id, name, description, category, price, Sells.is_available, link, creator_id, image
 FROM Product
 RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
-WHERE seller_affiliation = :seller_affiliation AND is_available = True AND category = :category
+WHERE seller_affiliation = :seller_affiliation AND Sells.is_available = True AND category = :category
 ORDER BY id
 ''',
                               seller_affiliation=seller_affiliation,
@@ -84,8 +86,10 @@ ORDER BY id
     @staticmethod
     def filteredPrice():
         rows = app.db.execute('''
-SELECT DISTINCT id, name, description, category, price, is_available, link, creator_id, image
+SELECT DISTINCT id, name, description, category, price, Sells.is_available, link, creator_id, image
 FROM Product
+RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
+WHERE Sells.is_available = true
 ORDER BY price ASC
 ''',)
         return [Product(*row) for row in rows] 
@@ -93,9 +97,11 @@ ORDER BY price ASC
     @staticmethod
     def search_filter(search):
         rows = app.db.execute('''
-SELECT DISTINCT id, name, description, category, price, is_available, link, creator_id, image
+SELECT DISTINCT id, name, description, category, price, Sells.is_available, link, creator_id, image
 FROM Product
-WHERE LOWER(name) LIKE '%' || :search || '%' OR UPPER(name) LIKE '%' || :search || '%' OR name LIKE '%' || :search || '%'
+RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
+WHERE (LOWER(name) LIKE '%' || :search || '%' OR UPPER(name) LIKE '%' || :search || '%' OR name LIKE '%' || :search || '%')
+  AND Sells.is_available = true
 ''',
                             search=search)
         return [Product(*row) for row in rows] 
@@ -103,9 +109,11 @@ WHERE LOWER(name) LIKE '%' || :search || '%' OR UPPER(name) LIKE '%' || :search 
     @staticmethod
     def search_id(id):
         rows = app.db.execute('''
-SELECT DISTINCT id, name, description, category, price, is_available, link, creator_id, image
+SELECT DISTINCT id, name, description, category, price, Sells.is_available, link, creator_id, image
 FROM Product
+RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
 WHERE id = :id
+  AND Sells.is_available = true
 ''',
                             id=id)
         return [Product(*row) for row in rows] 

@@ -32,6 +32,11 @@ def view_orders():
 
 """
 This form allows the user to select filters for the purchase history.
+For "Fulfillment Status", users can opt to see only fulfilled carts,
+only unfulfilled carts, or all carts regardless of fulfillment.
+For the second type of filter, users can view the most recent orders
+by selecting if they want to view orders that were purchased within 1
+day ago, or 2/5/10 days ago.
 """
 class OrderFiltersForm(FlaskForm):
     fulfill = SelectField(_l('Fulfillment Status'),

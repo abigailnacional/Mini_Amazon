@@ -179,6 +179,8 @@ def create_review():
                 return_message = "You have already submitted a review for this " + review_type + "!"
                 flash(return_message)
                 # return redirect(url_for('index.index'))
+            elif review_type == "seller" and not pr.check_user_can_review_seller(user_id, id):
+                flash("You cannot create a review because you have not ordered anything from this seller yet!")
             else:
                 create_review_contents = {
                     'reviewer_id': user_id,

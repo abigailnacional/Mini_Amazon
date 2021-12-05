@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<br><br>
+
+<h2>Fulfilled Orders</h2>
+<table class='table table-hover table-bordered container'>
+  <thead class="thead-dark">
+    <tr>
+      <!-- SELECT Users.first_name, Users.last_name, Users.address, Purchase.time_purchased, ProductInCart.quantity, Purchase.is_fulfilled -->
+      <th scope="col">First</th>
+      <th scope="col">Last</th>
+      <th scope="col">Address</th>
+      <th scope="col">Timestamp</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Fulfilled</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for order in fulfilled_orders %}
+      <tr>
+        <td scope="row">{{ order['first_name'] }}</td>
+        <td scope="row">{{ order['last_name'] }}</td>
+        <td scope="row">{{ order['address'] }}</td>
+        <td scope="row">{{ order['timestamp'] }}</td>
+        <td scope="row">{{ order['quantity'] }}</td>
+        <td scope="row">{{ order['fulfilled'] }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

@@ -157,12 +157,13 @@ class InventoryEntry:
             product_id=product_id
         )[0][0]
 
-    """
-    This method is used to decrease seller inventory of a product without committing to allow 
-    for rollback when purchasing a cart
-    """
+    
     @staticmethod
     def decrease_seller_inventory_without_commit(conn, product_id, seller_id, quantity):
+        """
+        This method is used to decrease seller inventory of a product without committing to allow 
+        for rollback when purchasing a cart
+        """
         conn.execute(text(
             """
             UPDATE Sells

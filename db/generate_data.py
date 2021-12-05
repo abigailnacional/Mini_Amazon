@@ -15,7 +15,6 @@ num_users_with_carts = 5
 num_restaurants = 6
 num_sellers = 20
 num_products = 5000
-num_reviews = 1000
 num_carts_per_user = 1000
 num_carts_populated_per_user = 3
 
@@ -39,7 +38,7 @@ sample_products = {1000: {'product-id': 1000, 'id': 1, 'name': 'Au Lait', 'descr
                     1016: {'product-id': 1016, 'id': 6, 'name': '2 Tacos', 'description': 'tacos customized with your choice of protein and toppings', 'category': 'Beverages', 'price': 9.35, 'is_available': 'True', 'creator_id': random.randint(base, base + num_total_users - 1), 'image': 'x'},
                     1017: {'product-id': 1017, 'id': 6, 'name': 'Smart Water', 'description': 'description unavailable', 'category': 'Beverages', 'price': 2.00, 'is_available': 'True', 'creator_id': random.randint(base, base + num_total_users - 1), 'image': 'x'}}
 
-# TODO: create modules for each csv so we don't have to re-create all the data every time
+print("Starting data generation on Users")
 
 with open('db/data/Users.csv', 'w', newline='') as users_file:
     writer = csv.writer(users_file, delimiter=',')
@@ -66,6 +65,8 @@ with open('db/data/Users.csv', 'w', newline='') as users_file:
 
     writer.writerow([-1, " ", " ", " ", " ", 0, " "])
 
+print("Data generation on Users done, starting data generation on Cart")
+
 purchased_cart_ids = []
 with open('db/data/Cart.csv', 'w', newline='') as cart_file:
     writer = csv.writer(cart_file, delimiter=',')
@@ -82,6 +83,8 @@ with open('db/data/Cart.csv', 'w', newline='') as cart_file:
             writer.writerow([cart_id, user_id, is_current, time_purchased, False, None])
 
             cart_id += 1
+
+print("Data generation on Cart done, starting data generation on Product")
 
 with open('db/data/Product.csv', 'w', newline='') as product_file:
     writer = csv.writer(product_file, delimiter=',')
@@ -103,6 +106,7 @@ with open('db/data/Product.csv', 'w', newline='') as product_file:
 
     writer.writerow([-1, " ", " ", " ", 0, False, " ", -1, " "])
 
+print("Data generation on Product done, starting data generation on Sells")
 
 sells = set()
 with open('db/data/Sells.csv', 'w', newline='') as sells_file:
@@ -121,6 +125,8 @@ with open('db/data/Sells.csv', 'w', newline='') as sells_file:
             if (seller_id, product_id) not in sells:
                 sells.add((seller_id, product_id))
                 writer.writerow([seller_affiliation, seller_id, product_id, inventory])
+
+print("Data generation on Sells done, starting data generation on ProductInCart")
 
 products_in_cart = set()
 with open('db/data/ProductInCart.csv', 'w', newline='') as product_in_cart_file:
@@ -144,6 +150,8 @@ with open('db/data/ProductInCart.csv', 'w', newline='') as product_in_cart_file:
 
                 products_in_cart.add((product_in_cart_id, cart_id, product_id, seller_id))
                 writer.writerow([product_in_cart_id, cart_id, product_id, seller_id, quantity])
+
+print("Data generation on ProductInCart done, starting data generation on Purchase")
 
 with open('db/data/Purchase.csv', 'w', newline='') as purchase_file:
     writer = csv.writer(purchase_file, delimiter=',')
@@ -171,34 +179,55 @@ with open('db/data/Purchase.csv', 'w', newline='') as purchase_file:
                     final_price]
             )
 
-with open('db/data/Feedback.csv', 'w', newline='') as feedback_file:
-    writer = csv.writer(feedback_file, delimiter=',')
+print("Data generation on Purchase done, starting data generation on Feedback")
 
-    reviewer_ids = random.sample(list(range(base, base + num_total_users)), num_reviews)
-    product_ids = random.sample(list(range(base, base + num_products)), num_reviews)
-    seller_ids = random.sample(list(range(base, base + num_total_users)), num_reviews)
+with open('db/data/Feedback.csv', 'w', newline='') as f, open('db/data/FeedbackUpvotes.csv', 'w', newline='') as f_up, open('db/data/FeedbackReports.csv', 'w', newline='') as f_r:
+    f_writer = csv.writer(f, delimiter=',')
+    f_up_writer = csv.writer(f_up, delimiter=',')
+    f_r_writer = csv.writer(f_r, delimiter=',')
 
-    for i in range(num_reviews):
-        reviewer_id = reviewer_ids[i]
-        product_id = product_ids[i]
-        rating = random.randint(1, 5)
-        upvotes = random.randint(0, 10)
-        review = ''.join(random.choice(letters) for x in range(random.randint(3, 20)))
+    product_ids = random.sample(list(range(base, base + num_products)), 2500)
+    seller_ids = set([sells_tuple[0] for sells_tuple in sells]) # too little sellers so just create data on them all
 
-        writer.writerow([reviewer_id, rating, review, product_id, -1,
-        datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), upvotes])
+    for product_id in product_ids:
+        sample_reviewer_ids = random.sample(list(range(base, base + num_total_users)), random.randint(1, 10))
+        for sample_reviewer_id in sample_reviewer_ids:
+            rating = random.randint(1, 5)
+            review = ''.join(random.choice(letters) for x in range(random.randint(3, 20)))
+            seller_id = -1
+            time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            upvotes = random.randint(0, 10)
+            reports = random.randint(0, 4)
 
-    for i in range(num_reviews):
-        reviewer_id = reviewer_ids[i]
-        seller_id = seller_ids[i]
-        rating = random.randint(1, 5)
-        upvotes = random.randint(0, 10)
-        review = ''.join(random.choice(letters) for x in range(random.randint(3, 20)))
+            f_writer.writerow([sample_reviewer_id, rating, review, product_id, seller_id, time, upvotes, reports])
+            
+            upvoter_ids = random.sample(list(range(base, base + num_total_users)), random.randint(1, 10))
+            for upvoter_id in upvoter_ids:
+                f_up_writer.writerow([upvoter_id, sample_reviewer_id, product_id, -1])
+            reporter_ids = random.sample(list(range(base, base + num_total_users)), random.randint(1, 10))
+            for reporter_id in reporter_ids:
+                f_r_writer.writerow([reporter_id, sample_reviewer_id, product_id, -1])
+            
+    for seller_id in seller_ids:
+        sample_reviewer_ids = random.sample(list(range(base, base + num_total_users)), random.randint(1, 10))
+        for sample_reviewer_id in sample_reviewer_ids:
+            rating = random.randint(1, 5)
+            review = ''.join(random.choice(letters) for x in range(random.randint(3, 20)))
+            product_id = -1
+            time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            upvotes = random.randint(0, 10)
+            reports = random.randint(0, 4)
 
-        writer.writerow([reviewer_id, rating, review, -1, seller_id,
-        datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), upvotes])
+            f_writer.writerow([sample_reviewer_id, rating, review, product_id, seller_id, time, upvotes, reports])
+            
+            upvoter_ids = random.sample(list(range(base, base + num_total_users)), random.randint(1, 10))
+            for upvoter_id in upvoter_ids:
+                f_up_writer.writerow([upvoter_id, sample_reviewer_id, -1, seller_id])
+            reporter_ids = random.sample(list(range(base, base + num_total_users)), random.randint(1, 10))
+            for reporter_id in reporter_ids:
+                f_r_writer.writerow([reporter_id, sample_reviewer_id, -1, seller_id])
 
-    
+print("Data generation on Feedback done, starting data generation on Coupon")
 
 codes = set()
 with open('db/data/Coupon.csv', 'w', newline='') as coupon_file:
@@ -215,3 +244,5 @@ with open('db/data/Coupon.csv', 'w', newline='') as coupon_file:
         percent_off = 50
 
         writer.writerow([code, expiration_date, product_id, seller_id, percent_off])
+
+print("Data generation on Coupon done")

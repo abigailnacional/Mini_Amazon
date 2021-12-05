@@ -17,7 +17,7 @@
     {% for purchased_cart in purchased_carts%}
       <tr>
         <th scope="row">
-          <a href="{{ url_for('cart.view_purchased_cart', cart_id=purchased_cart.id) }}">{{purchased_cart.id}}</a>
+          <a href="{{ url_for('cart.view_purchased_cart', cart_id=purchased_cart.id) }}?page=1">{{purchased_cart.id}}</a>
         </th>
         <td>{{purchased_cart.time_purchased}}</td>
         <td>{{purchased_cart.is_fulfilled}}</td>
@@ -25,5 +25,14 @@
     {% endfor %}
   </tbody>
 </table>
+
+{% if purchased_carts %}
+<a href="{{ url_for('order.view_orders')}}?page={{page_num + 1}}" type="button" class="btn btn-gray right">Next</a>
+{% endif %}
+{% if page_num != 1 %}
+<a href="{{ url_for('order.view_orders')}}?page={{page_num - 1}}" type="button" class="btn btn-gray right">Previous</a>
+{% endif %}
+<br><br>
+
 {% endblock %}
 ml>

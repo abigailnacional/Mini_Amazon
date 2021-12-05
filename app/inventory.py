@@ -35,14 +35,41 @@ def inventory():
         coupon = Coupon.get_current_coupon_for_product_seller(item.product_id, item.seller_id)
         if coupon:
             coupons[item.product_id] = coupon.code
+    return render_template('products_sold.html', inventory=items, page_num=page_num, max_pages=len(items), coupons=coupons)
+    
+@bp.route('/inventory/increment_quantity/<id>', methods=['POST'])
+def increment_quantity(id):
+    if not current_user.is_authenticated:
+        return redirect(url_for('index.index'))
+    
+    InventoryEntry.increase_quantity(id, current_user.id)
 
-    return render_template(
-        'products_sold.html', 
-        inventory=items,
-        coupons=coupons
-    )
 
-    return render_template('products_sold.html', inventory=items, page_num=page_num, max_pages=len(items))
+    return redirect(url_for('inventory.inventory'))
+
+
+@bp.route('/inventory/decrement_quantity/<id>', methods=['POST'])
+def decrement_quantity(id):
+    if not current_user.is_authenticated:
+        return redirect(url_for('index.index'))
+    
+    InventoryEntry.decrease_quantity(id, current_user.id)
+
+    return redirect(url_for('inventory.inventory'))
+
+
+@bp.route('/inventory/delete_product/<id>', methods=['POST'])
+def delete_product(id):
+    """
+    Marks the Sells.is_available = false for this seller/item.
+    """
+
+    if not current_user.is_authenticated:
+        return redirect(url_for('index.index'))
+
+    InventoryEntry.delete_item(id, current_user.id)
+
+    return redirect(url_for('inventory.inventory'))
 
 class AddProductForm(FlaskForm):
     name = StringField(_l('* Product Name'), validators=[DataRequired()])

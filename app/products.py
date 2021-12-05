@@ -17,7 +17,7 @@ def view_product():
     page_num = int(request.args.get('page'))
     products = Product.get_specific(vender_id, page_num)
     categories = Product.get_categories()
-    average_ratings = ProductReview.get_product_average_rating([product.id for product in products])
+    average_ratings = ProductReview.get_average_rating([product.id for product in products], "product")
     return render_template('product.html', vender_id=vender_id, product_sellers=product_sellers, 
                             avail_products=products, categories=categories, average_ratings=average_ratings,
                             page_num=page_num, pag_tag="/product?id=" + str(vender_id) + "&page=", max_pages=len(products))
@@ -29,7 +29,7 @@ def filtered_cat():
     spec_category = request.args.get('cat')
     products = Product.filteredCat(vender_id, spec_category, page_num)
     categories = Product.get_categories()
-    average_ratings = ProductReview.get_product_average_rating([product.id for product in products])
+    average_ratings = ProductReview.get_average_rating([product.id for product in products], "product")
     return render_template('product.html', vender_id=vender_id, product_sellers=product_sellers, 
                             avail_products=products, categories=categories, average_ratings=average_ratings,
                             page_num=page_num, pag_tag="/filter?id=" + str(vender_id) + "&cat=" + spec_category + "&page=", max_pages=len(products))
@@ -40,7 +40,7 @@ def filtered_price():
     page_num = int(request.args.get('page'))
     products = Product.filteredPrice(vender_id, page_num)
     categories = Product.get_categories()
-    average_ratings = ProductReview.get_product_average_rating([product.id for product in products])
+    average_ratings = ProductReview.get_average_rating([product.id for product in products], "product")
     return render_template('product.html', vender_id=vender_id, product_sellers=product_sellers, 
                             avail_products=products, categories=categories, average_ratings=average_ratings,
                             page_num=page_num, pag_tag="/filter-price?id=" + str(vender_id) + "&page=", max_pages=len(products))  
@@ -64,7 +64,7 @@ def search_filter():
     search = request.args.get('search')
     products = Product.search_filter(search, page_num)
     categories = Product.get_categories()
-    average_ratings = ProductReview.get_product_average_rating([product.id for product in products])
+    average_ratings = ProductReview.get_average_rating([product.id for product in products], "product")
     return render_template('product.html', vender_id=vender_id, product_sellers=product_sellers, 
                             avail_products=products, categories=categories, average_ratings=average_ratings,
                             page_num=page_num, pag_tag="/search?id=" + str(vender_id) + "&search=" + search + "&page=", max_pages=len(products))   
@@ -76,7 +76,7 @@ def search_id():
     search = request.args.get('search')
     products = Product.search_id(search, page_num)
     categories = Product.get_categories()
-    average_ratings = ProductReview.get_product_average_rating([product.id for product in products])
+    average_ratings = ProductReview.get_average_rating([product.id for product in products], "product")
     return render_template('product.html', vender_id=vender_id, product_sellers=product_sellers, 
                             avail_products=products, categories=categories, average_ratings=average_ratings,
                             page_num=page_num, pag_tag="/id-search?id=" + str(vender_id) + "&search=" + search + "&page=", max_pages=len(products))  
@@ -88,7 +88,14 @@ def ind_view():
     sellers = User.get_sellers(prod_id)
     reviews = ProductReview.get_reviews(prod_id, "product")
     summary_ratings = ProductReview.get_summary_rating(prod_id, "product")
+    upvote_exists, user_product_reports = [], []
+    if current_user.is_authenticated:
+        upvote_exists = [ProductReview.check_upvote_exists(current_user.id, review.reviewer_id, prod_id, -1) for review in reviews]
+        user_review_reports = ProductReview.get_user_review_reports(current_user.id)
+        user_product_reports = [(user_review_report[1], user_review_report[2]) for user_review_report in user_review_reports]
     return render_template('ind_prod.html', product_info=product, sellers=sellers, 
-                            product_sellers=product_sellers, reviews=reviews, summary_ratings=summary_ratings)
+                            product_sellers=product_sellers, reviews=reviews,
+                            summary_ratings=summary_ratings, upvote_exists=upvote_exists,
+                            user_product_reports=user_product_reports)
     
 

@@ -48,10 +48,10 @@
   <tbody>
     {% for purchase in purchases %}
       <tr>
-        <th scope="row">{{purchase.product_in_cart.product.id}}</th>
+        <th scope="row"><a href="/view?id={{purchase.product_in_cart.product.id}}">{{purchase.product_in_cart.product.id}}</a></th>
         <td>{{purchase.product_in_cart.product.name}}</td>
         <td>${{purchase.final_unit_price}}</td>
-        <td>{{purchase.product_in_cart.seller_id}}</td>
+        <th scope="row"><a href="{{ url_for('users.view_public_profile', public_user_id=purchase.product_in_cart.seller_id) }}">{{purchase.product_in_cart.seller_id}}</a></th>
         <td>{{purchase.product_in_cart.quantity}}</td>
         <td>{{purchase.is_fulfilled}}</td>
         {% if purchase.time_of_fulfillment %}
@@ -67,5 +67,12 @@
   </tbody>
 </table>
 
+{% if purchases %}
+<a href="{{ url_for('cart.view_purchased_cart', cart_id=cart_id)}}?page={{page_num + 1}}" type="button" class="btn btn-gray right">Next</a>
+{% endif %}
+{% if page_num != 1 %}
+<a href="{{ url_for('cart.view_purchased_cart', cart_id=cart_id)}}?page={{page_num - 1}}" type="button" class="btn btn-gray right">Previous</a>
+{% endif %}
+<br><br>
 {% endblock %}
 ml>

@@ -24,6 +24,7 @@
         <th>Creator ID</th>
         <th>Average Rating</th>
         <th># of Reviews</th>
+        <th>Category Ranking</th>
     </tr>
     <tr>
         <td>{{product_info.id}}</td>
@@ -32,6 +33,7 @@
         <td>{{product_info.creator_id}}</td>
         <td>{{summary_ratings[1]}}</td>
         <td>{{summary_ratings[0]}}</td>
+        <td>{{summary_ratings[2]}}</td>
     </tr>
 </table>
 <br></br>
@@ -49,7 +51,7 @@
   <tbody>
     {% for seller in sellers%}
       <tr>
-        <td>{{seller.id}}</td>
+        <th scope="row"><a href="{{ url_for('users.view_public_profile', public_user_id=seller.id) }}">{{seller.id}}</a></th>
         <td>{{seller.first_name}}</td>
         <td>{{seller.last_name}}</td>
         <td>{{seller.email}}</td>
@@ -63,34 +65,50 @@
   </tbody>
 </table>
 <br><br>
+{% if summary_ratings[0] != 0 %}
+<img src="data:image/png;base64, {{ summary_ratings[3].decode() }}"><img src="data:image/png;base64, {{ summary_ratings[4].decode() }}">
+{% endif %}
+<br><br>
 <a href="{{ url_for('product_rating.create_review', review_type='product', id=product_info.id) }}" type="button" class="btn btn-dark">Leave a Review</a>
 <br><br>
 <h2>All Reviews:</h2>
 <table class='table table-hover table-bordered container'>
   <thead class="thead-dark">
     <tr>
+      <th scope="col">User</th>
       <th scope="col">Star Rating</th>
       <th scope="col">Review Message</th> <!-- TODO: perhaps not review the entire message in this one column? -->
       <th scope="col">Date</th>
-      <th scope="col">Temp upvote counter</th>
-      <th scope="col">Upvote</th>
+      <th scope="col">Upvotes</th>
+      <th scope="col">Upvote This Review</th>
+      <th scope="col">Report This Review</th>
     </tr>
   </thead>
   <tbody>
     {% for i in range(reviews|length) %}
-      <tr>
-        <td>{{ reviews[i].rating }}</td>
-        <td>{{ reviews[i].review }}</td>
-        <td>{{ reviews[i].time_posted }}</td>
-        <td>{{ reviews[i].upvotes }}</td>
-        <td>
-          <a href="{{ url_for('product_rating.upvote_review', review_type='product', id=product_info.id) }}" type="button" class="btn btn-dark">Upvote This Review</a>
-        </td>
-      </tr>
+      {% if (reviews[i].reviewer_id, product_info.id) not in user_product_reports %}
+        <tr>
+          <td>{{ reviews[i].reviewer_id }}</td>
+          <td>{{ reviews[i].rating }}</td>
+          <td>{{ reviews[i].review }}</td>
+          <td>{{ reviews[i].time_posted }}</td>
+          <td>{{ reviews[i].upvotes }}</td>
+          <td>
+            {% if upvote_exists|length != 0 and upvote_exists[i] %}
+              <a href="{{ url_for('product_rating.remove_upvote', reviewer_id=reviews[i].reviewer_id, review_type='product', id=product_info.id) }}" type="button" class="btn btn-dark">Remove Upvote</a>
+            {% else %}
+              <a href="{{ url_for('product_rating.upvote_review', reviewer_id=reviews[i].reviewer_id, review_type='product', id=product_info.id) }}" type="button" class="btn btn-dark">Upvote</a>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{{ url_for('product_rating.report_review', reviewer_id=reviews[i].reviewer_id, review_type='product', id=product_info.id) }}" type="button" class="btn btn-dark">Report</a>
+          </td>
+        </tr>
+      {% endif %}
     {% endfor %}
   </tbody>
 </table>
 
-<a href="{{ url_for('index.index') }}" type="button" class="btn btn-dark">Show More Reviews (TODO)</a>
+<!-- <a href="{{ url_for('index.index') }}" type="button" class="btn btn-dark">Show More Reviews (TODO)</a> -->
 
 {% endblock %}

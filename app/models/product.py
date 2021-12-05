@@ -39,7 +39,7 @@ WHERE id = :id
 SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
 FROM Product
 RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
-WHERE seller_affiliation = :seller_affiliation AND is_available = True
+WHERE seller_affiliation = :seller_affiliation AND Sells.is_available = True
 ORDER BY id
 LIMIT 20
 OFFSET ((:page_num - 1) * 20)
@@ -54,7 +54,8 @@ OFFSET ((:page_num - 1) * 20)
         rows = app.db.execute('''
 SELECT id, name, description, category, price, is_available, creator_id, image
 FROM Product
-WHERE is_available = :is_available
+RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
+WHERE Sells.is_available = :is_available
 ''',
                               is_available=is_available)
         return [Product(*row) for row in rows]
@@ -64,7 +65,8 @@ WHERE is_available = :is_available
         rows = app.db.execute('''
 SELECT DISTINCT category
 FROM Product
-WHERE is_available = :is_available
+RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
+WHERE Sells.is_available = :is_available
 ''',
                                 is_available=is_available)
         return rows 
@@ -76,7 +78,7 @@ WHERE is_available = :is_available
 SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
 FROM Product
 RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
-WHERE seller_affiliation = :seller_affiliation AND is_available = True AND category = :category
+WHERE seller_affiliation = :seller_affiliation AND Sells.is_available = True AND category = :category
 ORDER BY id
 LIMIT 20
 OFFSET ((:page_num - 1) * 20)
@@ -136,7 +138,9 @@ OFFSET ((:page_num - 1) * 20)
         rows = app.db.execute('''
 SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
 FROM Product
+RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
 WHERE id = :id
+AND Sells.is_available = true
 LIMIT 20
 OFFSET ((:page_num - 1) * 20)
 ''',

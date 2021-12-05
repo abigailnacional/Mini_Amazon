@@ -51,6 +51,7 @@ CREATE TABLE Sells (
    seller_id INT NOT NULL,
    product_id INT NOT NULL,
    inventory INT NOT NULL,
+   is_available BOOLEAN NOT NULL DEFAULT TRUE,
    FOREIGN KEY (seller_id) REFERENCES Users(id),
    FOREIGN KEY (product_id) REFERENCES Product(id),
    PRIMARY KEY (seller_id, product_id)
@@ -62,7 +63,7 @@ CREATE TABLE Coupon (
     product_id INT NOT NULL,
     seller_id INT NOT NULL,
     percent_off INT NOT NULL,
-    FOREIGN KEY (seller_id, product_id) REFERENCES Sells(seller_id, product_id),
+    FOREIGN KEY (seller_id, product_id) REFERENCES Sells(seller_id, product_id) ON DELETE CASCADE,
     CHECK (percent_off > 0 AND percent_off <= 100)
 );
 
@@ -84,7 +85,7 @@ CREATE TABLE ProductInCart (
     seller_id INT NOT NULL,
     quantity INT NOT NULL,
     FOREIGN KEY (cart_id) REFERENCES Cart(id),
-    FOREIGN KEY (seller_id, product_id) REFERENCES Sells(seller_id, product_id)
+    FOREIGN KEY (seller_id, product_id) REFERENCES Sells(seller_id, product_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Purchase (
@@ -97,7 +98,7 @@ CREATE TABLE Purchase (
     final_unit_price DECIMAL NOT NULL,
     FOREIGN KEY (cart_id) REFERENCES Cart(id),
     FOREIGN KEY (user_id) REFERENCES Users(id),
-    FOREIGN KEY (product_in_cart_id) REFERENCES ProductInCart(id)
+    FOREIGN KEY (product_in_cart_id) REFERENCES ProductInCart(id) ON DELETE CASCADE
 );
 
 CREATE TABLE Feedback (
@@ -108,10 +109,37 @@ CREATE TABLE Feedback (
     seller_id INT,
     time_posted timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
     upvotes INT NOT NULL DEFAULT 0,
+    reports INT NOT NULL DEFAULT 0,
     PRIMARY KEY (reviewer_id, product_id, seller_id),
     FOREIGN KEY (reviewer_id) REFERENCES Users(id),
     FOREIGN KEY (seller_id) REFERENCES Users(id),
     FOREIGN KEY (product_id) REFERENCES Product(id),
+    CHECK((product_id IS NOT NULL) OR (seller_id IS NOT NULL))
+);
+
+CREATE TABLE Feedback_Upvotes (
+    upvoter_id INT NOT NULL,
+    reviewer_id INT NOT NULL,
+    product_id INT,
+    seller_id INT,
+    PRIMARY KEY (upvoter_id, reviewer_id, product_id, seller_id),
+    FOREIGN KEY (upvoter_id) REFERENCES Users(id),
+    FOREIGN KEY (reviewer_id) REFERENCES Users(id),
+    FOREIGN KEY (product_id) REFERENCES Product(id),
+    FOREIGN KEY (seller_id) REFERENCES Users(id),
+    CHECK((product_id IS NOT NULL) OR (seller_id IS NOT NULL))
+);
+
+CREATE TABLE Feedback_Reports (
+    reporter_id INT NOT NULL,
+    reviewer_id INT NOT NULL,
+    product_id INT,
+    seller_id INT,
+    PRIMARY KEY (reporter_id, reviewer_id, product_id, seller_id),
+    FOREIGN KEY (reporter_id) REFERENCES Users(id),
+    FOREIGN KEY (reviewer_id) REFERENCES Users(id),
+    FOREIGN KEY (product_id) REFERENCES Product(id),
+    FOREIGN KEY (seller_id) REFERENCES Users(id),
     CHECK((product_id IS NOT NULL) OR (seller_id IS NOT NULL))
 );
 

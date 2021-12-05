@@ -79,6 +79,28 @@ class InventoryEntry:
             product_id=product_id,
             inventory=inventory)
 
+    @staticmethod
+    def update_inventory(current_user, product_id, inventory):
+        rows = app.db.execute_with_no_return('''
+    UPDATE Sells
+    SET inventory = :inventory
+    WHERE product_id = :product_id AND seller_id = :user_id
+        ''',
+            inventory=inventory,
+            product_id=product_id,
+            user_id=current_user.id)
+
+    @staticmethod
+    def update_restaurant(current_user, product_id, seller_affiliation):
+        rows = app.db.execute_with_no_return('''
+    UPDATE Sells
+    SET seller_affiliation = :seller_affiliation
+    WHERE product_id = :product_id AND seller_id = :user_id
+        ''',
+            seller_affiliation=seller_affiliation,
+            product_id=product_id,
+            user_id=current_user.id)
+
 
 # Basic requirements:
 # A user who wishes to act as a seller will have an inventory page that lists all products for sale by this user. There should be a way to add a product to the inventory. For each product in the user’s inventory, the user can view and change the available quantity for sale by this user, or simply remove it altogether from the inventory.

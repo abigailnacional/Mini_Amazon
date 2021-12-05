@@ -85,7 +85,8 @@ class EditProductForm(FlaskForm):
     )
     inventory = IntegerField(_l('Product Inventory'))
     image = FileField(_l('Product Image'))
-    submit = SubmitField(_l('Start Selling Product'))
+    available = RadioField(_l('Product Avaliability'), choices = [(True, 'Avaliable'), (False, 'Not avaliable')])
+    submit = SubmitField(_l('Update Product Info'))
 
 @bp.route('/edit-product', methods=['GET', 'POST'])
 def edit_product():
@@ -95,8 +96,6 @@ def edit_product():
         image = form.image.data.filename
         # product image is being changed    
         if image != "":
-            print("WOO")
-            print(image)
             if image.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
                 f = request.files['image']
                 filename = secure_filename(image)
@@ -104,12 +103,31 @@ def edit_product():
             # product image submitted is wrong file type
             else:
                 flash('Incorrect file type [png, jpg, jpeg accepted]')
+
+        if form.name.data != "":
+            Product.update_name(product_id, form.name.data)
+            return redirect(url_for('inventory.inventory', page=1))
+        if form.description.data != "":
+            Product.update_description(product_id, form.description.data)
+            return redirect(url_for('inventory.inventory', page=1))
+        if form.price.data != None:
+            Product.update_price(product_id, form.price.data)
+            return redirect(url_for('inventory.inventory', page=1))
+        if form.category.data != "":
+            Product.update_category(product_id, form.category.data)
+            return redirect(url_for('inventory.inventory', page=1))
+        if form.restaurant.data != "":
+            for restaurant in form.restaurant.data:
+                InventoryEntry.update_restaurant(current_user, product_id, restaurant)
+                return redirect(url_for('inventory.inventory', page=1))
+        if form.inventory.data != None:
+            InventoryEntry.update_inventory(current_user, product_id, form.inventory.data)
+            return redirect(url_for('inventory.inventory', page=1))
+        if form.available.data != None:
+            Product.update_availability(product_id, form.available.data)
+            return redirect(url_for('inventory.inventory', page=1))
         else:
             return render_template('edit_product.html', form=form)
-        Product.update_product(form.name.data, form.description.data, form.price.data, form.category.data, form.image.data.filename)
-        #for restaurant in form.restaurant.data:
-        #    InventoryEntry.add_product_to_inventory(current_user, restaurant, prod_id, form.inventory.data)
-        return redirect(url_for('inventory.inventory'))
     return render_template('edit_product.html', form=form)
 
 

@@ -34,6 +34,12 @@
         <b>{{form.image.label}}</b><br/>
         {{form.image}}<br/>
     </p>
+    {% for subfield in form.available %}
+    <tr>
+        <td>{{ subfield }}</td>
+        <td>{{ subfield.label }}</td>
+    </tr>
+    {% endfor %}
     <p>
         {% with messages = get_flashed_messages() %}
         {% if messages %}

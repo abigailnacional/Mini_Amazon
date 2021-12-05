@@ -162,37 +162,54 @@ RETURNING id
         id = rows[0][0]
         return id
 
+    @staticmethod
+    def update_name(product_id, name):
+        rows = app.db.execute_with_no_return('''
+UPDATE Product
+SET name = :name
+WHERE id = :product_id
+        ''',
+            name=name,
+            product_id=product_id)
 
     @staticmethod
-    def update_product(name, description, price, category, image):
-        names = app.db.execute('''
-UPDATE Product name
-VALUES :name
-WHERE :name IS NOT NULL
-    ''',
-        name=name),
-        description = app.db.execute('''
-UPDATE Product description
-VALUES :description
-WHERE :description IS NOT NULL
-    ''',
-        description=description),
-        price = app.db.execute('''
-UPDATE Product price
-VALUES :price
-WHERE :price IS NOT NULL
-    ''',
-        price=price),
-        category = app.db.execute('''
-UPDATE Product category
-VALUES :category
-WHERE :category IS NOT NULL
-    ''',
-        category=category),
-        image = app.db.execute('''
-UPDATE Product image
-VALUES :image
-WHERE :image IS NOT NULL
-    ''',
-        image=image)
+    def update_description(product_id, description):
+        rows = app.db.execute_with_no_return('''
+UPDATE Product
+SET description = :description
+WHERE id = :product_id
+        ''',
+            description=description,
+            product_id=product_id)
+
+    @staticmethod
+    def update_price(product_id, price):
+        rows = app.db.execute_with_no_return('''
+UPDATE Product
+SET price = :price
+WHERE id = :product_id
+        ''',
+            price=price,
+            product_id=product_id)
+
+    @staticmethod
+    def update_category(product_id, category):
+        rows = app.db.execute_with_no_return('''
+UPDATE Product
+SET category = :category
+WHERE id = :product_id
+        ''',
+            category=category,
+            product_id=product_id)
+
+    @staticmethod
+    def update_availability(product_id, available):
+        rows = app.db.execute_with_no_return('''
+UPDATE Product
+SET is_available = :available
+WHERE id = :product_id
+        ''',
+            available=available,
+            product_id=product_id)
+        
         

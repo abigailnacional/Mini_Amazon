@@ -3,6 +3,7 @@ import string
 import csv
 import math
 import datetime
+from datetime import timedelta
 
 import names
 from random_address import real_random_address
@@ -77,7 +78,11 @@ with open('db/data/Cart.csv', 'w', newline='') as cart_file:
             is_current = num_cart == num_carts_per_user - 1
             time_purchased = None
             if not is_current:
-                time_purchased = "2021-09-10 13:12:58"
+                #Coming up with random spans of time between 0 and 20 days
+                randay = random.randint(0, 20)
+                ransec = random.randint(0, 59)
+                #Subtract random time from the current time and use that as time_purchased
+                time_purchased = datetime.datetime.now() - timedelta(days = randay, seconds = ransec)
                 purchased_cart_ids.append(cart_id)
 
             writer.writerow([cart_id, user_id, is_current, time_purchased, False, None])

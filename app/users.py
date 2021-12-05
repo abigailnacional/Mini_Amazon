@@ -43,16 +43,14 @@ def login():
         if user is None:
             flash('Invalid email or password')
             return redirect(url_for('users.login'))
-        if form.remember_me.data == True:
-            login_user(user, remember=True)
-        if form.remember_me.data == False:
-            login_user(user, remember=False)
+        login_user(user)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index.index')
 
         return redirect(next_page)
     return render_template('login.html', title='Sign In', form=form)
+
 
 """
 This form takes input from the user that is needed for registration, namely

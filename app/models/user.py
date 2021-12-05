@@ -34,17 +34,19 @@ class User(UserMixin):
     account.
     """
     @staticmethod
-    def get_by_auth(input_email, password):
+    def get_by_auth(email, password):
         rows = app.db.execute("""
-SELECT password, id, email, first_name, last_name
-FROM Users
-WHERE email = :inputted_email
-""",
-                              inputted_email=input_email)
-        if not rows:  # Email does not exist
+        SELECT password, id, email, first_name, last_name
+        FROM Users
+        WHERE email = :email
+        """,
+                              email=email)
+        if not rows:  # email not found
             return None
-        elif not check_password_hash(rows[0][0], password):
-            return None
+                # second check allows us to use the preloaded csv data (remove at some point)
+        elif not check_password_hash(rows[0][0], password) \
+                and not check_password_hash(generate_password_hash(rows[0][0]), password):
+                return None
         else:
             return User(*(rows[0][1:]))
 

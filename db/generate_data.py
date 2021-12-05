@@ -57,7 +57,7 @@ with open('db/data/Users.csv', 'w', newline='') as users_file:
         # source: https://moonbooks.org/Articles/How-to-generate-random-names-first-and-last-names-with-python-/
         first = names.get_first_name()
         last = names.get_last_name()
-        balance = round(random.randrange(0, 1000000000), 2)
+        balance = round(random.randrange(0.00, 1000000000.00), 2)
         # addresses are generated using the random address Python tool which accurately geocodes to data collected from the Open
         # Addresses project (would need additional data for other states - beyond scope of this project)
         # source: 

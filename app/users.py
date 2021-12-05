@@ -43,7 +43,10 @@ def login():
         if user is None:
             flash('Invalid email or password')
             return redirect(url_for('users.login'))
-        login_user(user)
+        if form.remember_me.data == True:
+            login_user(user, remember=True)
+        if form.remember_me.data == False:
+            login_user(user, remember=False)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index.index')
@@ -132,37 +135,27 @@ page.
 """
 @bp.route('/view_public_profile/<public_user_id>')
 def view_public_profile(public_user_id):
-    if current_user.is_authenticated:
-        if User.check_seller(public_user_id):
-            #If user is a seller, render user profile with extra seller info
-            seller_id = User.get_seller_info(public_user_id).id
-            reviews = ProductReview.get_reviews(seller_id, "seller")
-            summary_ratings = ProductReview.get_summary_rating(seller_id, "seller")
-            upvote_exists, user_seller_reports = [], []
-            if current_user.is_authenticated:
-                upvote_exists = [ProductReview.check_upvote_exists(current_user.id, review.reviewer_id, -1, seller_id) for review in reviews]
-                user_review_reports = ProductReview.get_user_review_reports(current_user.id)
-                user_seller_reports = [(user_review_report[1], user_review_report[3]) for user_review_report in user_review_reports]
+    if User.check_seller(public_user_id):
+        #If user is a seller, render user profile with extra seller info
+        seller_id = User.get_seller_info(public_user_id).id
+        reviews = ProductReview.get_reviews(seller_id, "seller")
+        summary_ratings = ProductReview.get_summary_rating(seller_id, "seller")
+        upvote_exists, user_seller_reports = [], []
+        if current_user.is_authenticated:
+            upvote_exists = [ProductReview.check_upvote_exists(current_user.id, review.reviewer_id, -1, seller_id) for review in reviews]
+            user_review_reports = ProductReview.get_user_review_reports(current_user.id)
+            user_seller_reports = [(user_review_report[1], user_review_report[3]) for user_review_report in user_review_reports]
 
-            return render_template(
-                'public_seller_profile.html',
-                seller = User.get_seller_info(public_user_id),
-                product_sellers = product_sellers,
-                reviews=reviews,
-                summary_ratings=summary_ratings,
-                upvote_exists=upvote_exists,
-                user_seller_reports=user_seller_reports
-            )
-        
-        #If user is not a seller, render user profile with limited info
         return render_template(
             'public_seller_profile.html',
-            seller =  User.get_seller_info(public_user_id),
+            seller = User.get_seller_info(public_user_id),
             product_sellers = product_sellers,
             reviews=reviews,
-            summary_ratings=summary_ratings
+            summary_ratings=summary_ratings,
+            upvote_exists=upvote_exists,
+            user_seller_reports=user_seller_reports
         )
-        
+
     #If user is not a seller, render user profile with limited info
     return render_template(
     'public_user_profile.html',
@@ -297,7 +290,7 @@ either deposit into or withdraw from their account.
 class EditBalanceForm(FlaskForm):
     amount = FloatField(_l('Amount to Withdraw/Deposit'), 
         validators=[DataRequired(message='Please enter a number.'),
-        NumberRange(min=0, max=1000000000.1, 
+        NumberRange(min=0, max=1000000000.01, 
         message='You must enter a number between 0 and 1000000000 (1 billion).')])
     submit = SubmitField(_l('Update Balance'))
 
@@ -322,9 +315,7 @@ This method allows the user to deposit money into their account.
 def increment_balance():
     form = EditBalanceForm()
     if form.validate_on_submit():
-        if User.under_max_balance(current_user, form.amount.data):
-            if User.increment_balance(current_user, form.amount.data):
-                flash('Money has been deposited into your account.')
-                return redirect(url_for('users.view_account'))
-        flash('Your account will exceed the maximum balance if this amount is deposited.')
+        if User.increment_balance(current_user, form.amount.data):
+            flash('Money has been deposited into your account.')
+            return redirect(url_for('users.view_account'))
     return render_template('edit_acct_info/deposit_money.html', title='Deposit Money', form=form)

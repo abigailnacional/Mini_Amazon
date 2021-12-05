@@ -5,8 +5,10 @@
 <br><br>
 
 <h2>Purchase History</h2>
-<a class="btn btn-secondary" href="{{ url_for('order.filters_for_orders')}}" type="button" class="btn btn-light">Add Filters</a>
+<a class="btn btn-secondary" href= "{{ url_for('order.filters_for_orders')}}" type="button" class="btn btn-light">Change Filters</a>
+<a class="btn btn-secondary" href="{{ url_for('order.view_orders')}}?page=1" type="button" class="btn btn-light">Clear Filters</a>
 <br><br>
+
 <table class='table table-hover table-bordered container'>
   <thead class="thead-dark">
     <tr>
@@ -29,10 +31,10 @@
 </table>
 
 {% if purchased_carts %}
-<a href="{{ url_for('order.view_orders')}}?page={{page_num + 1}}" type="button" class="btn btn-gray right">Next</a>
+<a href="/filtered_orders/?fulfill={{fulfill}}&time_period={{time_period}}&page={{page_num + 1}}" type="button" class="btn btn-gray right">Next</a>
 {% endif %}
 {% if page_num != 1 %}
-<a href="{{ url_for('order.view_orders')}}?page={{page_num - 1}}" type="button" class="btn btn-gray right">Previous</a>
+<a href="/filtered_orders/?fulfill={{fulfill}}&time_period={{time_period}}&page={{page_num - 1}}" type="button" class="btn btn-gray right">Previous</a>
 {% endif %}
 <br><br>
 

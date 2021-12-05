@@ -62,7 +62,8 @@ with open('db/data/Users.csv', 'w', newline='') as users_file:
         # source: 
         address = real_random_address()['address1']
         writer.writerow([id, email, password, first, last, balance, address])
-
+    
+    # Creating a dummy row with id=-1 due to Feedback Schema not allowing null values, this row should never be normally accessed
     writer.writerow([-1, " ", " ", " ", " ", 0, " "])
 
 print("Data generation on Users done, starting data generation on Cart")
@@ -104,6 +105,7 @@ with open('db/data/Product.csv', 'w', newline='') as product_file:
 
         writer.writerow([id, name, description, category, price, is_available, creator_id, image])
 
+    # Creating a dummy row with id=-1 due to Feedback Schema not allowing null values, this row should never be normally accessed
     writer.writerow([-1, " ", " ", "Appetizers", 0, False, -1, " "])
 
 print("Data generation on Product done, starting data generation on Sells")
@@ -190,6 +192,12 @@ with open('db/data/Feedback.csv', 'w', newline='') as f, open('db/data/FeedbackU
     product_ids = random.sample(list(range(base, base + num_products)), 2500)
     seller_ids = set([sells_tuple[0] for sells_tuple in sells]) # too little sellers so just create data on them all
 
+    """
+    For a given list of randomly selected product_ids and seller_ids, we generate 1 to 10 reviews. For each
+    of those reviews, it is upvoted by 0 to 10 different randomly selected users, and it is reported by 0 to 4
+    different randomly selected reports
+    """
+
     for product_id in product_ids:
         sample_reviewer_ids = random.sample(list(range(base, base + num_total_users)), random.randint(1, 10))
         for sample_reviewer_id in sample_reviewer_ids:
@@ -202,10 +210,10 @@ with open('db/data/Feedback.csv', 'w', newline='') as f, open('db/data/FeedbackU
 
             f_writer.writerow([sample_reviewer_id, rating, review, product_id, seller_id, time, upvotes, reports])
             
-            upvoter_ids = random.sample(list(range(base, base + num_total_users)), random.randint(1, 10))
+            upvoter_ids = random.sample(list(range(base, base + num_total_users)), upvotes)
             for upvoter_id in upvoter_ids:
                 f_up_writer.writerow([upvoter_id, sample_reviewer_id, product_id, -1])
-            reporter_ids = random.sample(list(range(base, base + num_total_users)), random.randint(1, 10))
+            reporter_ids = random.sample(list(range(base, base + num_total_users)), reports)
             for reporter_id in reporter_ids:
                 f_r_writer.writerow([reporter_id, sample_reviewer_id, product_id, -1])
             
@@ -221,10 +229,10 @@ with open('db/data/Feedback.csv', 'w', newline='') as f, open('db/data/FeedbackU
 
             f_writer.writerow([sample_reviewer_id, rating, review, product_id, seller_id, time, upvotes, reports])
             
-            upvoter_ids = random.sample(list(range(base, base + num_total_users)), random.randint(1, 10))
+            upvoter_ids = random.sample(list(range(base, base + num_total_users)), upvotes)
             for upvoter_id in upvoter_ids:
                 f_up_writer.writerow([upvoter_id, sample_reviewer_id, -1, seller_id])
-            reporter_ids = random.sample(list(range(base, base + num_total_users)), random.randint(1, 10))
+            reporter_ids = random.sample(list(range(base, base + num_total_users)), reports)
             for reporter_id in reporter_ids:
                 f_r_writer.writerow([reporter_id, sample_reviewer_id, -1, seller_id])
 

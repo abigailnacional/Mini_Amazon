@@ -6,7 +6,7 @@ id: randomly generated unique identifier (int)
 email: gmail account created through random string generation (varchar)
 password: account password created through random string generation (varchar)
 first_name and last_name: user identifier generated through Python names module (varchar)
-balance: represents current account balance - default at 0 with checks to ensure never becomes neg (int)
+balance: represents current account balance - default at 0 with checks to ensure never becomes neg (float)
 address: mailing address for user generated through random_address module (varchar)*
 *defaults to home address for all students, employees, etc. 
 */
@@ -16,9 +16,9 @@ CREATE TABLE Users (
     password VARCHAR(255) NOT NULL,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
-    balance INT DEFAULT 0,
+    balance FLOAT DEFAULT 0.00,
     address VARCHAR(255),
-    CHECK (balance >= 0)
+    CHECK (balance >= 0.00)
 );
 
 CREATE TABLE Product (
@@ -26,7 +26,7 @@ CREATE TABLE Product (
     name VARCHAR(255) NOT NULL,
     description VARCHAR(255), /* changed from not null */
     category VARCHAR(255) NOT NULL,
-    price DECIMAL NOT NULL,
+    price FLOAT NOT NULL,
     is_available BOOLEAN DEFAULT TRUE,
     link VARCHAR(255) NOT NULL,
     creator_id INT NOT NULL,
@@ -85,7 +85,7 @@ CREATE TABLE Purchase (
     is_fulfilled BOOLEAN DEFAULT FALSE,
     time_of_fulfillment timestamp without time zone DEFAULT NULL,
     cart_id INT NOT NULL,
-    final_unit_price DECIMAL NOT NULL,
+    final_unit_price FLOAT NOT NULL,
     FOREIGN KEY (cart_id) REFERENCES Cart(id),
     FOREIGN KEY (user_id) REFERENCES Users(id),
     FOREIGN KEY (product_in_cart_id) REFERENCES ProductInCart(id) ON DELETE CASCADE

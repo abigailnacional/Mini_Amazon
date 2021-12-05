@@ -15,7 +15,7 @@ class User(UserMixin):
             first_name: str,
             last_name:  str,
             password: Optional[str] = "",
-            balance: Optional[int] = 0,
+            balance: Optional[float] = 0.00,
             address: Optional[str] = "",
             seller_affiliation: Optional[int] = -1):
             
@@ -120,21 +120,6 @@ RETURNING id
             """,
             id=self.id,
         )[0][0] >= total_price
-
-    """
-    This method is used to determine whether the user's balance
-    will exceed the max int value for SQL after a given amount
-    is added to their balance.
-    """
-    def under_max_balance(self, total_price):
-        return app.db.execute(
-            """
-            SELECT balance
-            FROM Users
-            WHERE id = :id
-            """,
-            id=self.id,
-        )[0][0] + total_price <= 2147483647 #max int value in SQL
 
     """
     This method is used to decrease balance without committing to allow for rollback when purchasing a cart

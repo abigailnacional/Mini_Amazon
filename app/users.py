@@ -290,7 +290,7 @@ either deposit into or withdraw from their account.
 class EditBalanceForm(FlaskForm):
     amount = FloatField(_l('Amount to Withdraw/Deposit'), 
         validators=[DataRequired(message='Please enter a number.'),
-        NumberRange(min=0, max=1000000000.1, 
+        NumberRange(min=0, max=1000000000.01, 
         message='You must enter a number between 0 and 1000000000 (1 billion).')])
     submit = SubmitField(_l('Update Balance'))
 
@@ -315,9 +315,7 @@ This method allows the user to deposit money into their account.
 def increment_balance():
     form = EditBalanceForm()
     if form.validate_on_submit():
-        if User.under_max_balance(current_user, form.amount.data):
-            if User.increment_balance(current_user, form.amount.data):
-                flash('Money has been deposited into your account.')
-                return redirect(url_for('users.view_account'))
-        flash('Your account will exceed the maximum balance if this amount is deposited.')
+        if User.increment_balance(current_user, form.amount.data):
+            flash('Money has been deposited into your account.')
+            return redirect(url_for('users.view_account'))
     return render_template('edit_acct_info/deposit_money.html', title='Deposit Money', form=form)

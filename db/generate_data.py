@@ -47,7 +47,7 @@ with open('db/data/Users.csv', 'w', newline='') as users_file:
         if num == base:
             email = "admin@gmail.com"
             password = "123"
-            balance = 1000000000
+            balance = 1000000000.00
         else:
             email = ''.join(random.choice(letters) for i in range(random.randint(5, 10))) + "@gmail.com"
             password = ''.join(random.choice(letters) for i in range(random.randint(8, 16)))
@@ -57,7 +57,7 @@ with open('db/data/Users.csv', 'w', newline='') as users_file:
         # source: https://moonbooks.org/Articles/How-to-generate-random-names-first-and-last-names-with-python-/
         first = names.get_first_name()
         last = names.get_last_name()
-        balance = random.randint(0, 1000000000)
+        balance = round(random.randrange(0, 1000000000), 2)
         # addresses are generated using the random address Python tool which accurately geocodes to data collected from the Open
         # Addresses project (would need additional data for other states - beyond scope of this project)
         # source: 
@@ -82,7 +82,8 @@ with open('db/data/Cart.csv', 'w', newline='') as cart_file:
                 randay = random.randint(0, 20)
                 ransec = random.randint(0, 59)
                 #Subtract random time from the current time and use that as time_purchased
-                time_purchased = datetime.datetime.now() - timedelta(days = randay, seconds = ransec)
+                time_purchased = datetime.datetime.now() - timedelta(
+                    days = randay, seconds = ransec, milliseconds=0)
                 purchased_cart_ids.append(cart_id)
 
             writer.writerow([cart_id, user_id, is_current, time_purchased, False, None])
@@ -172,7 +173,7 @@ with open('db/data/Purchase.csv', 'w', newline='') as purchase_file:
             time_of_fulfillment = None
             if is_fulfilled:
                 time_of_fulfillment = "2021-09-10 13:12:58"
-            final_price = random.randint(0, 1000)
+            final_price = round(random.randrange(0, 1000), 2)
 
             writer.writerow(
                 [

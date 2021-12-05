@@ -107,7 +107,7 @@ OFFSET ((:page_num - 1) * 20)
     @staticmethod
     def filteredRating(stars, page_num):
         rows = app.db.execute('''
-SELECT DISTINCT id, name, description, category, price, Sells.is_available, creator_id, image
+SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
 FROM Product FULL OUTER JOIN Feedback ON Product.id = Feedback.product_id
 GROUP BY id
 HAVING AVG(rating) >= :stars

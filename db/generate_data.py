@@ -63,7 +63,7 @@ with open('db/data/Users.csv', 'w', newline='') as users_file:
         address = real_random_address()['address1']
         writer.writerow([id, email, password, first, last, balance, address])
 
-    writer.writerow([-1, " ", " ", " ", 0, " "])
+    writer.writerow([-1, " ", " ", " ", " ", 0, " "])
 
 print("Data generation on Users done, starting data generation on Cart")
 
@@ -104,7 +104,7 @@ with open('db/data/Product.csv', 'w', newline='') as product_file:
 
         writer.writerow([id, name, description, category, price, is_available, creator_id, image])
 
-    writer.writerow([-1, " ", " ", " ", 0, False, " ", -1, " "])
+    writer.writerow([-1, " ", " ", "Appetizers", 0, False, -1, " "])
 
 print("Data generation on Product done, starting data generation on Sells")
 
@@ -113,7 +113,7 @@ with open('db/data/Sells.csv', 'w', newline='') as sells_file:
     writer = csv.writer(sells_file, delimiter=',')
     for sample in sample_products:
          writer.writerow([sample_products[sample]['id'], random.randint(base, base + (num_sellers * 5)),
-                        sample_products[sample]['product-id'], random.randint(0, 1000000)])
+                        sample_products[sample]['product-id'], random.randint(0, 1000000), True])
     for num in range(base, base + (num_sellers * 5), 5):  # for first 100 users, every 5th user is a seller
         seller_id = num
         for _ in range(random.randint(1,  2000)):  # have each seller sell 1 to 2000 items for now
@@ -122,9 +122,10 @@ with open('db/data/Sells.csv', 'w', newline='') as sells_file:
             inventory = random.randint(0, 1000000)
             seller_affiliation = random.randint(1, num_restaurants)
 
+
             if (seller_id, product_id) not in sells:
                 sells.add((seller_id, product_id))
-                writer.writerow([seller_affiliation, seller_id, product_id, inventory])
+                writer.writerow([seller_affiliation, seller_id, product_id, inventory, True])
 
 print("Data generation on Sells done, starting data generation on ProductInCart")
 

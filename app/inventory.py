@@ -37,39 +37,74 @@ def inventory():
             coupons[item.product_id] = coupon.code
     return render_template('products_sold.html', inventory=items, page_num=page_num, max_pages=len(items), coupons=coupons)
     
-@bp.route('/inventory/increment_quantity/<id>', methods=['POST'])
-def increment_quantity(id):
+@bp.route('/increment_quantity', methods=['GET'])
+def increment_quantity():
     if not current_user.is_authenticated:
         return redirect(url_for('index.index'))
     
-    InventoryEntry.increase_quantity(id, current_user.id)
+    page_num = int(request.args.get('page'))
+    prod_id = int(request.args.get('id'))
+    
+    InventoryEntry.increase_quantity(prod_id, current_user.id)
+    items: List[InventoryEntry] = InventoryEntry.get_all_entries_by_seller(
+        page_num, seller_id=current_user.id)
+
+    coupons = {}
+    for item in items:
+        coupon = Coupon.get_current_coupon_for_product_seller(item.product_id, item.seller_id)
+        if coupon:
+            coupons[item.product_id] = coupon.code
+
+    return render_template('products_sold.html', inventory=items, page_num=page_num, max_pages=len(items), coupons=coupons,
+                            pag_tag = "/increment_quantity?id=" + str(prod_id) + "&page=")
 
 
-    return redirect(url_for('inventory.inventory'))
-
-
-@bp.route('/inventory/decrement_quantity/<id>', methods=['POST'])
-def decrement_quantity(id):
+@bp.route('/decrement_quantity', methods=['GET'])
+def decrement_quantity():
     if not current_user.is_authenticated:
         return redirect(url_for('index.index'))
+
+    page_num = int(request.args.get('page'))
+    prod_id = int(request.args.get('id'))
     
-    InventoryEntry.decrease_quantity(id, current_user.id)
+    InventoryEntry.decrease_quantity(prod_id, current_user.id)
+    items: List[InventoryEntry] = InventoryEntry.get_all_entries_by_seller(
+        page_num, seller_id=current_user.id)
 
-    return redirect(url_for('inventory.inventory'))
+    coupons = {}
+    for item in items:
+        coupon = Coupon.get_current_coupon_for_product_seller(item.product_id, item.seller_id)
+        if coupon:
+            coupons[item.product_id] = coupon.code
+
+    return render_template('products_sold.html', inventory=items, page_num=page_num, max_pages=len(items), coupons=coupons,
+                            pag_tag = "/decrement_quantity?id=" + str(prod_id) + "&page=")
 
 
-@bp.route('/inventory/delete_product/<id>', methods=['POST'])
-def delete_product(id):
+@bp.route('/delete_product', methods=['GET'])
+def delete_product():
     """
     Marks the Sells.is_available = false for this seller/item.
     """
 
+    page_num = int(request.args.get('page'))
+    prod_id = int(request.args.get('id'))
+
     if not current_user.is_authenticated:
         return redirect(url_for('index.index'))
 
-    InventoryEntry.delete_item(id, current_user.id)
+    InventoryEntry.delete_item(prod_id, current_user.id)
+    items: List[InventoryEntry] = InventoryEntry.get_all_entries_by_seller(
+        page_num, seller_id=current_user.id)
 
-    return redirect(url_for('inventory.inventory'))
+    coupons = {}
+    for item in items:
+        coupon = Coupon.get_current_coupon_for_product_seller(item.product_id, item.seller_id)
+        if coupon:
+            coupons[item.product_id] = coupon.code
+
+    return render_template('products_sold.html', inventory=items, page_num=page_num, max_pages=len(items), coupons=coupons,
+                            pag_tag = "/delete_product?id=" + str(prod_id) + "&page=")
 
 class AddProductForm(FlaskForm):
     name = StringField(_l('* Product Name'), validators=[DataRequired()])

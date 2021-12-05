@@ -42,11 +42,9 @@ class InventoryEntry:
                    Product.category AS category, 
                    Product.price AS price, 
                    Product.is_available AS is_available
-            FROM Sells
-            JOIN Product
-            ON Product.id=Sells.product_id
+            FROM Sells JOIN Product ON Product.id=Sells.product_id
             WHERE seller_id = :seller_id
-            AND is_available = true
+            AND Sells.is_available = true
             LIMIT 20
             OFFSET ((:page_num - 1) * 20)
             """,

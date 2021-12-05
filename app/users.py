@@ -13,7 +13,6 @@ from .products import product_sellers
 from flask import Blueprint
 bp = Blueprint('users', __name__)
 
-
 class LoginForm(FlaskForm):
     email = StringField(_l('Email'), validators=[DataRequired(), Email()])
     password = PasswordField(_l('Password'), validators=[DataRequired()])

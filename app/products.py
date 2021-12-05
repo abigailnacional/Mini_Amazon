@@ -14,50 +14,72 @@ product_sellers = {1: 'Beyu Blue', 2: 'The Loop', 3: 'McDonalds', 4: 'Panda Expr
 @bp.route('/product', methods=['GET'])
 def view_product():
     vender_id = int(request.args.get('id'))
-    products = Product.get_specific(vender_id)
+    page_num = int(request.args.get('page'))
+    products = Product.get_specific(vender_id, page_num)
     categories = Product.get_categories()
     average_ratings = ProductReview.get_product_average_rating([product.id for product in products])
     return render_template('product.html', vender_id=vender_id, product_sellers=product_sellers, 
-                            avail_products=products, categories=categories, average_ratings=average_ratings)
+                            avail_products=products, categories=categories, average_ratings=average_ratings,
+                            page_num=page_num, pag_tag="/product?id=" + str(vender_id) + "&page=", max_pages=len(products))
 
 @bp.route('/filter', methods=['GET'])
 def filtered_cat():
     vender_id = int(request.args.get('id'))
+    page_num = int(request.args.get('page'))
     spec_category = request.args.get('cat')
-    products = Product.filteredCat(vender_id, spec_category)
+    products = Product.filteredCat(vender_id, spec_category, page_num)
     categories = Product.get_categories()
     average_ratings = ProductReview.get_product_average_rating([product.id for product in products])
     return render_template('product.html', vender_id=vender_id, product_sellers=product_sellers, 
-                            avail_products=products, categories=categories, average_ratings=average_ratings)
+                            avail_products=products, categories=categories, average_ratings=average_ratings,
+                            page_num=page_num, pag_tag="/filter?id=" + str(vender_id) + "&cat=" + spec_category + "&page=", max_pages=len(products))
 
 @bp.route('/filter-price', methods=['GET'])
 def filtered_price():
     vender_id = int(request.args.get('id'))
-    products = Product.filteredPrice()
+    page_num = int(request.args.get('page'))
+    products = Product.filteredPrice(vender_id, page_num)
     categories = Product.get_categories()
     average_ratings = ProductReview.get_product_average_rating([product.id for product in products])
     return render_template('product.html', vender_id=vender_id, product_sellers=product_sellers, 
-                            avail_products=products, categories=categories, average_ratings=average_ratings)  
+                            avail_products=products, categories=categories, average_ratings=average_ratings,
+                            page_num=page_num, pag_tag="/filter-price?id=" + str(vender_id) + "&page=", max_pages=len(products))  
+
+@bp.route('/filter-rat', methods=['GET'])
+def filtered_rating():
+    vender_id = int(request.args.get('id'))
+    page_num = int(request.args.get('page'))
+    stars = int(request.args.get('stars'))
+    products = Product.filteredRating(stars, page_num)
+    categories = Product.get_categories()
+    average_ratings = ProductReview.get_product_average_rating([product.id for product in products])
+    return render_template('product.html', vender_id=vender_id, product_sellers=product_sellers, 
+                            avail_products=products, categories=categories, average_ratings=average_ratings,
+                            page_num=page_num, pag_tag="/filter-rat?id=" + str(vender_id) + "&stars=" + str(stars) + "&page=", max_pages=len(products)) 
 
 @bp.route('/search', methods=['GET'])
 def search_filter():
     vender_id = int(request.args.get('id'))
+    page_num = int(request.args.get('page'))
     search = request.args.get('search')
-    products = Product.search_filter(search)
+    products = Product.search_filter(search, page_num)
     categories = Product.get_categories()
     average_ratings = ProductReview.get_product_average_rating([product.id for product in products])
     return render_template('product.html', vender_id=vender_id, product_sellers=product_sellers, 
-                            avail_products=products, categories=categories, average_ratings=average_ratings)  
+                            avail_products=products, categories=categories, average_ratings=average_ratings,
+                            page_num=page_num, pag_tag="/search?id=" + str(vender_id) + "&search=" + search + "&page=", max_pages=len(products))   
 
 @bp.route('/id-search', methods=['GET'])
 def search_id():
     vender_id = int(request.args.get('id'))
+    page_num = int(request.args.get('page'))
     search = request.args.get('search')
-    products = Product.search_id(search)
+    products = Product.search_id(search, page_num)
     categories = Product.get_categories()
     average_ratings = ProductReview.get_product_average_rating([product.id for product in products])
     return render_template('product.html', vender_id=vender_id, product_sellers=product_sellers, 
-                            avail_products=products, categories=categories, average_ratings=average_ratings)  
+                            avail_products=products, categories=categories, average_ratings=average_ratings,
+                            page_num=page_num, pag_tag="/id-search?id=" + str(vender_id) + "&search=" + search + "&page=", max_pages=len(products))  
 
 @bp.route('/view', methods=['GET'])
 def ind_view():

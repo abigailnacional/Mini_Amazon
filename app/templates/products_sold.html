@@ -18,12 +18,15 @@
       <th scope="col">Available</th>
       <th scope="col">Current Coupon</th>
       <th scope="col">Generate Coupon</th>
+      <th scope="col">Edit Info</th>
     </tr>
   </thead>
   <tbody>
     {% for item in inventory %}
       <tr>
-        <td scope="row">{{ item.product_id }}</td>
+        <th scope="row">
+          <a href="/view?id={{item.product_id}}">{{ item.product_id }}</a>
+        </th>
         <td scope="row">{{ item.inventory }}</td>
         <td scope="row">{{ item.name }}</td>
         <td scope="row">{{ item.category }}</td>
@@ -40,10 +43,19 @@
             <button>Click here!</button>
           </form></td>
         {% endif %}
+        <td><a href="{{ url_for('inventory.edit_product', product_id=item.product_id) }}">Edit</a></td>
       </tr>
     {% endfor %}
   </tbody>
 </table>
+
+{% if page_num < max_pages %}
+<a href="/inventory?page={{page_num + 1}}" type="button" class="btn btn-gray right">Next</a>
+{% endif %}
+{% if page_num != 1 %}
+<a href="/inventory?page={{page_num - 1}}" type="button" class="btn btn-gray right">Previous</a>
+{% endif %}
+<br></br>
 
 {% endblock %}
 ml>

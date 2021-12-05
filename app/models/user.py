@@ -43,7 +43,8 @@ class User(UserMixin):
                               email=email)
         if not rows:  # email not found
             return None
-                # second check allows us to use the preloaded csv data (remove at some point)
+                # second check allows us to use the preloaded csv data; cannot be removed
+                # when we are using our sample database
         elif not check_password_hash(rows[0][0], password) \
                 and not check_password_hash(generate_password_hash(rows[0][0]), password):
                 return None
@@ -87,8 +88,8 @@ RETURNING id
             return User.get(id)
         except Exception as e:
             print("except!", e)
-            # likely email already in use; better error checking and
-            # reporting needed
+            # Error checks at the registration form should prevent any issues from
+            # reaching this point
             return None
 
     """

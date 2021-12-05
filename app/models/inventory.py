@@ -1,5 +1,4 @@
 from flask import current_app as app
-# from .product import Product
 from typing import List
 from sqlalchemy import text
 
@@ -30,8 +29,12 @@ class InventoryEntry:
         self.price = price
         self.is_available = is_available
 
+
     @staticmethod
     def get_all_entries_by_seller(seller_id: int):
+        """
+        Created an inventory entry for units the seller is selling. Displays it as a table with rows. 
+        """
         rows = app.db.execute(
             """
             SELECT Sells.seller_affiliation, Sells.seller_id, Sells.product_id, Sells.inventory,
@@ -43,6 +46,7 @@ class InventoryEntry:
             JOIN Product
             ON Product.id=Sells.product_id
             WHERE seller_id = :seller_id
+              AND Sells.is_available = true
             """,
             seller_id=seller_id
         )
@@ -65,30 +69,84 @@ class InventoryEntry:
                        price, 
                        is_available) in rows]
 
+    
+    @staticmethod
+    def increase_quantity(product_id: int, seller_id: int):
+        """
+        Allows seller to increment the number of units they have in their inventory
+        """
+        app.db.execute_with_no_return(
+            """
+            UPDATE Sells
+            SET inventory = inventory + 1
+            WHERE product_id = :product_id
+            AND seller_id = :seller_id
+            """,
+
+            product_id=product_id,
+            seller_id=seller_id
+        )
+
+    
+    @staticmethod
+    def decrease_quantity(product_id: int, seller_id: int):
+        """
+        Allows seller to decrement the number of units they have in their inventory
+        """
+
+        app.db.execute_with_no_return (
+            """
+            UPDATE Sells
+            SET inventory = inventory - 1
+            WHERE product_id = :product_id
+            AND seller_id = :seller_id
+            """,
+
+
+            product_id=product_id,
+            seller_id=seller_id
+        )
+
+    @staticmethod
+    def set_quantity(product_id: int, new_quantity: int, seller_id: int):
+        """
+        Allows seller to set the number of units they have in their inventory
+        """
+        app.db.execute_with_no_return(
+            """
+            UPDATE Sells
+            SET inventory = :new_quantity
+            WHERE product_id = :product_id
+            AND seller_id = :seller_id
+            """,
+            new_quantity=new_quantity,
+            product_id=product_id,
+            seller_id=seller_id
+        )
+
+    @staticmethod
+    def delete_item(product_id: int, seller_id: int):
+        """
+        Marks the item as not available, but does not delete the record. 
+        Removes item from being visualized on render without needing to reload.
+        """
         
-    # TODO: MAKE WAY FOR SELLERS TO ADD PRODUCTS TO THEIR INVENTORY
-    # @staticmethod
-    # def add_product_to_inventory(seller_id, product_id, inventory):
-
-    #     app.db.execture_non_select_statement(
-    #         """
-    #         INSERT INTO Sells
-    #         VALUES ()
-    #         """
-
-
-    #     )
-
-
-# Basic requirements:
-# A user who wishes to act as a seller will have an inventory page that lists all products for sale by this user. There should be a way to add a product to the inventory. For each product in the user’s inventory, the user can view and change the available quantity for sale by this user, or simply remove it altogether from the inventory.
-# A seller can browse/search the history of orders fulfilled or to be fulfilled, sorted by in reverse chronological order by default. For each order in this list, show a summary (buyer information including address, date order placed, total amount/number of items, and overall fulfillment status), but do not show information concerning other sellers (recall that an order may involve multiple sellers), and provide a mechanism for marking a line item as fulfilled. (Recall from Cart / Order that order submission automatically decrements the available quantity in the seller’s inventory; so fulfillment should not further update the inventory.)
-# Possible additional features:
-# Add visualization/analytics to the inventory and/or order fulfillment pages to show popularity and trends of one’s products.
-# Add analytics about buyers who have worked with this seller, e.g., ratings, number of messages, etc.
+        app.db.execute_with_no_return(
+            """
+            UPDATE Sells
+            SET is_available = false
+            WHERE product_id = :product_id
+            AND seller_id = :seller_id
+            """,
+            product_id=product_id,
+            seller_id=seller_id
+        )
 
     @staticmethod
     def get_amount_available(seller_id, product_id):
+        """
+        Gets the amount of inventory for a product a seller is selling
+        """
         return app.db.execute(
             """
             SELECT inventory
@@ -100,12 +158,13 @@ class InventoryEntry:
             product_id=product_id
         )[0][0]
 
-    """
-    This method is used to decrease seller inventory of a product without committing to allow 
-    for rollback when purchasing a cart
-    """
+    
     @staticmethod
     def decrease_seller_inventory_without_commit(conn, product_id, seller_id, quantity):
+        """
+        This method is used to decrease seller inventory of a product without committing to allow 
+        for rollback when purchasing a cart
+        """
         conn.execute(text(
             """
             UPDATE Sells

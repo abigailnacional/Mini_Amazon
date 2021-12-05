@@ -22,6 +22,7 @@
         <th>Creator ID</th>
         <th>Average Rating</th>
         <th># of Reviews</th>
+        <th>Category Ranking</th>
     </tr>
     <tr>
         <td>{{product_info.id}}</td>
@@ -30,6 +31,7 @@
         <td>{{product_info.creator_id}}</td>
         <td>{{summary_ratings[1]}}</td>
         <td>{{summary_ratings[0]}}</td>
+        <td>{{summary_ratings[2]}}</td>
     </tr>
 </table>
 <br></br>
@@ -60,6 +62,10 @@
     {% endfor %}
   </tbody>
 </table>
+<br><br>
+{% if summary_ratings[0] != 0 %}
+<img src="data:image/png;base64, {{ summary_ratings[3].decode() }}"><img src="data:image/png;base64, {{ summary_ratings[4].decode() }}">
+{% endif %}
 <br><br>
 <a href="{{ url_for('product_rating.create_review', review_type='product', id=product_info.id) }}" type="button" class="btn btn-dark">Leave a Review</a>
 <br><br>

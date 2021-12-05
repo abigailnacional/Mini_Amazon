@@ -41,6 +41,7 @@ CREATE TABLE Sells (
    seller_id INT NOT NULL,
    product_id INT NOT NULL,
    inventory INT NOT NULL,
+   is_available BOOLEAN NOT NULL DEFAULT TRUE,
    FOREIGN KEY (seller_id) REFERENCES Users(id),
    FOREIGN KEY (product_id) REFERENCES Product(id),
    PRIMARY KEY (seller_id, product_id)
@@ -52,7 +53,7 @@ CREATE TABLE Coupon (
     product_id INT NOT NULL,
     seller_id INT NOT NULL,
     percent_off INT NOT NULL,
-    FOREIGN KEY (seller_id, product_id) REFERENCES Sells(seller_id, product_id),
+    FOREIGN KEY (seller_id, product_id) REFERENCES Sells(seller_id, product_id) ON DELETE CASCADE,
     CHECK (percent_off > 0 AND percent_off <= 100)
 );
 
@@ -74,7 +75,7 @@ CREATE TABLE ProductInCart (
     seller_id INT NOT NULL,
     quantity INT NOT NULL,
     FOREIGN KEY (cart_id) REFERENCES Cart(id),
-    FOREIGN KEY (seller_id, product_id) REFERENCES Sells(seller_id, product_id)
+    FOREIGN KEY (seller_id, product_id) REFERENCES Sells(seller_id, product_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Purchase (
@@ -87,7 +88,7 @@ CREATE TABLE Purchase (
     final_unit_price DECIMAL NOT NULL,
     FOREIGN KEY (cart_id) REFERENCES Cart(id),
     FOREIGN KEY (user_id) REFERENCES Users(id),
-    FOREIGN KEY (product_in_cart_id) REFERENCES ProductInCart(id)
+    FOREIGN KEY (product_in_cart_id) REFERENCES ProductInCart(id) ON DELETE CASCADE
 );
 
 CREATE TABLE Feedback (

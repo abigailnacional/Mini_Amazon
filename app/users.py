@@ -143,7 +143,6 @@ def view_public_profile(public_user_id):
                 upvote_exists = [ProductReview.check_upvote_exists(current_user.id, review.reviewer_id, -1, seller_id) for review in reviews]
                 user_review_reports = ProductReview.get_user_review_reports(current_user.id)
                 user_seller_reports = [(user_review_report[1], user_review_report[3]) for user_review_report in user_review_reports]
-
             return render_template(
                 'public_seller_profile.html',
                 seller = User.get_seller_info(public_user_id),
@@ -153,15 +152,6 @@ def view_public_profile(public_user_id):
                 upvote_exists=upvote_exists,
                 user_seller_reports=user_seller_reports
             )
-        
-        #If user is not a seller, render user profile with limited info
-        return render_template(
-            'public_seller_profile.html',
-            seller =  User.get_seller_info(public_user_id),
-            product_sellers = product_sellers,
-            reviews=reviews,
-            summary_ratings=summary_ratings
-        )
         
     #If user is not a seller, render user profile with limited info
     return render_template(

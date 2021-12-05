@@ -30,6 +30,7 @@ def view_reviews():
         product_reviews, reviewed_product_ids, reviewed_product_names = [], [], []
         seller_reviews, reviewed_seller_ids, reviewed_seller_names = [], [], []
 
+        # Gets all the reviews from the databases by calling appropriate functions, and formats them correctly
         for review in reviews:
             if review.product_id != -1:
                 reviewed_product_names.append(p.get(review.product_id).name)
@@ -61,6 +62,7 @@ def edit_review():
         form = CreateReviewForm(number_of_stars=review.rating, written_review=review.review)
 
         if form.validate_on_submit():
+            # Repopulating the form with the previous data
             num_stars = form.number_of_stars.data
             written_review = form.written_review.data
 
@@ -174,11 +176,11 @@ def create_review():
             written_review = form.written_review.data
 
             #check if reviewer id already exists in database
-            # TODO: move this code to before user fills out data
             if pr.check_user_review_exists(user_id, id, review_type):
                 return_message = "You have already submitted a review for this " + review_type + "!"
                 flash(return_message)
                 # return redirect(url_for('index.index'))
+            # check if user has ordered from the seller
             elif review_type == "seller" and not pr.check_user_can_review_seller(user_id, id):
                 flash("You cannot create a review because you have not ordered anything from this seller yet!")
             else:
@@ -186,7 +188,7 @@ def create_review():
                     'reviewer_id': user_id,
                     'rating': int(num_stars),
                     'review': written_review,
-                    'product_id': int(id) if review_type == "product" else -1, #temp fix for db cols not accepting NULL values
+                    'product_id': int(id) if review_type == "product" else -1,
                     'seller_id': int(id) if review_type == "seller" else -1,
                     'time_posted': time.strftime('%Y-%m-%d %H:%M:%S'),
                     'upvotes': 0,

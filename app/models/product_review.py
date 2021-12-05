@@ -18,6 +18,9 @@ class ProductReview:
         self.upvotes = upvotes
         self.reports = reports
 
+    """
+    Get all reviews by specified id and type (either product or seller)
+    """
     @staticmethod
     def get_reviews(id, review_type):
         if review_type == "product":
@@ -47,6 +50,9 @@ class ProductReview:
 
             return reviews
 
+    """
+    Get all reviews by specified user id
+    """
     @staticmethod
     def get_reviews_by_user(reviewer_id):
         rows = app.db.execute(
@@ -62,6 +68,9 @@ class ProductReview:
 
         return reviews
 
+    """
+    Get a specific review by the user with id
+    """
     @staticmethod
     def get_specific_review_by_user(user_id, id, review_type):
         if review_type == "product":
@@ -87,6 +96,9 @@ class ProductReview:
         
             return ProductReview(*(rows[0])) if rows else []
 
+    """
+    Remove a specific review by the user with id
+    """
     @staticmethod
     def remove_specific_review_by_user(user_id, id, review_type):
         if review_type == "product":
@@ -106,6 +118,9 @@ class ProductReview:
                 user_id=user_id,
                 seller_id=id)
 
+    """
+    Get all summary rating for a given review
+    """
     @staticmethod
     def get_summary_rating(id, review_type):
         if review_type == "product":
@@ -122,6 +137,7 @@ class ProductReview:
             if num_reviews == 0:
                 return (num_reviews, avg_rating, "N/A")
 
+            # Gathering current product rating data
             current_product_rating_rows = app.db.execute(
                 '''
                 SELECT rating
@@ -138,6 +154,7 @@ class ProductReview:
                 '5': current_product_rating_data.count(5),
             }
 
+            # Gathering product category rating data
             category = Product.get(id).category
             category_product_rating_rows = app.db.execute(
                 '''
@@ -211,6 +228,7 @@ class ProductReview:
             if num_reviews == 0:
                 return (num_reviews, avg_rating, "N/A")
 
+            # Gathering current seller rating data
             current_seller_rating_rows = app.db.execute(
                 '''
                 SELECT rating
@@ -227,6 +245,7 @@ class ProductReview:
                 '5': current_seller_rating_data.count(5),
             }
 
+            # Gathering all seller rating data
             seller_rating_rows = app.db.execute(
                 '''
                 SELECT DISTINCT seller_id
@@ -283,8 +302,11 @@ class ProductReview:
 
             return (num_reviews, avg_rating, f'#{seller_ranking}', rating_distribution_plot_url, overall_seller_percentile_plot_url)
 
+    """
+    Get average rating of all given ids
+    """
     @staticmethod
-    def get_average_rating(product_ids, type):
+    def get_average_rating(ids, type):
         ret = []
         rows = None
 
@@ -310,18 +332,25 @@ class ProductReview:
         # fast computation of average rating through sorting and dict lookups
         rows.sort(key=lambda x:x[0])
         rows_dict = {i[0]: i[1] for i in rows}
-        for product_id in product_ids:
-            avg = rows_dict.get(product_id)
+        for id in ids:
+            avg = rows_dict.get(id)
             ret.append("{:.2f}".format(avg) if avg != None else "No ratings yet")
 
         return ret
 
+    """
+    Checking if a user review exists for the given review
+    """
     @staticmethod
     def check_user_review_exists(user_id, id, review_type):
         review = ProductReview.get_specific_review_by_user(user_id, id, review_type)
 
         return review != []
     
+    """
+    Checking if a user can review a seller by checking if user has ordered from
+    seller before
+    """
     @staticmethod
     def check_user_can_review_seller(user_id, seller_id):
         rows = app.db.execute(
@@ -338,6 +367,9 @@ class ProductReview:
 
         return rows != []
 
+    """
+    Editing a user's own review
+    """
     @staticmethod
     def update_review(review_contents):
         reviewer_id = review_contents['reviewer_id']
@@ -361,6 +393,9 @@ class ProductReview:
             time_posted=time_posted
         )
 
+    """
+    Adding a user review to the database
+    """
     @staticmethod
     def add_review(contents):
         reviewer_id = contents['reviewer_id']
@@ -387,6 +422,9 @@ class ProductReview:
             reports=reports
         )
 
+    """
+    Checking whether a user has upvoted the given review before
+    """
     @staticmethod
     def check_upvote_exists(upvoter_id, reviewer_id, product_id, seller_id):
         rows = app.db.execute(
@@ -402,6 +440,9 @@ class ProductReview:
     
         return rows != []
 
+    """
+    Adds an upvote to the given review
+    """
     @staticmethod
     def upvote_review(upvoter_id, reviewer_id, product_id, seller_id):
         app.db.execute_with_no_return(
@@ -426,6 +467,9 @@ class ProductReview:
             seller_id=seller_id
         )
 
+    """
+    Removes an upvote to the given review
+    """
     @staticmethod
     def remove_upvote(upvoter_id, reviewer_id, product_id, seller_id):
         app.db.execute_with_no_return(
@@ -450,6 +494,9 @@ class ProductReview:
             seller_id=seller_id
         )
 
+    """
+    Checks if a user has already reported this review before
+    """
     @staticmethod
     def check_report_exists(reporter_id, reviewer_id, product_id, seller_id):
         rows = app.db.execute(
@@ -465,6 +512,9 @@ class ProductReview:
     
         return rows != []
 
+    """
+    Gets all of a user's reports
+    """
     @staticmethod
     def get_user_review_reports(user_id):
         rows = app.db.execute(
@@ -477,6 +527,9 @@ class ProductReview:
 
         return rows
 
+    """
+    Reports a review and adds that info to the database
+    """
     @staticmethod
     def report_review(reporter_id, reviewer_id, product_id, seller_id):
         app.db.execute_with_no_return(

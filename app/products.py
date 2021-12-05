@@ -66,6 +66,7 @@ def ind_view():
     sellers = User.get_sellers(prod_id)
     reviews = ProductReview.get_reviews(prod_id, "product")
     summary_ratings = ProductReview.get_summary_rating(prod_id, "product")
+    # breakpoint()
     upvote_exists, user_product_reports = [], []
     if current_user.is_authenticated:
         upvote_exists = [ProductReview.check_upvote_exists(current_user.id, review.reviewer_id, prod_id, -1) for review in reviews]

@@ -1,5 +1,9 @@
 from flask import current_app as app
 
+import io
+import matplotlib.pyplot as plt
+import base64
+
 class ProductReview:
     def __init__(self, reviewer_id, rating, review, product_id, seller_id, time_posted, upvotes, reports):
         self.reviewer_id = reviewer_id
@@ -110,7 +114,34 @@ class ProductReview:
                 ''',
                 id=id)
 
-            ret = (rows[0][0], "{:.1f}".format(rows[0][1]) if rows[0][0] != 0 else "No ratings yet")
+            ratings_rows = app.db.execute(
+                '''
+                SELECT rating
+                FROM Feedback
+                WHERE product_id = :id
+                ''',
+                id=id)
+            data = [rating_row[0] for rating_row in ratings_rows]
+            data_dist = {
+                '1': data.count(1),
+                '2': data.count(2),
+                '3': data.count(3),
+                '4': data.count(4),
+                '5': data.count(5),
+            }
+
+            histogram_plot = io.BytesIO()
+            plt.hist(data, [0.75, 1.25, 1.75, 2.25, 2.75, 3.25, 3.75, 4.25, 4.75, 5.25], facecolor='g')
+            plt.xticks([1, 2, 3, 4, 5])
+            plt.yticks([0, max(data_dist.values())])
+            plt.savefig(histogram_plot, format='png')
+            plt.close()
+            histogram_plot.seek(0)
+            plot_url = base64.b64encode(histogram_plot.getvalue())
+
+            ret = (rows[0][0], 
+                   "{:.1f}".format(rows[0][1]) if rows[0][0] != 0 else "No ratings yet",
+                   plot_url)
 
             return ret
         else:

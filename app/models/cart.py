@@ -19,7 +19,7 @@ class Cart:
             user_id: int,
             is_current: bool,
             time_purchased: Optional[datetime] = None,
-            is_fulfilled: Optional[bool] = None,
+            is_fulfilled: Optional[bool] = False,
             coupon_applied: Optional[str] = None
     ):
         self.id = id

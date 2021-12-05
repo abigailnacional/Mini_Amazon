@@ -21,7 +21,7 @@ class Purchase:
             time_of_fulfillment: datetime,
             cart_id: int,
             user_id: int,
-            final_unit_price: int,
+            final_unit_price: float,
             product_in_cart: Optional[ProductInCart] = None
     ):
         self.id = id

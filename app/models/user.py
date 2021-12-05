@@ -15,7 +15,7 @@ class User(UserMixin):
             first_name: str,
             last_name:  str,
             password: Optional[str] = "",
-            balance: Optional[int] = 0,
+            balance: Optional[float] = 0.00,
             address: Optional[str] = "",
             seller_affiliation: Optional[int] = -1):
             
@@ -43,7 +43,8 @@ class User(UserMixin):
                               email=email)
         if not rows:  # email not found
             return None
-                # second check allows us to use the preloaded csv data (remove at some point)
+                # second check allows us to use the preloaded csv data; cannot be removed
+                # when we are using our sample database
         elif not check_password_hash(rows[0][0], password) \
                 and not check_password_hash(generate_password_hash(rows[0][0]), password):
                 return None
@@ -87,8 +88,8 @@ RETURNING id
             return User.get(id)
         except Exception as e:
             print("except!", e)
-            # likely email already in use; better error checking and
-            # reporting needed
+            # Error checks at the registration form should prevent any issues from
+            # reaching this point
             return None
 
     """
@@ -119,21 +120,6 @@ RETURNING id
             """,
             id=self.id,
         )[0][0] >= total_price
-
-    """
-    This method is used to determine whether the user's balance
-    will exceed the max int value for SQL after a given amount
-    is added to their balance.
-    """
-    def under_max_balance(self, total_price):
-        return app.db.execute(
-            """
-            SELECT balance
-            FROM Users
-            WHERE id = :id
-            """,
-            id=self.id,
-        )[0][0] + total_price <= 2147483647 #max int value in SQL
 
     """
     This method is used to decrease balance without committing to allow for rollback when purchasing a cart

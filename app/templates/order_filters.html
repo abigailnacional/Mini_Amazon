@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Select Order Filters</h1> 
+<p>You may select 1 or more filters to apply.</p>
+
+<form action="" method="post" novalidate>
+    {{ form.csrf_token }}
+    <p>
+        <b>{{form.fulfill.label}}</b><br/>
+        {{form.fulfill}}<br/>
+    </p>
+    <p>
+        <b>{{form.time_period.label}}</b><br/>
+        {{form.time_period}}<br/>
+    </p>
+    {{ form.submit(class_="btn btn-black") }}
+</form>
+
+{% endblock %}

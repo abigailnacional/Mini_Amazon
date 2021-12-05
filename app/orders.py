@@ -16,7 +16,7 @@ def view_orders():
     """
 
     if current_user.is_authenticated:
-        page_num = int(request.args.get('page'))
+        page_num = int(request.args.get('page', default=1))
 
         # need all past carts
         purchased_carts = Cart.get_purchased_carts(current_user.id, page_num)

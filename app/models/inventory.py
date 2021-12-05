@@ -102,6 +102,7 @@ class InventoryEntry:
             AND seller_id = :seller_id
             """,
 
+
             product_id=product_id,
             seller_id=seller_id
         )

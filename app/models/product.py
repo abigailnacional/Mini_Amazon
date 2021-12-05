@@ -36,10 +36,10 @@ WHERE id = :id
     @staticmethod
     def get_specific(seller_affiliation, page_num):
         rows = app.db.execute('''
-SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
+SELECT DISTINCT id, name, description, category, price, Sells.is_available, creator_id, image
 FROM Product
 RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
-WHERE seller_affiliation = :seller_affiliation AND is_available = True
+WHERE seller_affiliation = :seller_affiliation AND Sells.is_available = True
 ORDER BY id
 LIMIT 20
 OFFSET ((:page_num - 1) * 20)
@@ -52,10 +52,10 @@ OFFSET ((:page_num - 1) * 20)
     @staticmethod
     def get_all(is_available=True):
         rows = app.db.execute('''
-SELECT id, name, description, category, price, is_available, creator_id, image
+SELECT id, name, description, category, price, Sells.is_available, creator_id, image
 FROM Product
 RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
-WHERE is_available = :is_available
+WHERE Sells.is_available = :is_available
 ''',
                               is_available=is_available)
         return [Product(*row) for row in rows]
@@ -66,7 +66,7 @@ WHERE is_available = :is_available
 SELECT DISTINCT category
 FROM Product
 RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
-WHERE is_available = :is_available
+WHERE Sells.is_available = :is_available
 ''',
                                 is_available=is_available)
         return rows 
@@ -75,10 +75,10 @@ WHERE is_available = :is_available
     @staticmethod
     def filteredCat(seller_affiliation, category, page_num):
         rows = app.db.execute('''
-SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
+SELECT DISTINCT id, name, description, category, price, Sells.is_available, creator_id, image
 FROM Product
 RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
-WHERE seller_affiliation = :seller_affiliation AND is_available = True AND category = :category
+WHERE seller_affiliation = :seller_affiliation AND Sells.is_available = True AND category = :category
 ORDER BY id
 LIMIT 20
 OFFSET ((:page_num - 1) * 20)
@@ -92,9 +92,9 @@ OFFSET ((:page_num - 1) * 20)
     @staticmethod
     def filteredPrice(seller_affiliation, page_num):
         rows = app.db.execute('''
-SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
+SELECT DISTINCT id, name, description, category, price, Sells.is_available, creator_id, image
 FROM Product RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
-WHERE seller_affiliation = :seller_affiliation AND is_available = True
+WHERE seller_affiliation = :seller_affiliation AND Sells.is_available = True
 ORDER BY price ASC
 LIMIT 20
 OFFSET ((:page_num - 1) * 20)
@@ -107,7 +107,7 @@ OFFSET ((:page_num - 1) * 20)
     @staticmethod
     def filteredRating(stars, page_num):
         rows = app.db.execute('''
-SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
+SELECT DISTINCT id, name, description, category, price, Sells.is_available, creator_id, image
 FROM Product FULL OUTER JOIN Feedback ON Product.id = Feedback.product_id
 GROUP BY id
 HAVING AVG(rating) >= :stars
@@ -136,11 +136,11 @@ OFFSET ((:page_num - 1) * 20)
     @staticmethod
     def search_id(id, page_num):
         rows = app.db.execute('''
-SELECT DISTINCT id, name, description, category, price, is_available, creator_id, image
+SELECT DISTINCT id, name, description, category, price, Sells.is_available, creator_id, image
 FROM Product
 RIGHT OUTER JOIN Sells ON Product.id=Sells.product_id
 WHERE id = :id
-AND is_available = true
+AND Sells.is_available = true
 LIMIT 20
 OFFSET ((:page_num - 1) * 20)
 ''',

@@ -63,7 +63,7 @@ with open('db/data/Users.csv', 'w', newline='') as users_file:
         address = real_random_address()['address1']
         writer.writerow([id, email, password, first, last, balance, address])
 
-    writer.writerow([-1, " ", " ", " ", " ", 0, " "])
+    writer.writerow([-1, " ", " ", " ", 0, " "])
 
 print("Data generation on Users done, starting data generation on Cart")
 

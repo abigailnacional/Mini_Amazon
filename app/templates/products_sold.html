@@ -16,6 +16,7 @@
       <th scope="col">Category</th>
       <th scope="col">Price</th>
       <th scope="col">Available</th>
+      <th scope="col">Edit Info</th>
     </tr>
   </thead>
   <tbody>
@@ -27,6 +28,7 @@
         <td scope="row">{{ item.category }}</td>
         <td scope="row">{{ item.price }}</td>
         <td scope="row">{{ item.is_available }}</td>
+        <td><a href="{{ url_for('inventory.edit_product', product_id=item.product_id) }}">Edit</a></td>
       </tr>
     {% endfor %}
   </tbody>

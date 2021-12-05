@@ -162,4 +162,37 @@ RETURNING id
         id = rows[0][0]
         return id
 
-    
+
+    @staticmethod
+    def update_product(name, description, price, category, image):
+        names = app.db.execute('''
+UPDATE Product name
+VALUES :name
+WHERE :name IS NOT NULL
+    ''',
+        name=name),
+        description = app.db.execute('''
+UPDATE Product description
+VALUES :description
+WHERE :description IS NOT NULL
+    ''',
+        description=description),
+        price = app.db.execute('''
+UPDATE Product price
+VALUES :price
+WHERE :price IS NOT NULL
+    ''',
+        price=price),
+        category = app.db.execute('''
+UPDATE Product category
+VALUES :category
+WHERE :category IS NOT NULL
+    ''',
+        category=category),
+        image = app.db.execute('''
+UPDATE Product image
+VALUES :image
+WHERE :image IS NOT NULL
+    ''',
+        image=image)
+        

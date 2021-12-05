@@ -1,5 +1,5 @@
 import os
-from flask import render_template, redirect, url_for, request, flash, Flask
+from flask import render_template, redirect, url_for, request, flash, Flask, session
 from flask_login import current_user
 from typing import List
 from flask_wtf import FlaskForm
@@ -53,7 +53,6 @@ class AddProductForm(FlaskForm):
 
 @bp.route('/add-product', methods=['GET', 'POST'])
 def add_product():
-    global base
     form = AddProductForm()
     if request.method == 'POST':
         image = form.image.data.filename
@@ -63,7 +62,6 @@ def add_product():
                 filename = secure_filename(image)
                 f.save(os.path.join(UPLOAD_FOLDER, filename))
                 prod_id = Product.add_product(form.name.data, form.description.data, form.price.data, form.category.data, form.image.data.filename, current_user)
-                print(prod_id)
                 for restaurant in form.restaurant.data:
                     InventoryEntry.add_product_to_inventory(current_user, restaurant, prod_id, form.inventory.data)
                 return redirect(url_for('inventory.inventory'))
@@ -73,6 +71,46 @@ def add_product():
         else:
             return render_template('add_product.html', form=form)
     return render_template('add_product.html', form=form)
+
+class EditProductForm(FlaskForm):
+    name = StringField(_l('Product Name'))
+    description = StringField(_l('Product Description'))
+    price = DecimalField(_l('Product Price'))
+    category = SelectField(_l('Type'),
+        choices = [('', 'Select a category'), ('Entrées', 'Entrées'), ('Sides', 'Sides'), ('Appetizers', 'Appetizers'), ('Desserts', 'Desserts'), ('Beverages', 'Beverages')]
+    )
+    # have to input restaurant id as string for flask form constraints (later convert back to int for sql query)
+    restaurant = SelectMultipleField(_l('Locations Served'),
+        choices = [('', 'Select restuarant(s)'), ('1', 'Beyu Blue'), ('2', 'The Loop'), ('3', 'McDonalds'), ('4', 'Panda Express'), ('5', 'Il Forno'), ('6', 'Sazon')]
+    )
+    inventory = IntegerField(_l('Product Inventory'))
+    image = FileField(_l('Product Image'))
+    submit = SubmitField(_l('Start Selling Product'))
+
+@bp.route('/edit-product', methods=['GET', 'POST'])
+def edit_product():
+    form = EditProductForm()
+    product_id = int(request.args.get('product_id'))
+    if request.method == 'POST':
+        image = form.image.data.filename
+        # product image is being changed    
+        if image != "":
+            print("WOO")
+            print(image)
+            if image.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
+                f = request.files['image']
+                filename = secure_filename(image)
+                f.save(os.path.join(UPLOAD_FOLDER, filename))
+            # product image submitted is wrong file type
+            else:
+                flash('Incorrect file type [png, jpg, jpeg accepted]')
+        else:
+            return render_template('edit_product.html', form=form)
+        Product.update_product(form.name.data, form.description.data, form.price.data, form.category.data, form.image.data.filename)
+        #for restaurant in form.restaurant.data:
+        #    InventoryEntry.add_product_to_inventory(current_user, restaurant, prod_id, form.inventory.data)
+        return redirect(url_for('inventory.inventory'))
+    return render_template('edit_product.html', form=form)
 
 
 

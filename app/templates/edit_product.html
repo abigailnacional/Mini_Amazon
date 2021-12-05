@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Edit Existing Product</h1> 
+
+<form action="" method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <p>
+        <b>{{ form.name.label }}</b><br/>
+        {{ form.name(size=32) }}<br/>
+    </p>
+    <p>
+        <b>{{ form.description.label }}</b><br/>
+        {{ form.description(size=32) }}<br/>
+    </p>
+    <p>
+        <b>{{ form.price.label }}</b><br/>
+        {{ form.price(size=32) }}<br/>
+    </p>
+    <p>
+        <b>{{ form.inventory.label }}</b><br/>
+        {{ form.inventory(size=32) }}<br/>
+    </p>
+    <p>
+        <b>{{form.category.label}}</b><br/>
+        {{form.category}}<br/>
+    </p>
+    <p>
+        <b>{{form.restaurant.label}}</b><br/>
+        {{form.restaurant}}<br/>
+    </p>   
+    <p>
+        <b>{{form.image.label}}</b><br/>
+        {{form.image}}<br/>
+    </p>
+    <p>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+          {% for message in messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+    </p>
+    {{ form.submit(class_="btn btn-black") }}
+</form>
+
+{% endblock %}

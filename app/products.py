@@ -52,7 +52,7 @@ def filtered_rating():
     stars = int(request.args.get('stars'))
     products = Product.filteredRating(stars, page_num)
     categories = Product.get_categories()
-    average_ratings = ProductReview.get_product_average_rating([product.id for product in products])
+    average_ratings = ProductReview.get_average_rating([product.id for product in products], "product")
     return render_template('product.html', vender_id=vender_id, product_sellers=product_sellers, 
                             avail_products=products, categories=categories, average_ratings=average_ratings,
                             page_num=page_num, pag_tag="/filter-rat?id=" + str(vender_id) + "&stars=" + str(stars) + "&page=", max_pages=len(products)) 

@@ -13,8 +13,6 @@ from .products import product_sellers
 from flask import Blueprint
 bp = Blueprint('users', __name__)
 
-<<<<<<< HEAD
-=======
 """
 This form takes input from the user, namely an email and a password,
 so that the user may log in. If the user selects the 'Remember Me'
@@ -23,7 +21,6 @@ unless they click the 'Log Out' button. If 'Remember Me' is not selected,
 the user will automatically be logged out if they close their browser (but
 not if they only close a tab).
 """
->>>>>>> b1dafddc98fce4cb0e96379e5203877cbbf1a759
 class LoginForm(FlaskForm):
     email = StringField(_l('Email'), validators=[DataRequired(), Email()])
     password = PasswordField(_l('Password'), validators=[DataRequired()])

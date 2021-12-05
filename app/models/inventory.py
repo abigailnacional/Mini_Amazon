@@ -46,7 +46,7 @@ class InventoryEntry:
             JOIN Product
             ON Product.id=Sells.product_id
             WHERE seller_id = :seller_id
-            AND Sells.is_available = true
+            AND is_available = true
             LIMIT 20
             OFFSET ((:page_num - 1) * 20)
             """,

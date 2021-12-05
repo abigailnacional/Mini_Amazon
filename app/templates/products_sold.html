@@ -27,8 +27,8 @@
       <th scope="col">Price</th>
       <th scope="col">Available</th>
       <th scope="col">Current Coupon</th>
-      <th scope="col"></th>
-      <th scope="col"></th>
+      <th scope="col">Generate Coupon</th>
+      <th scope="col">Edit Info</th>
     </tr>
   </thead>
   <tbody>
@@ -40,9 +40,9 @@
         </td>
         <td scope="row" style="text-align: center; vertical-align: middle;">
           <div style="width: 100%; text-align: center;">
-
-            <form method="post" action="/inventory/increment_quantity/{{item.product_id}}"><button name="up" value="up" class="btn-updown">&and;</button></form>
-            <form method="post" action="/inventory/decrement_quantity/{{item.product_id}}"><button name="down" value="down" class="btn-updown">&or;</button></form>
+            <a href="/increment_quantity?id={{item.product_id}}&page={{page_num}}" type="button" name="up" value="up" class="btn-updown">&and;</a>
+            <a href="/decrement_quantity?id={{item.product_id}}&page={{page_num}}" type="button" name="down" value="down" class="btn-updown">&or;</a>
+          
           </div>
         </td>
         <td scope="row">{{ item.name }}</td>
@@ -60,13 +60,22 @@
             <button>Generate Coupon</button>
           </form></td>
         {% endif %}
+        <td><a href="{{ url_for('inventory.edit_product', product_id=item.product_id) }}">Edit</a></td>
         <td scope="row">
-          <form method="post" action="/inventory/delete_product/{{item.product_id}}"><button name="delete" value="delete" class="btn-updown">X</button></form>
+          <a href="/delete_product?id={{item.product_id}}&page={{page_num}}" type="button" name="delete" value="delete" class="btn-updown">X</a>
         </td>
       </tr>
     {% endfor %}
   </tbody>
 </table>
+
+{% if page_num < max_pages %}
+<a href="{{ pag_tag }}{{ page_num + 1 }}" type="button" class="btn btn-gray right">Next</a>
+{% endif %}
+{% if page_num != 1 %}
+<a href="{{ pag_tag }}{{ page_num - 1 }}" type="button" class="btn btn-gray right">Previous</a>
+{% endif %}
+<br></br>
 
 {% endblock %}
 ml>

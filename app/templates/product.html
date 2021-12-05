@@ -3,25 +3,35 @@
 {% block content %}
 <img src = "{{ url_for('static', filename='images/' + vender_id|string + '.png') }}" height="100"/>
 <h1>Products for sale at {{product_sellers[vender_id]}}:</h1>
-<a href="/filter-price?id={{vender_id}}" type="button" class="btn btn-gray left">Filter by price</a>
+<a href="/filter-price?id={{vender_id}}&page=1" type="button" class="btn btn-gray left">Filter by price</a>
 <select id="categoryFilter" class="btn btn-gray left" onchange="location = this.value;">
-  <option value="/product?id={{vender_id}}">Filter by category</option>
+  <option value="/product?id={{vender_id}}&page=1">Filter by category</option>
   <tbody>
     {% for category in categories%}
       <tr>
-        document.write('<option value="/filter?id={{vender_id}}&cat={{category[0]}}">{{category[0]}}</option>');
+        document.write('<option value="/filter?id={{vender_id}}&cat={{category[0]}}&page=1">{{category[0]}}</option>');
       </tr>
       {% endfor %}
+  </tbody>
+</select>
+<select id="ratingFilter" class="btn btn-gray left" onchange="location = this.value;">
+  <option value="/product?id={{vender_id}}">Filter by rating</option>
+  <tbody>
+      <tr> document.write('<option value="/filter-rat?id={{vender_id}}&stars=5&page=1">5 stars</option>'); </tr>
+      <tr> document.write('<option value="/filter-rat?id={{vender_id}}&stars=4&page=1">≥ 4 stars</option>'); </tr>
+      <tr> document.write('<option value="/filter-rat?id={{vender_id}}&stars=3&page=1">≥ 3 stars</option>'); </tr>
   </tbody>
 </select>
 <form action="/id-search" class="right">
   <input type="hidden" name="id" value="{{vender_id}}">
   <input type="text" placeholder="Search for product ID" name="search">
+  <input type="hidden" name="page" value="1">
   <button type="submit">Submit</button>
 </form>
 <form action="/search" class="right">
   <input type="hidden" name="id" value="{{vender_id}}">
   <input type="text" placeholder="Search for product name" name="search">
+  <input type="hidden" name="page" value="1">
   <button type="submit">Submit</button>
 </form>
 
@@ -51,5 +61,13 @@
     {% endfor %}
   </tbody>
 </table>
+
+{% if page_num < max_pages %}
+<a href="{{ pag_tag }}{{ page_num + 1 }}" type="button" class="btn btn-gray right">Next</a>
+{% endif %}
+{% if page_num != 1 %}
+<a href="{{ pag_tag }}{{ page_num - 1 }}" type="button" class="btn btn-gray right">Previous</a>
+{% endif %}
+<br></br>
 
 {% endblock %}

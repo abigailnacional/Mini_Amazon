@@ -31,7 +31,7 @@ class InventoryEntry:
 
 
     @staticmethod
-    def get_all_entries_by_seller(seller_id: int):
+    def get_all_entries_by_seller(page_num, seller_id: int):
         """
         Created an inventory entry for units the seller is selling. Displays it as a table with rows. 
         """
@@ -42,13 +42,14 @@ class InventoryEntry:
                    Product.category AS category, 
                    Product.price AS price, 
                    Product.is_available AS is_available
-            FROM Sells
-            JOIN Product
-            ON Product.id=Sells.product_id
+            FROM Sells JOIN Product ON Product.id=Sells.product_id
             WHERE seller_id = :seller_id
-              AND Sells.is_available = true
+            AND Sells.is_available = true
+            LIMIT 20
+            OFFSET ((:page_num - 1) * 20)
             """,
-            seller_id=seller_id
+            seller_id=seller_id,
+            page_num=page_num
         )
 
         return [InventoryEntry(
@@ -69,6 +70,39 @@ class InventoryEntry:
                        price, 
                        is_available) in rows]
 
+    @staticmethod
+    def add_product_to_inventory(current_seller, restaurant, product_id, inventory):
+
+        rows = app.db.execute_with_no_return('''
+    INSERT INTO Sells (seller_affiliation, seller_id, product_id, inventory)
+    VALUES (:restaurant, :seller_id, :product_id, :inventory);
+        ''',
+            restaurant=restaurant,
+            seller_id=current_seller.id,
+            product_id=product_id,
+            inventory=inventory)
+
+    @staticmethod
+    def update_inventory(current_user, product_id, inventory):
+        rows = app.db.execute_with_no_return('''
+    UPDATE Sells
+    SET inventory = :inventory
+    WHERE product_id = :product_id AND seller_id = :user_id
+        ''',
+            inventory=inventory,
+            product_id=product_id,
+            user_id=current_user.id)
+
+    @staticmethod
+    def update_restaurant(current_user, product_id, seller_affiliation):
+        rows = app.db.execute_with_no_return('''
+    UPDATE Sells
+    SET seller_affiliation = :seller_affiliation
+    WHERE product_id = :product_id AND seller_id = :user_id
+        ''',
+            seller_affiliation=seller_affiliation,
+            product_id=product_id,
+            user_id=current_user.id)
     
     @staticmethod
     def increase_quantity(product_id: int, seller_id: int):

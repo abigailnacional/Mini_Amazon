@@ -137,7 +137,7 @@ def add_product():
                 prod_id = Product.add_product(form.name.data, form.description.data, form.price.data, form.category.data, form.image.data.filename, current_user)
                 for restaurant in form.restaurant.data:
                     InventoryEntry.add_product_to_inventory(current_user, restaurant, prod_id, form.inventory.data)
-                return redirect(url_for('inventory.inventory'))
+                return redirect(url_for('inventory.inventory', page=1))
             else:
                 flash('Incorrect file type [png, jpg, jpeg accepted]')
                 render_template('add_product.html', form=form)

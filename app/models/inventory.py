@@ -74,8 +74,8 @@ class InventoryEntry:
     def add_product_to_inventory(current_seller, restaurant, product_id, inventory):
 
         rows = app.db.execute_with_no_return('''
-    INSERT INTO Sells (seller_affiliation, seller_id, product_id, inventory)
-    VALUES (:restaurant, :seller_id, :product_id, :inventory);
+    INSERT INTO Sells (seller_affiliation, seller_id, product_id, inventory, is_available)
+    VALUES (:restaurant, :seller_id, :product_id, :inventory, TRUE);
         ''',
             restaurant=restaurant,
             seller_id=current_seller.id,

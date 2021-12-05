@@ -57,7 +57,7 @@ with open('db/data/Users.csv', 'w', newline='') as users_file:
         # source: https://moonbooks.org/Articles/How-to-generate-random-names-first-and-last-names-with-python-/
         first = names.get_first_name()
         last = names.get_last_name()
-        balance = round(random.randrange(0.00, 1000000000.00), 2)
+        balance = round(random.uniform(0.00, 1000000000.00), 2)
         # addresses are generated using the random address Python tool which accurately geocodes to data collected from the Open
         # Addresses project (would need additional data for other states - beyond scope of this project)
         # source: 
@@ -79,6 +79,7 @@ with open('db/data/Cart.csv', 'w', newline='') as cart_file:
             is_current = num_cart == num_carts_per_user - 1
             time_purchased = None
             if not is_current:
+                is_fulfilled = bool(random.randint(0, 1))
                 #Coming up with random spans of time between 0 and 20 days
                 randay = random.randint(0, 20)
                 ransec = random.randint(0, 59)
@@ -87,7 +88,7 @@ with open('db/data/Cart.csv', 'w', newline='') as cart_file:
                     days = randay, seconds = ransec, milliseconds=0)
                 purchased_cart_ids.append(cart_id)
 
-            writer.writerow([cart_id, user_id, is_current, time_purchased, False, None])
+            writer.writerow([cart_id, user_id, is_current, time_purchased, is_fulfilled, None])
 
             cart_id += 1
 
@@ -175,7 +176,7 @@ with open('db/data/Purchase.csv', 'w', newline='') as purchase_file:
             time_of_fulfillment = None
             if is_fulfilled:
                 time_of_fulfillment = "2021-09-10 13:12:58"
-            final_price = round(random.randrange(0, 1000), 2)
+            final_price = round(random.uniform(0, 1000), 2)
 
             writer.writerow(
                 [
